@@ -147,7 +147,8 @@ const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 const LogOut = ()=>{
-  router.push('/login')
+  localStorage.removeItem('token')
+  router.replace('/login')
 }
 </script>
 

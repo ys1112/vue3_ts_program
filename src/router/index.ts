@@ -24,12 +24,12 @@ const router = createRouter({
       children: [
         {
           name: "home",
-          path: "home",
+          path: "/home",
           component: Home,
         },
         {
           name: "system",
-          path: "system",
+          path: "/system",
           component: System,
         },
       ],

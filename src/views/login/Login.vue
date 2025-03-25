@@ -162,7 +162,9 @@ const toLogin = (formEl: FormInstance | undefined) => {
           message: '登录成功',
           type: 'success',
         })
-        router.push('/menu/home')
+        const {token} = res.data
+        localStorage.setItem('token',token)
+        router.push('/home')
       } else {
         ElMessage.error('登录失败,请检查账号密码是否正确')
       }
@@ -186,8 +188,9 @@ const toRegister = async (formEl: FormInstance | undefined) => {
           type: 'success',
         })
         formEl.resetFields()
+        activeName.value = 'first'
       } else {
-        ElMessage.error('注册失败')
+        ElMessage.error('注册失败,请检查账号密码是否合规')
       }
     } else {
       console.log('error submit!')
