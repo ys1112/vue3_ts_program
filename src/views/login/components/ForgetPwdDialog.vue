@@ -1,7 +1,8 @@
 <template>
   <!-- 忘记密码对话框 -->
   <el-dialog v-model="state.forgetDialogVisible" title="忘记密码" width="420" :before-close="handleClose">
-    <el-form :rules="rules" label-position="top" class="login-form"  style="max-width: 600px">
+    <el-form :model="forgetData" :rules="rules" ref="ruleFormRef" label-position="top" class="login-form"
+      style="max-width: 600px">
       <el-form-item label="请输入您的个人账号" prop="account">
         <el-input v-model="forgetData.account" style="width: 300px" placeholder="请输入账号">
         </el-input>
@@ -13,8 +14,8 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="state.forgetDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="openResetDialog">
+        <el-button @click="cancelReset(ruleFormRef)">取消</el-button>
+        <el-button type="primary" @click="openResetDialog(ruleFormRef)">
           下一步
         </el-button>
       </div>
@@ -22,21 +23,21 @@
   </el-dialog>
   <!-- 重置密码对话框 -->
   <el-dialog v-model="state.resetDialogVisible" title="重置密码" width="420" :before-close="handleClose">
-    <el-form :rules="rules" label-position="top" class="login-form"  style="max-width: 600px">
+    <el-form :model="forgetData" :rules="rules" ref="confirmFormRef" label-position="top" class="login-form"
+      style="max-width: 600px">
       <el-form-item label="请输入您的新密码" prop="password">
-        <el-input v-model="forgetData.password" style="width: 300px" placeholder="请输入您的新密码">
+        <el-input type="password" show-password v-model="forgetData.password" style="width: 300px" placeholder="请输入您的新密码">
         </el-input>
       </el-form-item>
       <el-form-item label="请再次输入您的新密码" prop="confirmPassword">
-        <el-input v-model="forgetData.confirmPassword" style="width: 300px" placeholder="请再次输入您的新密码">
+        <el-input type="password" show-password v-model="forgetData.confirmPassword" style="width: 300px" placeholder="请再次输入您的新密码">
         </el-input>
       </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="state.resetDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="state.resetDialogVisible = false">
-          下一步
+          重置
         </el-button>
       </div>
     </template>
@@ -48,71 +49,97 @@ import { reactive, ref, } from 'vue';
 import { ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
 // 对话框状态
 const state = reactive({
-  forgetDialogVisible:false,
-  resetDialogVisible:false
+  forgetDialogVisible: false,
+  resetDialogVisible: false
 })
 const ruleFormRef = ref<FormInstance>()
+const confirmFormRef = ref<FormInstance>()
 interface ForgetForm {
   account: string
   email: string
-  password:string
-  confirmPassword:string
+  password: string
+  confirmPassword: string
 }
 const forgetData: ForgetForm = reactive({
   account: '',
   email: '',
-  password:'',
-  confirmPassword:''
+  password: '',
+  confirmPassword: ''
 })
 const regEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const validateAccount = (rule: any, value: any, callback: any) => {
-
-}
+const regPassword = /^[a-zA-Z0-9_?!@]{6,16}$/
 const validateEmail = (rule: any, value: any, callback: any) => {
   if (forgetData.email === '') {
-    callback(new Error('请输入您的注册邮箱'))
+    return callback(new Error('请输入您的注册邮箱'))
   } else {
     if (forgetData.email !== '') {
-      if (regEmail.test(forgetData.email)) return
-      callback(new Error("请输入正确的邮箱格式"))
+      if (!regEmail.test(forgetData.email)) {
+        callback(new Error("请输入正确的邮箱格式"))
+      } else {
+        callback()
+      }
     }
+  }
+}
+const validatePassword = (rule: any, value: any, callback: any) => {
+  if (forgetData.password !== '') {
+    if (!regPassword.test(forgetData.password)) {
+      callback(new Error("请确认新密码，长度6-16位含字母数字_?!@"))
+    } else {
+      callback()
+    }
+  }
+}
+const validateConfirmPwd = (rule: any, value: any, callback: any) => {
+  if (forgetData.password !== forgetData.confirmPassword) {
+    return callback(new Error("两次密码不一致"))
+  } else {
     callback()
   }
 }
 const rules = reactive<FormRules<ForgetForm>>({
   account: [
     { required: true, message: '请输入您的注册账号', trigger: 'blur' },
-    // { validator: validateAccount, trigger: 'blur' }
+    { min: 6, max: 12, message: '请确认账号，长度6-12位', trigger: 'blur' },
   ],
   email: [
-    // { required: true, message: '请输入您的邮箱', trigger: 'blur' },
     { required: true, validator: validateEmail, trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入您的新密码', trigger: 'blur' },
-    // { validator: validateAccount, trigger: 'blur' }
+    { validator: validatePassword, trigger: 'blur' }
   ],
   confirmPassword: [
     { required: true, message: '请再次输入您的新密码', trigger: 'blur' },
-    // { validator: validateAccount, trigger: 'blur' }
+    { validator: validateConfirmPwd, trigger: 'blur' }
   ],
 })
 
 function handleClose(done: () => void) {
-  ElMessageBox.confirm('确认关闭当前对话框？')
-    .then(() => {
-      done()
-    })
-    .catch(() => {
-      // catch error
-    })
+  confirmFormRef.value?.resetFields()
+  ruleFormRef.value?.resetFields()
+  done()
 }
 const open = () => {
   state.forgetDialogVisible = true
 }
-const openResetDialog = () =>{
+const cancelReset = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.resetFields()
   state.forgetDialogVisible = false
-  state.resetDialogVisible = true
+}
+
+const openResetDialog = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate((valid) => {
+    if (valid) {
+      state.forgetDialogVisible = false
+      state.resetDialogVisible = true
+    } else {
+      console.log('error submit!')
+    }
+  })
+
 }
 defineExpose({
   open
@@ -122,5 +149,9 @@ defineExpose({
 <style lang="scss" scoped>
 .el-form {
   padding-left: 42px;
+}
+
+.dialog-footer {
+  padding-right: 48px;
 }
 </style>

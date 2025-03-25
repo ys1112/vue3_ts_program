@@ -13,19 +13,20 @@
         <div class="login-wrapper">
           <div class="login-content">
             <el-card class="box-login">
-              <el-tabs v-model="activeName" class="demo-tabs" stretch>
+              <el-tabs v-model="activeName" @tab-click="handleClick" class="demo-tabs" stretch>
                 <el-tab-pane label="登录" name="first">
-                  <el-form class="login-form" style="max-width: 600px">
-                    <el-form-item label="账号">
-                      <el-input v-model="loginData.account" style="width: 300px" placeholder="请输入账号">
+                  <el-form ref="ruleFormRef" :model="loginData" :rules="rules" class="login-form"
+                    style="max-width: 600px">
+                    <el-form-item label="账号" prop="account">
+                      <el-input v-model="loginData.account" style="width: 280px" placeholder="请输入账号">
                         <template #prefix>
                           <el-icon>
                             <User />
                           </el-icon></template>
                       </el-input>
                     </el-form-item>
-                    <el-form-item label="密码">
-                      <el-input v-model="loginData.password" style="width: 300px" placeholder="请输入密码" type="password"
+                    <el-form-item label="密码" prop="password">
+                      <el-input v-model="loginData.password" style="width: 280px" placeholder="请输入密码" type="password"
                         show-password>
                         <template #prefix><el-icon>
                             <Lock />
@@ -34,19 +35,22 @@
                     </el-form-item>
                     <div class="login-btn-wrapper">
                       <div class="forget-wrapper">
-                        <a href="#" class="forget-btn" @click="forgetPwd">忘记密码</a>
+                        <span class="forget-btn" @click="forgetPwd">忘记密码</span>
                       </div>
                       <div class="login-btn-wrapper">
-                        <el-button type="primary" class="login-btn" @click="toMenuHome">登录</el-button>
+                        <el-button type="primary" class="login-btn" @click="toLogin(ruleFormRef)">登录</el-button>
                       </div>
-                      <div class=" to-register-wrapper">还没有账号？ <a href="#" class="to-register-btn">马上注册</a></div>
+                      <div class=" to-register-wrapper">还没有账号？ <span class="to-register-btn"
+                          @click="activeName = 'second'">马上注册</span>
+                      </div>
                     </div>
                   </el-form>
                 </el-tab-pane>
                 <el-tab-pane label="注册" name="second">
-                  <el-form label-width="auto" class="register-form" style="max-width: 600px">
-                    <el-form-item label="账号">
-                      <el-input v-model="registerData.account" style="width: 300px" placeholder="账号长度6-12位">
+                  <el-form ref="registerFormRef" :model="registerData" :rules="rules" label-width="90px"
+                    class="register-form" style="max-width: 600px">
+                    <el-form-item label="账号" prop="account">
+                      <el-input v-model="registerData.account" style="width: 280px" placeholder="账号长度6-12位">
                         <template #prefix>
                           <el-icon>
                             <User />
@@ -54,8 +58,8 @@
                       </el-input>
                     </el-form-item>
 
-                    <el-form-item label="密码">
-                      <el-input v-model="registerData.password" style="width: 300px" placeholder="密码长度6-16位含字母数字_?!@"
+                    <el-form-item label="密码" prop="password">
+                      <el-input v-model="registerData.password" style="width: 280px" placeholder="密码长度6-16位含字母数字_?!@"
                         type="password" show-password>
                         <template #prefix><el-icon>
                             <Lock />
@@ -63,8 +67,8 @@
                       </el-input>
                     </el-form-item>
 
-                    <el-form-item label="确认密码">
-                      <el-input v-model="registerData.confirmPassword" style="width: 300px" placeholder="请再次输入密码"
+                    <el-form-item label="确认密码" prop="confirmPassword">
+                      <el-input v-model="registerData.confirmPassword" style="width: 280px" placeholder="请再次输入密码"
                         type="password" show-password>
                         <template #prefix><el-icon>
                             <Lock />
@@ -72,7 +76,7 @@
                       </el-input>
                     </el-form-item>
                     <div class="register-wrapper">
-                      <el-button type="primary" class="register-btn" @click="toRegister">注册</el-button>
+                      <el-button type="primary" class="register-btn" @click="toRegister(registerFormRef)">注册</el-button>
                     </div>
                   </el-form>
                 </el-tab-pane>
@@ -94,12 +98,16 @@
 </template>
 
 <script lang="ts" setup name="Login">
+import { ElMessage, type FormInstance, type FormRules, type TabsPaneContext  } from 'element-plus'
 import { ref, reactive, onMounted } from 'vue'
 import forgetDialog from './components/ForgetPwdDialog.vue'
 import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
 const router = useRouter()
 const activeName = ref('first')
+// 表单验证规则
+const ruleFormRef = ref<FormInstance>()
+const registerFormRef = ref<FormInstance>()
 const forgetDialogRef = ref()
 function forgetPwd() {
   forgetDialogRef.value.open()
@@ -119,21 +127,79 @@ const registerData: formData = reactive({
   password: '',
   confirmPassword: ''
 })
-const toMenuHome = () => {
-  login(loginData).then(res => {
-    console.log(res);
 
-  })
-  // router.push('/menu/home')
-}
-const toRegister = () => {
-  if (registerData.password == registerData.confirmPassword) {
-    const { account, password } = registerData
-    register({ account, password }).then(res => {
-      console.log(res);
-    })
+const validateAccount = (rule: any, value: any, callback: any) => {
+  if (registerData.password !== registerData.confirmPassword) {
+    return callback(new Error("两次密码不一致"))
   }
+  callback()
 }
+
+const rules = reactive<FormRules<formData>>({
+  account: [
+    { required: true, message: '请输入您账号', trigger: 'blur' },
+    { min: 6, max: 12, message: '请确认账号，长度6-12位', trigger: 'blur' },
+  ],
+  password: [
+    { required: true, message: '请输入您的密码', trigger: 'blur' },
+    { min: 6, max: 16, message: '请确认密码，长度6-16位含字母数字_?!@', trigger: 'blur' },
+  ],
+  confirmPassword: [
+    { required: true, message: '请再次输入您的新密码', trigger: 'blur' },
+    { validator: validateAccount, trigger: 'blur' }
+  ],
+})
+
+
+
+const toLogin = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate(async (valid) => {
+    if (valid) {
+      const res = await login(loginData)
+      if (res.data.status == 0) {
+        ElMessage({
+          message: '登录成功',
+          type: 'success',
+        })
+        router.push('/menu/home')
+      } else {
+        ElMessage.error('登录失败,请检查账号密码是否正确')
+      }
+    } else {
+      console.log('error submit!')
+    }
+  })
+
+
+}
+
+
+const toRegister = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate(async (valid) => {
+    if (valid) {
+      const res = await register(registerData)
+      if (res.data.status == 0) {
+        ElMessage({
+          message: '注册成功',
+          type: 'success',
+        })
+        formEl.resetFields()
+      } else {
+        ElMessage.error('注册失败')
+      }
+    } else {
+      console.log('error submit!')
+    }
+  })
+
+}
+const handleClick = (tab: TabsPaneContext, event: Event)=>{
+  ruleFormRef.value?.resetFields()
+  registerFormRef.value?.resetFields()
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -187,6 +253,7 @@ const toRegister = () => {
               text-decoration: none;
               color: #409eff;
               font-size: 12px;
+              cursor: pointer;
             }
           }
 
@@ -212,6 +279,7 @@ const toRegister = () => {
             font-size: 12px;
 
             .to-register-btn {
+              cursor: pointer;
               text-decoration: none;
               color: #409eff;
             }
