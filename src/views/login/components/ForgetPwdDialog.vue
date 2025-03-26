@@ -67,7 +67,7 @@ const forgetData: ForgetForm = reactive({
   confirmPassword: ''
 })
 const regEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const regPassword = /^[a-zA-Z0-9_?!@]{6,16}$/
+const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 const validateEmail = (rule: any, value: any, callback: any) => {
   if (forgetData.email === '') {
     return callback(new Error('请输入您的注册邮箱'))
@@ -84,13 +84,16 @@ const validateEmail = (rule: any, value: any, callback: any) => {
 const validatePassword = (rule: any, value: any, callback: any) => {
   if (forgetData.password !== '') {
     if (!regPassword.test(forgetData.password)) {
-      callback(new Error("请确认新密码，长度6-16位含字母数字_?!@"))
+      callback(new Error("请确认新密码，必须包含字母和数字，长度6-16位含-_?!@"))
     } else {
       callback()
     }
   }
 }
 const validateConfirmPwd = (rule: any, value: any, callback: any) => {
+  if(forgetData.password == '') {
+    return callback(new Error("请先输入您的新密码"))
+  }
   if (forgetData.password !== forgetData.confirmPassword) {
     return callback(new Error("两次密码不一致"))
   } else {

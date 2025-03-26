@@ -98,20 +98,23 @@
 </template>
 
 <script lang="ts" setup name="Login">
-import { ElMessage, type FormInstance, type FormRules, type TabsPaneContext  } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules, type TabsPaneContext } from 'element-plus'
 import { ref, reactive, onMounted } from 'vue'
 import forgetDialog from './components/ForgetPwdDialog.vue'
 import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
+import { useInfoStore } from '@/store/userInfo'
+
+const userStore = useInfoStore()
+const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
+
 const router = useRouter()
 const activeName = ref('first')
 // 表单验证规则
 const ruleFormRef = ref<FormInstance>()
 const registerFormRef = ref<FormInstance>()
 const forgetDialogRef = ref()
-function forgetPwd() {
-  forgetDialogRef.value.open()
-}
+
 
 interface formData {
   account: string
@@ -128,11 +131,26 @@ const registerData: formData = reactive({
   confirmPassword: ''
 })
 
-const validateAccount = (rule: any, value: any, callback: any) => {
+const validateConfirmPwd = (rule: any, value: any, callback: any) => {
+  if(value === '') {
+    return callback(new Error("请再次输入您的新密码"))
+  }
+  if(registerData.password == '') {
+    return callback(new Error("请先输入您的新密码"))
+  }
   if (registerData.password !== registerData.confirmPassword) {
     return callback(new Error("两次密码不一致"))
   }
   callback()
+}
+const validatePassword = (rule: any, value: any, callback: any) => {
+  if (value !== '') {
+    if (!regPassword.test(value)) {
+      callback(new Error("请确认密码，必须包含字母和数字，长度6-16位含-_?!@"))
+    } else {
+      callback()
+    }
+  }
 }
 
 const rules = reactive<FormRules<formData>>({
@@ -142,38 +160,39 @@ const rules = reactive<FormRules<formData>>({
   ],
   password: [
     { required: true, message: '请输入您的密码', trigger: 'blur' },
-    { min: 6, max: 16, message: '请确认密码，长度6-16位含字母数字_?!@', trigger: 'blur' },
+    { validator: validatePassword, trigger: 'blur' },
   ],
   confirmPassword: [
     { required: true, message: '请再次输入您的新密码', trigger: 'blur' },
-    { validator: validateAccount, trigger: 'blur' }
+    { validator: validateConfirmPwd, trigger: 'blur' }
   ],
 })
 
-
+function forgetPwd() {
+  forgetDialogRef.value.open()
+}
 
 const toLogin = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
       const res = await login(loginData)
+      userStore.userName = res.data.results.name
       if (res.data.status == 0) {
         ElMessage({
           message: '登录成功',
           type: 'success',
         })
-        const {token} = res.data
-        localStorage.setItem('token',token)
+        const { token } = res.data
+        localStorage.setItem('token', token)
         router.push('/home')
       } else {
-        ElMessage.error('登录失败,请检查账号密码是否正确')
+        ElMessage.error('登录失败')
       }
     } else {
       console.log('error submit!')
     }
   })
-
-
 }
 
 
@@ -198,7 +217,7 @@ const toRegister = async (formEl: FormInstance | undefined) => {
   })
 
 }
-const handleClick = (tab: TabsPaneContext, event: Event)=>{
+const handleClick = (tab: TabsPaneContext, event: Event) => {
   ruleFormRef.value?.resetFields()
   registerFormRef.value?.resetFields()
 }

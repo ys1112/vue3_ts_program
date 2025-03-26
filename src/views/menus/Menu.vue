@@ -89,7 +89,7 @@
             <span>登录日志</span>
           </el-menu-item>
 
-          <el-menu-item index="9">
+          <el-menu-item index="system">
             <el-icon>
               <setting />
             </el-icon>
@@ -100,7 +100,7 @@
       </el-aside>
       <el-container>
         <el-header>
-          <div class="header-left">刘波 欢迎您登录本系统</div>
+          <div class="header-left">{{ userStore.userName || '————'  }} 欢迎您登录本系统</div>
           <div class="header-right">
             <el-icon size="20">
               <Message />
@@ -130,8 +130,11 @@
   </div>
 </template>
 <script lang="ts" setup name="Menu">
-import { reactive, toRefs } from 'vue'
+import { reactive, toRefs, ref} from 'vue'
 import { useRouter } from 'vue-router'
+import { useInfoStore } from '@/store/userInfo'
+
+const userStore = useInfoStore()
 const router = useRouter()
 const state = reactive({
   circleUrl:
@@ -146,7 +149,7 @@ const handleOpen = (key: string, keyPath: string[]) => {
 const handleClose = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
-const LogOut = ()=>{
+const LogOut = () => {
   localStorage.removeItem('token')
   router.replace('/login')
 }
@@ -159,9 +162,11 @@ const LogOut = ()=>{
   align-items: center;
   background-color: #4a5057;
   color: #fff;
+
   .header-left {
     font-size: 14px;
   }
+
   .header-right {
     display: flex;
     align-items: center;

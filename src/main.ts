@@ -8,7 +8,8 @@ import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // 全局配置国际化的配置
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-
+// 引入pinia
+import { createPinia } from 'pinia'
 import router from './router'
 const app = createApp(App)
 // 导入所有图标并进行全局注册
@@ -17,6 +18,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 // 挂载路由
 app.use(router)
+app.use(createPinia())
 app.use(ElementPlus, {
   locale: zhCn,
 })
