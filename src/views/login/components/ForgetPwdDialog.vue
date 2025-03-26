@@ -26,17 +26,19 @@
     <el-form :model="forgetData" :rules="rules" ref="confirmFormRef" label-position="top" class="login-form"
       style="max-width: 600px">
       <el-form-item label="请输入您的新密码" prop="password">
-        <el-input type="password" show-password v-model="forgetData.password" style="width: 300px" placeholder="请输入您的新密码">
+        <el-input type="password" show-password v-model="forgetData.password" style="width: 300px"
+          placeholder="请输入您的新密码">
         </el-input>
       </el-form-item>
       <el-form-item label="请再次输入您的新密码" prop="confirmPassword">
-        <el-input type="password" show-password v-model="forgetData.confirmPassword" style="width: 300px" placeholder="请再次输入您的新密码">
+        <el-input type="password" show-password v-model="forgetData.confirmPassword" style="width: 300px"
+          placeholder="请再次输入您的新密码">
         </el-input>
       </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button type="primary" @click="state.resetDialogVisible = false">
+        <el-button type="primary" @click="toResetPassword(confirmFormRef)">
           重置
         </el-button>
       </div>
@@ -46,7 +48,8 @@
 
 <script lang="ts" setup name="ForgetPwdDialog">
 import { reactive, ref, } from 'vue';
-import { ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
+import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
+import { verifyAccount, resetPassword } from '@/api/login'
 // 对话框状态
 const state = reactive({
   forgetDialogVisible: false,
@@ -91,7 +94,7 @@ const validatePassword = (rule: any, value: any, callback: any) => {
   }
 }
 const validateConfirmPwd = (rule: any, value: any, callback: any) => {
-  if(forgetData.password == '') {
+  if (forgetData.password == '') {
     return callback(new Error("请先输入您的新密码"))
   }
   if (forgetData.password !== forgetData.confirmPassword) {
@@ -134,16 +137,52 @@ const cancelReset = (formEl: FormInstance | undefined) => {
 
 const openResetDialog = (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  formEl.validate((valid) => {
+  formEl.validate(async (valid) => {
     if (valid) {
-      state.forgetDialogVisible = false
-      state.resetDialogVisible = true
+      const res = await verifyAccount({
+        account: forgetData.account,
+        email: forgetData.email,
+      })
+      if (res.data.status == 0) {
+        sessionStorage.setItem('resetId',res.data.id)
+        formEl.resetFields()
+        state.forgetDialogVisible = false
+        state.resetDialogVisible = true
+      } else {
+        ElMessage.error('请检查账号和邮箱')
+      }
+
     } else {
       console.log('error submit!')
     }
   })
-
 }
+
+const toResetPassword = (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  formEl.validate(async (valid) => {
+    if (valid) {
+      const res = await resetPassword({
+        id: sessionStorage.getItem('resetId') || '',
+        newPassword: forgetData.password,
+      })
+      if (res.data.status == 0) {
+        ElMessage({
+          message: '重置密码成功',
+          type: 'success',
+        })
+        formEl.resetFields()
+        state.resetDialogVisible = false
+      } else {
+        ElMessage.error('重置密码失败')
+      }
+
+    } else {
+      console.log('error submit!')
+    }
+  })
+}
+
 defineExpose({
   open
 })

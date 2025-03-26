@@ -4,7 +4,7 @@
       <el-aside width="200px">
         <h4 class="mb-2 menu-title">通用后台管理系统</h4>
         <el-menu active-text-color="#ffd04b" background-color="#545c64" class="el-menu-vertical-demo"
-          default-active="home" text-color="#fff" @open="handleOpen" @close="handleClose" router>
+          default-active="home" text-color="#fff" @select="selectedItem" router :unique-opened="true">
           <el-menu-item index="home">
             <template #title>
               <el-icon>
@@ -21,7 +21,7 @@
             <span>系统概览</span>
           </el-menu-item>
 
-          <el-sub-menu index="3">
+          <el-sub-menu index="user_manage">
             <template #title>
               <el-icon>
                 <User />
@@ -29,7 +29,7 @@
               <span>用户管理</span>
             </template>
             <el-menu-item-group title="管理员管理">
-              <el-menu-item index="3-1">产品管理员</el-menu-item>
+              <el-menu-item index="product_manager">产品管理员</el-menu-item>
               <el-menu-item index="3-2">用户管理员</el-menu-item>
               <el-menu-item index="3-3">消息管理员</el-menu-item>
             </el-menu-item-group>
@@ -89,7 +89,7 @@
             <span>登录日志</span>
           </el-menu-item>
 
-          <el-menu-item index="system">
+          <el-menu-item index="setting">
             <el-icon>
               <setting />
             </el-icon>
@@ -100,13 +100,13 @@
       </el-aside>
       <el-container>
         <el-header>
-          <div class="header-left">{{ userStore.userName || '————'  }} 欢迎您登录本系统</div>
+          <div class="header-left">{{ userName || 'Undefined' }} 欢迎您登录本系统</div>
           <div class="header-right">
             <el-icon size="20">
               <Message />
             </el-icon>
             <div class="block">
-              <el-avatar :size="24" :src="circleUrl" />
+              <el-avatar :size="24" :src="avatar || circleUrl" />
             </div>
             <el-dropdown>
               <span class="el-dropdown-link">
@@ -122,6 +122,7 @@
             </el-dropdown>
           </div>
         </el-header>
+        <Breadcrumb :breadItems="breadItems"></Breadcrumb>
         <el-main>
           <RouterView></RouterView>
         </el-main>
@@ -130,11 +131,18 @@
   </div>
 </template>
 <script lang="ts" setup name="Menu">
-import { reactive, toRefs, ref} from 'vue'
+import Breadcrumb from "@/components/BreadCrumb.vue";
+import { reactive, toRefs, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useInfoStore } from '@/store/userInfo'
+import { MenusEnum } from '@/contants/MenusEnum'
+let breadItems = reactive({
+  first: '首页',
+  second: ''
+})
 
-const userStore = useInfoStore()
+const userName = localStorage.getItem('userName')
+const avatar = localStorage.getItem('avatar')
 const router = useRouter()
 const state = reactive({
   circleUrl:
@@ -142,13 +150,24 @@ const state = reactive({
 })
 
 const { circleUrl } = toRefs(state)
+const selectedItem = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+  breadItems = Object.assign(breadItems, {
+    first: '首页',
+    second: ''
+  })
+  for (const key in keyPath) {
+    if (+key == 0) {
+      breadItems.first = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
+    }
+    if (+key == 1) {
+      breadItems.second = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
+    }
+  }
+  console.log(breadItems);
 
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
 }
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+
 const LogOut = () => {
   localStorage.removeItem('token')
   router.replace('/login')
@@ -172,7 +191,7 @@ const LogOut = () => {
     align-items: center;
 
     .block {
-      margin: 0 20px;
+      margin: 0 18px;
       cursor: pointer;
     }
 
@@ -185,6 +204,7 @@ const LogOut = () => {
       align-items: center;
       color: #a0a5af;
       cursor: pointer;
+      font-size: 16px;
     }
   }
 }
@@ -202,7 +222,12 @@ const LogOut = () => {
   height: calc(100vh - 65px);
   border-color: #555c64;
 }
-
+.el-main {
+    --el-main-margin: 10px;
+    background: #999;
+    overflow: auto;
+    margin: var(--el-main-margin);
+}
 :deep(.el-tooltip__trigger:focus-visible) {
   outline: unset;
 }

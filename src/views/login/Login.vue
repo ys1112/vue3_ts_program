@@ -132,10 +132,10 @@ const registerData: formData = reactive({
 })
 
 const validateConfirmPwd = (rule: any, value: any, callback: any) => {
-  if(value === '') {
+  if (value === '') {
     return callback(new Error("请再次输入您的新密码"))
   }
-  if(registerData.password == '') {
+  if (registerData.password == '') {
     return callback(new Error("请先输入您的新密码"))
   }
   if (registerData.password !== registerData.confirmPassword) {
@@ -177,12 +177,14 @@ const toLogin = (formEl: FormInstance | undefined) => {
   formEl.validate(async (valid) => {
     if (valid) {
       const res = await login(loginData)
-      userStore.userName = res.data.results.name
       if (res.data.status == 0) {
         ElMessage({
           message: '登录成功',
           type: 'success',
         })
+        localStorage.setItem('userName',res.data.results.name)
+        localStorage.setItem('avatar',res.data.results.image_url)
+        
         const { token } = res.data
         localStorage.setItem('token', token)
         router.push('/home')

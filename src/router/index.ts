@@ -4,6 +4,8 @@ import Login from "@/views/login/Login.vue"
 import Menu from "@/views/menus/Menu.vue"
 import Home from "@/views/home/Home.vue"
 import System from "@/views/system/System.vue";
+import Setting from "@/views/setting/SysSttting.vue";
+import ProductManager from "@/views/user_manage/ProductManager.vue";
 const router = createRouter({
   // 创建路由历史模式
   history: createWebHistory(),
@@ -32,6 +34,17 @@ const router = createRouter({
           path: "/system",
           component: System,
         },
+        {
+          name: "product_manager",
+          path: "/product_manager",
+          component: ProductManager,
+        },
+        {
+          name: "setting",
+          path: "/setting",
+          component: Setting,
+        },
+        
       ],
     },
   ],

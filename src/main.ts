@@ -10,6 +10,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 // 引入pinia
 import { createPinia } from 'pinia'
+import 'virtual:svg-icons-register'
 import router from './router'
 const app = createApp(App)
 // 导入所有图标并进行全局注册
