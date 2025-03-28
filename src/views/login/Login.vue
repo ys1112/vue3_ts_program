@@ -105,7 +105,7 @@ import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
 import { useInfoStore } from '@/store/userInfo'
 
-const userStore = useInfoStore()
+const {getInfo} = useInfoStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 
 const router = useRouter()
@@ -168,7 +168,7 @@ const rules = reactive<FormRules<formData>>({
   ],
 })
 
-function forgetPwd() {
+const forgetPwd = ()=> {
   forgetDialogRef.value.open()
 }
 
@@ -182,10 +182,8 @@ const toLogin = (formEl: FormInstance | undefined) => {
           message: '登录成功',
           type: 'success',
         })
-        localStorage.setItem('userName',res.data.results.name)
-        localStorage.setItem('avatar',res.data.results.image_url)
-        
         const { token } = res.data
+        getInfo(res.data.results.id)
         localStorage.setItem('token', token)
         router.push('/home')
       } else {

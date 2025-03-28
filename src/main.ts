@@ -10,6 +10,9 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 // 引入pinia
 import { createPinia } from 'pinia'
+// pinia持久化工具
+import persistedState from "pinia-plugin-persistedstate";
+
 import 'virtual:svg-icons-register'
 import router from './router'
 const app = createApp(App)
@@ -19,7 +22,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 // 挂载路由
 app.use(router)
-app.use(createPinia())
+app.use(createPinia().use(persistedState))
 app.use(ElementPlus, {
   locale: zhCn,
 })

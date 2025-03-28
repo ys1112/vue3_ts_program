@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts" setup name="ForgetPwdDialog">
-import { reactive, ref, } from 'vue';
+import { reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
 import { verifyAccount, resetPassword } from '@/api/login'
 // 对话框状态

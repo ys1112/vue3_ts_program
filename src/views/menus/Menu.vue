@@ -4,7 +4,7 @@
       <el-aside width="200px">
         <h4 class="mb-2 menu-title">通用后台管理系统</h4>
         <el-menu active-text-color="#ffd04b" background-color="#545c64" class="el-menu-vertical-demo"
-          default-active="home" text-color="#fff" @select="selectedItem" router :unique-opened="true">
+          :default-active="activeMenu" text-color="#fff" @select="selectedItem" router :unique-opened="true">
           <el-menu-item index="home">
             <template #title>
               <el-icon>
@@ -100,13 +100,13 @@
       </el-aside>
       <el-container>
         <el-header>
-          <div class="header-left">{{ userName || 'Undefined' }} 欢迎您登录本系统</div>
+          <div class="header-left">{{ userInfo.name || 'Undefined' }} 欢迎您登录本系统</div>
           <div class="header-right">
             <el-icon size="20">
               <Message />
             </el-icon>
             <div class="block">
-              <el-avatar :size="24" :src="avatar || circleUrl" />
+              <el-avatar :size="24" :src="userInfo.image_url || circleUrl" />
             </div>
             <el-dropdown>
               <span class="el-dropdown-link">
@@ -136,13 +136,20 @@ import { reactive, toRefs, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useInfoStore } from '@/store/userInfo'
 import { MenusEnum } from '@/contants/MenusEnum'
-let breadItems = reactive({
-  first: '首页',
-  second: ''
-})
+let breadItems = reactive(JSON.parse(sessionStorage.getItem('breadItems') as string) || { first: '首页', second: '' })
+const activeMenu = ref('home')
+for (const key in MenusEnum) {
+  if (breadItems.second == MenusEnum[key as keyof typeof MenusEnum]) {
+    activeMenu.value = key
+    break
+  }
+  if (breadItems.first == MenusEnum[key as keyof typeof MenusEnum]) {
+    activeMenu.value = key
+  }
+}
+const infoStore = useInfoStore()
+const { userInfo } = reactive(infoStore)
 
-const userName = localStorage.getItem('userName')
-const avatar = localStorage.getItem('avatar')
 const router = useRouter()
 const state = reactive({
   circleUrl:
@@ -164,12 +171,12 @@ const selectedItem = (key: string, keyPath: string[]) => {
       breadItems.second = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
     }
   }
-  console.log(breadItems);
-
+  sessionStorage.setItem('breadItems', JSON.stringify(breadItems))
 }
 
 const LogOut = () => {
-  localStorage.removeItem('token')
+  localStorage.clear()
+  sessionStorage.clear()
   router.replace('/login')
 }
 </script>
@@ -222,12 +229,13 @@ const LogOut = () => {
   height: calc(100vh - 65px);
   border-color: #555c64;
 }
+
 .el-main {
-    --el-main-margin: 10px;
-    background: #999;
-    overflow: auto;
-    margin: var(--el-main-margin);
+  padding: 0;
+  background-color: #e6e6e6;
+  overflow: auto;
 }
+
 :deep(.el-tooltip__trigger:focus-visible) {
   outline: unset;
 }
