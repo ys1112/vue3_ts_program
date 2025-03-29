@@ -188,7 +188,7 @@ const LogOut = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #4a5057;
+  background-color: #303133;
   color: #fff;
 
   .header-left {

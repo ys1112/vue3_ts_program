@@ -1,5 +1,7 @@
 <template>
-  <h1>System</h1>
+  <div class="common-wrapper">
+    <div class="common-content">System</div>
+  </div>
 </template>
 
 <script lang="ts" setup name="System">

@@ -3,7 +3,7 @@
     <!-- 轮播图 -->
     <div class="common-content">
       <div class="carousel-wrapper">
-        <el-carousel :interval="4000" indicator-position="outside" :autoplay="false" type="card" height="280px">
+        <el-carousel :interval="4000" indicator-position="outside" :autoplay="false" type="card" height="255px">
           <el-carousel-item v-for="item in carouselData" :key="item.id">
             <el-image class="carousel-img" :src="getImageUrl(item.url)" fit="cover" />
           </el-carousel-item>
@@ -63,7 +63,7 @@
         </el-col>
         <el-col :span="12">
           <div class="announced-wrapper">
-            <el-table :data="systemData" style="width: 100%" max-height="160">
+            <el-table :data="systemData" style="width: 100%" max-height="200">
               <el-table-column prop="title" label="系统消息" />
               <el-table-column prop="date" />
             </el-table>
@@ -116,28 +116,28 @@ const tableData = reactive([
 
 const systemData = reactive([
   {
-    title: '已出库',
-    date: '2025-03-01',
+    title: '苹果已出库',
+    date: '2025-06-01',
   },
   {
-    title: '已入库',
+    title: '香蕉已入库',
     date: '2025-05-02',
   },
   {
-    title: '已出库',
-    date: '2025-03-01',
+    title: '梨子已出库',
+    date: '2025-04-01',
   },
   {
-    title: '已入库',
-    date: '2025-05-02',
+    title: '芒果已入库',
+    date: '2025-03-02',
   },
   {
-    title: '已出库',
-    date: '2025-03-01',
+    title: '橙子已出库',
+    date: '2025-02-01',
   },
   {
-    title: '已入库',
-    date: '2025-05-02',
+    title: '橘子已入库',
+    date: '2025-01-02',
   },
 ])
 
@@ -153,10 +153,10 @@ const systemData = reactive([
 
 .layout-wrapper {
   .company-wrapper {
-    height: 160px;
+    height: 200px;
     padding: 8px;
     border-radius: 8px;
-    background-color: #E6E8EB;
+    background-color: #F0F2F5;
     cursor: pointer;
 
     .company-wrapper-title {
@@ -173,7 +173,7 @@ const systemData = reactive([
 }
 
 .announced-wrapper {
-  height: 160px;
+  height: 200px;
   padding: 8px;
   border-radius: 8px;
 }

@@ -7,7 +7,7 @@
             <div class="account-info-content">
               <span class="account-info-item">用户头像：</span>
               <!-- 1.头像上传 -->
-              <el-upload class="avatar-uploader" action="http://127.0.0.1:3001/user/uploadAvatar"
+              <el-upload class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
                 :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload">
                 <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
@@ -131,6 +131,8 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
     ElMessage.error('Avatar picture size can not exceed 2MB!')
     return false
   }
+  console.log(rawFile);
+  
   return true
 }
 
