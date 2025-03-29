@@ -10,7 +10,7 @@
               <el-upload class="avatar-uploader" action="http://127.0.0.1:3001/user/uploadAvatar"
                 :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload">
-                <img v-if="userInfo.image_url" :src="userInfo.image_url" class="avatar" />
+                <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
                 <el-icon v-else class="avatar-uploader-icon">
                   <Plus />
                 </el-icon>
@@ -117,6 +117,10 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = async (
       type: 'success',
     })
   }
+}
+const handleImageError = (event:any)=>{
+  console.log('图片加载失败', event)
+  userInfo.image_url = ''
 }
 // 上传文件限制
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
@@ -227,21 +231,11 @@ const resetEmail = async() => {
 </script>
 
 <style lang="scss" scoped>
-.common-wrapper {
-  box-sizing: border-box;
-  height: calc(100vh - 120px);
-  margin: 16px;
-  padding: 12px;
-  border-radius: 10px;
-  background-color: #fff;
-}
-
 .account-info-wrapper {
   .account-info-content {
     display: flex;
     align-items: center;
     margin: 28px;
-
     .account-info-item {
       margin-right: 20px;
     }

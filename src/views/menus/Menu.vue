@@ -122,7 +122,9 @@
             </el-dropdown>
           </div>
         </el-header>
-        <Breadcrumb :breadItems="breadItems"></Breadcrumb>
+        <div class="bread">
+          <Breadcrumb :breadItems="breadItems"></Breadcrumb>
+        </div>
         <el-main>
           <RouterView></RouterView>
         </el-main>

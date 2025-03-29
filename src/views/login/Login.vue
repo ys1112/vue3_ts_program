@@ -228,7 +228,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
 .common-layout {
   color: #fff;
   height: 100vh;
-  background-image: url('@/assets/bgc.jpg');
+  background-image: url('@/assets/images/bgc.jpg');
   background-size: 100%;
 
   .header-wrapper {

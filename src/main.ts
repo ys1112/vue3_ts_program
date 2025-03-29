@@ -4,6 +4,8 @@ import App from './App.vue'
 import ElementPlus from 'element-plus'
 // 导入element样式
 import 'element-plus/dist/index.css'
+// 导入全局公共样式
+import '@/assets/styles/common.scss'
 // 导入element图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // 全局配置国际化的配置
