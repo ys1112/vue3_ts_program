@@ -5,7 +5,7 @@ import { ElMessage } from "element-plus"
 export const useInfoStore = defineStore(
   "userInfo",
   () => {
-    // userName，imageUrl就是state
+    // userInfo就是state
     const userInfo = reactive({
       account: "",
       name: "",
@@ -25,10 +25,6 @@ export const useInfoStore = defineStore(
           if (res.data.hasOwnProperty(key)) {
             userInfo[key as keyof typeof userInfo] = res.data[key]
           }
-        })
-        ElMessage({
-          message: "获取用户信息成功",
-          type: "success",
         })
       } else {
         ElMessage({

@@ -1,246 +1,264 @@
 <template>
   <div class="common-wrapper">
     <div class="common-content">
-      <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+      <el-tabs v-model="activeName" class="demo-tabs">
+        <!-- 账号详情 -->
         <el-tab-pane label="账号详情" name="accountInfo">
-          <div class="account-info-wrapper">
-            <div class="account-info-content">
-              <span class="account-info-item">用户头像：</span>
+          <div class="setting-info-wrapper">
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户头像：</span>
               <!-- 1.头像上传 -->
               <el-upload class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
                 :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
-                :before-upload="beforeAvatarUpload">
+                :before-upload="beforeAvatarUpload" :data="{ id: userInfo.id }">
                 <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
                 <el-icon v-else class="avatar-uploader-icon">
                   <Plus />
                 </el-icon>
               </el-upload>
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户账号:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户账号:</span>
               <!-- 2.用户账号 -->
               <el-input v-model="userInfo.account" style="width: 240px" disabled />
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户密码:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户密码:</span>
               <!-- 3.用户密码 -->
               <el-button type="primary" @click="resetPassword">修改密码</el-button>
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户姓名:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户姓名:</span>
               <!-- 4.用户姓名 -->
-              <el-input v-model="userName" style="width: 240px" class="account-info-item" />
+              <el-input v-model="userName" style="width: 240px" class="setting-info-item" />
               <el-button type="primary" @click="resetName">保存</el-button>
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户性别:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户性别:</span>
               <!-- 5.用户性别 -->
-              <el-select v-model="userInfo.gender" placeholder="请选择性别" style="width: 240px" class="account-info-item">
+              <el-select v-model="userInfo.gender" placeholder="请选择性别" style="width: 240px" class="setting-info-item">
                 <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
               <el-button type="primary" @click="resetGender">保存</el-button>
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户身份:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户身份:</span>
               <!-- 6.用户身份 -->
               <el-input v-model="userInfo.identity" style="width: 240px" disabled />
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户部门:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户部门:</span>
               <!-- 7.用户部门 -->
               <el-input v-model="userInfo.department" style="width: 240px" disabled />
             </div>
-            <div class="account-info-content">
-              <span class="account-info-item">用户邮箱:</span>
+            <div class="setting-info-content">
+              <span class="setting-info-item">用户邮箱:</span>
               <!-- 8.用户邮箱 -->
-              <el-input v-model="userInfo.email" style="width: 240px" class="account-info-item" />
+              <el-input v-model="userInfo.email" style="width: 240px" class="setting-info-item" />
               <el-button type="primary" @click="resetEmail">保存</el-button>
             </div>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="公司信息" name="companyInfo">公司信息</el-tab-pane>
-        <el-tab-pane label="首页管理" name="homeSetting">首页管理</el-tab-pane>
+        <!-- 公司信息 -->
+        <el-tab-pane label="公司信息" name="companyInfo">
+          <div class="setting-info-wrapper">
+            <div class="setting-info-content" v-for="item in conmapyData" :key="item.id">
+              <span class="setting-info-item">{{ getCompanyTitle(item.set_name) }}:</span>
+              <!-- 公司名称 -->
+              <el-input v-if="item.set_name == 'company_name'" v-model="item.set_value" style="width: 240px"
+                class="setting-info-item" />
+              <el-button v-if="item.set_name == 'company_name'" type="primary"
+                @click="setCompanyName(item)">编辑公司名称</el-button>
+              <el-button v-else type="success" @click="openSetInfoDialog(item)">编辑{{ getCompanyTitle(item.set_name)
+              }}</el-button>
+            </div>
+          </div>
+        </el-tab-pane>
+        <!-- 首页管理 -->
+        <el-tab-pane label="首页管理" name="homeSetting">
+          <div class="home-info-wrapper">
+            <span class="upload-tip">提示：点击图片框上传首页轮播图</span>
+            <div class="home-info-content" v-for="item in swiperData" :key="item.id">
+              <span class="home-info-item">{{ getSwiperTitle(item.set_name) }}：</span>
+              <el-upload class="upload-demo" action="http://127.0.0.1:3001/set/setSwiper" list-type="picture"
+                :auto-upload="true" :show-file-list="false"
+                :on-success="handleSwiperSuccess" :before-upload="beforeSwiperUpload"
+                :data="{ set_name: item.set_name }">
+                <img class="swiper-item" v-if="item.set_value" :src="item.set_value" @error="handleImageError" />
+                <div v-else class="swiper-item">
+                  <SvgIcon icon-name="upload" size="24" class="bread-crumb-icon" color="#2c2c2c"></SvgIcon>
+                </div>
+              </el-upload>
+            </div>
+          </div>
+        </el-tab-pane>
+        <!-- 其他设置 -->
         <el-tab-pane label="其他设置" name="otherSetting">其他设置</el-tab-pane>
       </el-tabs>
     </div>
   </div>
   <ResetDialog :userId="userInfo.id" ref="resetDialogRef"></ResetDialog>
+  <SetInfoDialog ref="setInfoDialogRef"></SetInfoDialog>
 </template>
 
 <script lang="ts" setup name="Setting">
+import { reactive, ref } from "vue"
+import { type UploadProps, ElMessage } from "element-plus"
+import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
+import { SwiperEnum } from '@/contants/SwiperEnum'
 import ResetDialog from "@/views/setting/resetPassword/ResetDialog.vue";
-import { onMounted, reactive, ref } from 'vue'
-import { type UploadFile, type TabsPaneContext, type UploadProps, ElMessage } from 'element-plus'
-import { useInfoStore } from '@/store/userInfo'
-import { bindAccount, updateName, updateGender, updateEmail } from "@/api/user";
-const infoStore = useInfoStore()
-const { userInfo } = reactive(infoStore)
-const resetDialogRef = ref()
-const options = [
-  {
-    value: '男',
-    label: '男',
-  },
-  {
-    value: '女',
-    label: '女',
-  }
-]
-const activeName = ref('accountInfo')
+import SetInfoDialog from "@/views/setting/setCompanyInfo/SetInfoDialog.vue";
+import emitter from '@/utils/emitter'
+import SvgIcon from "@/components/SvgIcon.vue"
+import { setCompanyInfo } from "@/api/setting";
+// 引入防抖函数
+import { useDebounce } from '@/hooks/useDebounce'
 
-// 重新定义用户名，防止输入框数据双向绑定，欢迎语中姓名改变
-const userName = ref(userInfo.name)
+// 使用账号详情hooks
+import useAccountInfo from '@/hooks/useAoocuntInfo'
+// 使用公司信息和首页轮播图hooks
+// import useHomeSetting from '@/hooks/useHomeSetting'
 
-const originUserInfo = Object.assign({},userInfo)
-
-const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
+// pinia存储的公司信息和首页轮播图数据
+import { useSettingStore } from "@/store/settingInfo"
+// 打开修改对话框
+const setInfoDialogRef = ref()
+const settingStore = useSettingStore()
+// pinia存储的数据
+const { swipers:{swiperData},companyInfo:{conmapyData} } = reactive(settingStore)
+interface setInfoForm {
+  id?: number
+  set_name: string
+  set_value: string
 }
-onMounted(async () => {
-  
-})
-// 头像上传
-const handleAvatarSuccess: UploadProps['onSuccess'] = async (
-  response,
-  uploadFile
-) => {
-  userInfo.image_url = response.url
-  const bindData = {
-    url: response.url,
-    only_id: response.only_id,
-    account: userInfo.account
+
+
+// 账号详情
+const {
+  userInfo,
+  resetDialogRef,
+  options,
+  userName,
+  handleAvatarSuccess,
+  handleImageError,
+  beforeAvatarUpload,
+  resetPassword,
+  resetName,
+  resetGender,
+  resetEmail,
+} = useAccountInfo()
+// tab初始项
+const activeName = ref("accountInfo")
+
+
+// 公司信息
+const getCompanyTitle = (item: string) => {
+  return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
+}
+// 修改公司名称按钮函数  使用防抖函数
+const setCompanyName = useDebounce(async (item: setInfoForm) => {
+  const data = {
+    set_name: item.set_name,
+    set_value: item.set_value
   }
-  const res = await bindAccount(bindData)
+
+  const res = await setCompanyInfo(data)
+
   if (res.data.status == 0) {
-    ElMessage({
-      message: '绑定头像成功',
+    return ElMessage({
+      message: "修改公司名称成功",
       type: 'success',
     })
   }
+  ElMessage.error('修改公司名称失败,请检查网络后重试')
+},500)
+
+// 打开编辑弹窗
+const openSetInfoDialog = (item: setInfoForm) => {
+  emitter.emit('setInfo', item)
+  setInfoDialogRef.value.open()
 }
-const handleImageError = (event:any)=>{
-  console.log('图片加载失败', event)
-  userInfo.image_url = ''
+
+
+// 首页管理
+// 轮播图标题
+const getSwiperTitle = (item: string) => {
+  return SwiperEnum[item as keyof typeof SwiperEnum]
 }
+// 轮播图上传
+const handleSwiperSuccess: UploadProps["onSuccess"] = async (
+  response,
+  uploadFile,
+) => {
+  if (response.status == 0) {
+    // console.log(response);
+    swiperData.forEach((item: setInfoForm,index) => {
+      if (response.set_name == item.set_name) {
+        swiperData[index].set_value = response.url
+      }
+    })
+    ElMessage({
+      message: "修改轮播图成功",
+      type: 'success',
+    })
+  }
+
+  // userInfo.image_url = response.url
+
+}
+
 // 上传文件限制
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  if (rawFile.type !== 'image/jpeg') {
-    ElMessage.error('Avatar picture must be JPG format!')
-    return false
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('Avatar picture size can not exceed 2MB!')
+const beforeSwiperUpload: UploadProps["beforeUpload"] = (rawFile) => {
+  if (rawFile.size / 1024 / 1024 > 2) {
+    ElMessage.error("Avatar picture size can not exceed 2MB!")
     return false
   }
-  console.log(rawFile);
-  
   return true
-}
-
-// 修改密码
-const resetPassword = () => {
-  resetDialogRef.value.open()
-}
-
-// 修改用户姓名
-const resetName = async() => {
-  // 对比是否修改用户名
-  if(userName.value == originUserInfo.name) {
-    return ElMessage.error('修改姓名与原姓名一致，请重新修改')
-  }
-  if (userName.value && userInfo.id) {
-    const id = {
-      id: userInfo.id
-    }
-    const uName = {
-      name: userName.value
-    }
-    // 调用更新姓名接口
-    const res = await updateName(id, uName)
-    if (res.data.status == 0) {
-      // 修改成功对比文件重新赋值
-      originUserInfo.name = userName.value
-      // pinia更新用户数据
-      userInfo.name = userName.value
-      ElMessage({
-        message: '修改姓名成功',
-        type: 'success',
-      })
-    } else {
-      if(res.data.message.includes('pattern')) 
-      return ElMessage.error('修改姓名失败,请检查姓名格式')
-    }
-  } else {
-    ElMessage.error('修改姓名失败，请稍后再试')
-  }
-}
-// 修改用户性别
-const resetGender = async () => {
-  if(userInfo.gender == originUserInfo.gender) {
-    return ElMessage.error('修改性别与原性别一致，请重新修改')
-  }
-  if (userInfo.gender && userInfo.id) {
-    const id = {
-      id: userInfo.id
-    }
-    const gender = {
-      gender: userInfo.gender
-    }
-    // 调用更新性别接口
-    const res = await updateGender(id, gender)
-    if (res.data.status == 0) {
-      originUserInfo.gender = userInfo.gender
-      ElMessage({
-        message: '修改性别成功',
-        type: 'success',
-      })
-    } else {
-      ElMessage.error('修改性别失败')
-    }
-  } else {
-    ElMessage.error('修改性别失败')
-  }
-}
-
-// 修改用户邮箱
-const resetEmail = async() => {
-  if(userInfo.email == originUserInfo.email) {
-    return ElMessage.error('修改邮箱与原邮箱一致，请重新修改')
-  }
-  if (userInfo.gender && userInfo.id) {
-    const id = {
-      id: userInfo.id
-    }
-    const email = {
-      email: userInfo.email
-    }
-    // 调用更新邮箱接口
-    const res = await updateEmail(id, email)
-    if (res.data.status == 0) {
-      originUserInfo.email = userInfo.email
-      ElMessage({
-        message: '修改邮箱成功',
-        type: 'success',
-      })
-    } else {
-      if(res.data.message.includes('pattern')) 
-      return ElMessage.error('修改邮箱失败,请检查邮箱格式')
-    }
-  } else {
-    ElMessage.error('修改邮箱失败，请稍后再试')
-  }
 }
 
 </script>
 
 <style lang="scss" scoped>
-.account-info-wrapper {
-  .account-info-content {
+.setting-info-wrapper {
+  .setting-info-content {
     display: flex;
     align-items: center;
-    margin: 28px;
-    .account-info-item {
+    margin: 32px;
+
+    .setting-info-item {
+      margin-right: 32px;
+    }
+
+  }
+}
+
+.home-info-wrapper {
+  .home-info-content {
+    display: flex;
+    align-items: center;
+    margin: 16px 32px 0;
+
+    .home-info-item {
       margin-right: 20px;
     }
+
+    .swiper-item {
+      width: 280px;
+      height: 88px;
+      text-align: center;
+      line-height: 88px;
+      border: 1px dashed var(--el-border-color);
+    }
+
+    .swiper-item:hover {
+      border-color: var(--el-color-primary);
+    }
+  }
+
+  .upload-tip {
+    margin-left: 32px;
+    font-weight: 700;
+    color: var(--el-color-primary);
   }
 }
 

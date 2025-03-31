@@ -104,8 +104,10 @@ import forgetDialog from './components/ForgetPwdDialog.vue'
 import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
 import { useInfoStore } from '@/store/userInfo'
+import { useSettingStore } from '@/store/settingInfo'
 
 const {getInfo} = useInfoStore()
+const {getSettingInfo} = useSettingStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 
 const router = useRouter()
@@ -184,6 +186,7 @@ const toLogin = (formEl: FormInstance | undefined) => {
         })
         const { token } = res.data
         getInfo(res.data.results.id)
+        getSettingInfo()
         localStorage.setItem('token', token)
         router.push('/home')
       } else {

@@ -4,8 +4,8 @@
     <div class="common-content">
       <div class="carousel-wrapper">
         <el-carousel :interval="4000" indicator-position="outside" :autoplay="false" type="card" height="255px">
-          <el-carousel-item v-for="item in carouselData" :key="item.id">
-            <el-image class="carousel-img" :src="getImageUrl(item.url)" fit="cover" />
+          <el-carousel-item v-for="item in swiperData" :key="item.id">
+            <el-image class="carousel-img" :src="item.set_value" fit="cover" />
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -13,34 +13,15 @@
     <div class="common-content">
       <div class="layout-wrapper">
         <el-row :gutter="20">
-          <el-col :span="6">
-            <div class="company-wrapper">
+          <el-col :span="6" v-for="item in companyInfos.list" :key="item.id">
+            <div class="company-wrapper" @click="openDetailDialog(item)">
               <span class="company-wrapper-title">
-                公司介绍
+                {{ getCompanyTitle(item.set_name) }}
               </span>
+              <div class="company-info" v-html="item.set_value"></div>
             </div>
           </el-col>
-          <el-col :span="6">
-            <div class="company-wrapper">
-              <span class="company-wrapper-title">
-                公司架构
-              </span>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div class="company-wrapper">
-              <span class="company-wrapper-title">
-                公司战略
-              </span>
-            </div>
-          </el-col>
-          <el-col :span="6">
-            <div class="company-wrapper">
-              <span class="company-wrapper-title">
-                公司高层
-              </span>
-            </div>
-          </el-col>
+
         </el-row>
       </div>
     </div>
@@ -48,7 +29,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="announced-wrapper">
-            <el-table :data="tableData" style="width: 100%" max-height="160">
+            <el-table :data="tableData" style="width: 100%" max-height="200">
               <el-table-column prop="title" label="公司公告" />
               <el-table-column prop="necessary" width="100" align="center">
                 <template #default="scope">
@@ -72,33 +53,33 @@
       </el-row>
     </div>
   </div>
+  <ShowDetailDialog ref="detailDialogRef"></ShowDetailDialog>
 </template>
 
 <script lang="ts" setup name="Home">
-import { reactive, ref } from 'vue';
-const getImageUrl = (name: string) => {
-  return new URL(`/src/assets/images/${name}`, import.meta.url).href;
-};
-const isNecessary = ref()
-const carouselData = reactive([
-  {
-    id: 1,
-    url: 'swiper1.png'
-  },
-  {
-    id: 2,
-    url: 'swiper2.png'
-  },
-  {
-    id: 3,
-    url: 'swiper3.png'
-  },
-  {
-    id: 4,
-    url: 'swiper4.png'
-  },
-])
+import ShowDetailDialog from "@/views/home/showDetailDialog/ShowDetailDialog.vue";
+import { onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
+// pinia存储的公司信息和首页轮播图数据
+import { useSettingStore } from "@/store/settingInfo"
+import emitter from '@/utils/emitter'
+const detailDialogRef = ref()
+const settingStore = useSettingStore()
+// pinia存储的数据
+const { swipers: { swiperData }, companyInfo: { conmapyData } } = reactive(settingStore)
+// const getImageUrl = (name: string) => {
+//   return new URL(`/src/assets/images/${name}`, import.meta.url).href;
+// };
+const companyInfos: { [key: string]: any } = reactive({ list: [] })
+// 公司信息
+const getCompanyTitle = (item: string) => {
+  return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
+}
+onBeforeMount(() => {
+  companyInfos.list = conmapyData.filter((item: any, index) => { return index > 0 })
+  console.log(companyInfos.list);
 
+})
 const tableData = reactive([
   {
     title: '下班后开会',
@@ -141,7 +122,11 @@ const systemData = reactive([
   },
 ])
 
-
+// 打开编辑弹窗
+const openDetailDialog = (item: any) => {
+  emitter.emit('detail', item)
+  detailDialogRef.value.open()
+}
 </script>
 
 <style lang="scss" scoped>
@@ -154,16 +139,21 @@ const systemData = reactive([
 .layout-wrapper {
   .company-wrapper {
     height: 200px;
-    padding: 8px;
+    padding: 16px;
     border-radius: 8px;
     background-color: #F0F2F5;
     cursor: pointer;
+    overflow: hidden;
 
     .company-wrapper-title {
       text-decoration: underline solid #337ecc 1px;
       text-underline-offset: 4px;
       color: #303133;
       font-weight: 700;
+    }
+    .company-info {
+      height: 160px;
+      overflow: hidden;
     }
   }
 
@@ -173,8 +163,10 @@ const systemData = reactive([
 }
 
 .announced-wrapper {
-  height: 200px;
+  box-sizing: border-box;
+  height: 216px;
   padding: 8px;
+  overflow: hidden;
   border-radius: 8px;
 }
 
@@ -189,17 +181,24 @@ const systemData = reactive([
 :deep(.el-table__body .el-table__row) {
   height: 20px;
 }
+
 :deep(.el-scrollbar__bar) {
   background-color: #CDD0D6;
 }
+
 :deep(.el-scrollbar__thumb) {
   background-color: #303133;
 }
+
 :deep(.el-carousel__indicators--outside button) {
-    background-color: #000;
-    opacity: .28;
-    border-radius: 4px;
+  border-radius: 4px;
+  background-color: #606266;
 }
+
+:deep(.el-carousel__indicators--outside button:hover) {
+  background-color: #606266;
+}
+
 .el-carousel {
   --el-carousel-indicator-height: 4px;
 }
