@@ -1,19 +1,20 @@
 <template>
   <div class="common-wrapper">
     <!-- 轮播图 -->
-    <div class="common-content">
+    <div class="common-content home-content">
       <div class="carousel-wrapper">
-        <el-carousel :interval="4000" indicator-position="outside" :autoplay="false" type="card" height="255px">
-          <el-carousel-item v-for="item in swiperData" :key="item.id">
+        <el-carousel :interval="4000" indicator-position="outside" :autoplay="false" type="card" height="240px">
+          <el-carousel-item v-for="item in swipers.swiperData" :key="item.id">
             <el-image class="carousel-img" :src="item.set_value" fit="cover" />
           </el-carousel-item>
         </el-carousel>
       </div>
     </div>
-    <div class="common-content">
+    <!-- 公司信息 -->
+    <div class="common-content home-content">
       <div class="layout-wrapper">
         <el-row :gutter="20">
-          <el-col :span="6" v-for="item in companyInfos.list" :key="item.id">
+          <el-col :span="6" v-for="item in companyInfo.mainContent" :key="item.id">
             <div class="company-wrapper" @click="openDetailDialog(item)">
               <span class="company-wrapper-title">
                 {{ getCompanyTitle(item.set_name) }}
@@ -25,7 +26,8 @@
         </el-row>
       </div>
     </div>
-    <div class="common-content">
+    <!-- 公司公告 -->
+    <div class="common-content home-content">
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="announced-wrapper">
@@ -61,25 +63,25 @@ import ShowDetailDialog from "@/views/home/showDetailDialog/ShowDetailDialog.vue
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
 // pinia存储的公司信息和首页轮播图数据
-import { useSettingStore } from "@/store/settingInfo"
+import { useSettingStore } from "@/store/settingInfoStore"
 import emitter from '@/utils/emitter'
 const detailDialogRef = ref()
 const settingStore = useSettingStore()
 // pinia存储的数据
-const { swipers: { swiperData }, companyInfo: { conmapyData } } = reactive(settingStore)
+const { swipers, companyInfo } = reactive(settingStore)
 // const getImageUrl = (name: string) => {
 //   return new URL(`/src/assets/images/${name}`, import.meta.url).href;
 // };
-const companyInfos: { [key: string]: any } = reactive({ list: [] })
+// const companyInfos: { [key: string]: any } = reactive({ list: [] })
 // 公司信息
 const getCompanyTitle = (item: string) => {
   return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
 }
-onBeforeMount(() => {
-  companyInfos.list = conmapyData.filter((item: any, index) => { return index > 0 })
-  console.log(companyInfos.list);
-
-})
+// onMounted( () => {
+//   setTimeout(()=>{
+//     companyInfos.list = companyInfo.conmapyData.filter((item: any, index) => { return index > 0 })
+//   },10)
+// })
 const tableData = reactive([
   {
     title: '下班后开会',
@@ -97,27 +99,27 @@ const tableData = reactive([
 
 const systemData = reactive([
   {
-    title: '苹果已出库',
+    title: '手机1已出库',
     date: '2025-06-01',
   },
   {
-    title: '香蕉已入库',
+    title: '电脑2已入库',
     date: '2025-05-02',
   },
   {
-    title: '梨子已出库',
+    title: '平板3已出库',
     date: '2025-04-01',
   },
   {
-    title: '芒果已入库',
+    title: '耳机4已入库',
     date: '2025-03-02',
   },
   {
-    title: '橙子已出库',
+    title: '手表5已出库',
     date: '2025-02-01',
   },
   {
-    title: '橘子已入库',
+    title: '屏幕6已入库',
     date: '2025-01-02',
   },
 ])
@@ -135,11 +137,12 @@ const openDetailDialog = (item: any) => {
   height: 100%;
   border-radius: 10px;
 }
+.home-content {
 
-.layout-wrapper {
+  .layout-wrapper {
   .company-wrapper {
     height: 200px;
-    padding: 16px;
+    padding: 8px;
     border-radius: 8px;
     background-color: #F0F2F5;
     cursor: pointer;
@@ -161,11 +164,11 @@ const openDetailDialog = (item: any) => {
     background-color: #d9ecff;
   }
 }
+}
+
 
 .announced-wrapper {
-  box-sizing: border-box;
-  height: 216px;
-  padding: 8px;
+  height: 192px;
   overflow: hidden;
   border-radius: 8px;
 }

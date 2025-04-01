@@ -1,6 +1,6 @@
 <template>
   <div class="common-wrapper">
-    <div class="common-content">ProductManager</div>
+    <div class="common-content product-manager-content">ProductManager</div>
   </div>
 </template>
 
@@ -8,4 +8,8 @@
 
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.product-manager-content {
+  height: 100%;
+}
+</style>

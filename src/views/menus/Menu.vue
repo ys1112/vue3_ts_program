@@ -4,7 +4,7 @@
       <el-aside width="200px">
         <h4 class="mb-2 menu-title">通用后台管理系统</h4>
         <el-menu active-text-color="#ffd04b" background-color="#545c64" class="el-menu-vertical-demo"
-          :default-active="activeMenu" text-color="#fff" @select="selectedItem" router :unique-opened="true">
+          :default-active="activeMenuItem.activeMenu" text-color="#fff" @select="selectedItem" router :unique-opened="true">
           <el-menu-item index="home">
             <template #title>
               <el-icon>
@@ -14,7 +14,7 @@
             </template>
           </el-menu-item>
 
-          <el-menu-item index="system">
+          <el-menu-item index="overview">
             <el-icon>
               <Document />
             </el-icon>
@@ -30,11 +30,11 @@
             </template>
             <el-menu-item-group title="管理员管理">
               <el-menu-item index="product_manager">产品管理员</el-menu-item>
-              <el-menu-item index="3-2">用户管理员</el-menu-item>
-              <el-menu-item index="3-3">消息管理员</el-menu-item>
+              <el-menu-item index="user_manager">用户管理员</el-menu-item>
+              <el-menu-item index="message_manager">消息管理员</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="员工管理">
-              <el-menu-item index="3-4">员工列表</el-menu-item>
+              <el-menu-item index="user_list">员工列表</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 
@@ -46,10 +46,10 @@
               <span>产品管理</span>
             </template>
             <el-menu-item-group title="入库管理">
-              <el-menu-item index="4-1">产品列表</el-menu-item>
+              <el-menu-item index="product_list">产品列表</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="出库管理">
-              <el-menu-item index="4-2">出库列表</el-menu-item>
+              <el-menu-item index="delivery_list">出库列表</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 
@@ -61,28 +61,28 @@
               <span>消息管理</span>
             </template>
             <el-menu-item-group title="消息管理">
-              <el-menu-item index="5-1">消息列表</el-menu-item>
+              <el-menu-item index="message_list">消息列表</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="回收站">
-              <el-menu-item index="5-2">回收站</el-menu-item>
+              <el-menu-item index="recycle_bin">回收站</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 
-          <el-menu-item index="6">
+          <el-menu-item index="contract_manage">
             <el-icon>
               <Files />
             </el-icon>
             <span>合同管理</span>
           </el-menu-item>
 
-          <el-menu-item index="7">
+          <el-menu-item index="operate_log">
             <el-icon>
               <DocumentCopy />
             </el-icon>
             <span>操作日志</span>
           </el-menu-item>
 
-          <el-menu-item index="8">
+          <el-menu-item index="login_log">
             <el-icon>
               <Memo />
             </el-icon>
@@ -134,22 +134,28 @@
 </template>
 <script lang="ts" setup name="Menu">
 import Breadcrumb from "@/components/BreadCrumb.vue";
-import { reactive, toRefs, ref } from 'vue'
+import { reactive, toRefs, ref, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
-import { useInfoStore } from '@/store/userInfo'
+import { useUserInfoStore } from '@/store/userInfoStore'
+import { useCommonStore } from '@/store/commonStore'
+import { useSettingStore } from '@/store/settingInfoStore'
 import { MenusEnum } from '@/contants/MenusEnum'
-let breadItems = reactive(JSON.parse(sessionStorage.getItem('breadItems') as string) || { first: '首页', second: '' })
-const activeMenu = ref('home')
-for (const key in MenusEnum) {
-  if (breadItems.second == MenusEnum[key as keyof typeof MenusEnum]) {
-    activeMenu.value = key
-    break
+
+onBeforeMount(() => {
+  // 保证刷新activeName位置
+  for (const key in MenusEnum) {
+    if (breadItems.second == MenusEnum[key as keyof typeof MenusEnum]) {
+      activeMenuItem.activeMenu = key
+      break
+    }
+    if (breadItems.first == MenusEnum[key as keyof typeof MenusEnum]) {
+      activeMenuItem.activeMenu = key
+    }
   }
-  if (breadItems.first == MenusEnum[key as keyof typeof MenusEnum]) {
-    activeMenu.value = key
-  }
-}
-const infoStore = useInfoStore()
+})
+const commonStore = useCommonStore()
+let { activeMenuItem, breadItems, getBread } = reactive(commonStore)
+const infoStore = useUserInfoStore()
 const { userInfo } = reactive(infoStore)
 
 const router = useRouter()
@@ -161,15 +167,15 @@ const state = reactive({
 const { circleUrl } = toRefs(state)
 const selectedItem = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
-  breadItems = Object.assign(breadItems, {
-    first: '首页',
-    second: ''
-  })
+  breadItems.first = ''
+  breadItems.second = ''
   for (const key in keyPath) {
     if (+key == 0) {
+      // 面包屑第一层名称
       breadItems.first = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
     }
     if (+key == 1) {
+      // 面包屑第二层名称
       breadItems.second = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
     }
   }
@@ -177,8 +183,14 @@ const selectedItem = (key: string, keyPath: string[]) => {
 }
 
 const LogOut = () => {
+  // 写在上面，不然重置时会去读取storage里面的值，导致清除不干净
   localStorage.clear()
   sessionStorage.clear()
+  const stores = [useCommonStore(),useSettingStore(), useUserInfoStore()]
+  stores.forEach((store) => {
+    store.$reset(); // 重置状态到初始值
+    localStorage.removeItem(store.$id);
+  });
   router.replace('/login')
 }
 </script>

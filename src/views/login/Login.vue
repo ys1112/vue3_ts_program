@@ -103,10 +103,10 @@ import { ref, reactive, onMounted } from 'vue'
 import forgetDialog from './components/ForgetPwdDialog.vue'
 import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
-import { useInfoStore } from '@/store/userInfo'
-import { useSettingStore } from '@/store/settingInfo'
+import { useUserInfoStore } from '@/store/userInfoStore'
+import { useSettingStore } from '@/store/settingInfoStore'
 
-const {getInfo} = useInfoStore()
+const {getInfo} = useUserInfoStore()
 const {getSettingInfo} = useSettingStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 

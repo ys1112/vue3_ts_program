@@ -1,6 +1,6 @@
 <template>
   <div class="common-wrapper">
-    <div class="common-content">
+    <div class="common-content set-content">
       <el-tabs v-model="activeName" class="demo-tabs">
         <!-- 账号详情 -->
         <el-tab-pane label="账号详情" name="accountInfo">
@@ -81,12 +81,11 @@
             <div class="home-info-content" v-for="item in swiperData" :key="item.id">
               <span class="home-info-item">{{ getSwiperTitle(item.set_name) }}：</span>
               <el-upload class="upload-demo" action="http://127.0.0.1:3001/set/setSwiper" list-type="picture"
-                :auto-upload="true" :show-file-list="false"
-                :on-success="handleSwiperSuccess" :before-upload="beforeSwiperUpload"
-                :data="{ set_name: item.set_name }">
+                :auto-upload="true" :show-file-list="false" :on-success="handleSwiperSuccess"
+                :before-upload="beforeSwiperUpload" :data="{ set_name: item.set_name }">
                 <img class="swiper-item" v-if="item.set_value" :src="item.set_value" @error="handleImageError" />
                 <div v-else class="swiper-item">
-                  <SvgIcon icon-name="upload" size="24" class="bread-crumb-icon" color="#2c2c2c"></SvgIcon>
+                  <SvgIcon icon-name="upload" size="24" color="#2c2c2c"></SvgIcon>
                 </div>
               </el-upload>
             </div>
@@ -102,7 +101,7 @@
 </template>
 
 <script lang="ts" setup name="Setting">
-import { reactive, ref } from "vue"
+import { reactive, ref, nextTick } from "vue"
 import { type UploadProps, ElMessage } from "element-plus"
 import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
 import { SwiperEnum } from '@/contants/SwiperEnum'
@@ -120,12 +119,12 @@ import useAccountInfo from '@/hooks/useAoocuntInfo'
 // import useHomeSetting from '@/hooks/useHomeSetting'
 
 // pinia存储的公司信息和首页轮播图数据
-import { useSettingStore } from "@/store/settingInfo"
+import { useSettingStore } from "@/store/settingInfoStore"
 // 打开修改对话框
 const setInfoDialogRef = ref()
 const settingStore = useSettingStore()
 // pinia存储的数据
-const { swipers:{swiperData},companyInfo:{conmapyData} } = reactive(settingStore)
+const { swipers: { swiperData }, companyInfo: { conmapyData } } = reactive(settingStore)
 interface setInfoForm {
   id?: number
   set_name: string
@@ -150,7 +149,6 @@ const {
 // tab初始项
 const activeName = ref("accountInfo")
 
-
 // 公司信息
 const getCompanyTitle = (item: string) => {
   return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
@@ -171,14 +169,13 @@ const setCompanyName = useDebounce(async (item: setInfoForm) => {
     })
   }
   ElMessage.error('修改公司名称失败,请检查网络后重试')
-},500)
+}, 500)
 
 // 打开编辑弹窗
 const openSetInfoDialog = (item: setInfoForm) => {
   emitter.emit('setInfo', item)
   setInfoDialogRef.value.open()
 }
-
 
 // 首页管理
 // 轮播图标题
@@ -191,12 +188,14 @@ const handleSwiperSuccess: UploadProps["onSuccess"] = async (
   uploadFile,
 ) => {
   if (response.status == 0) {
-    // console.log(response);
-    swiperData.forEach((item: setInfoForm,index) => {
-      if (response.set_name == item.set_name) {
-        swiperData[index].set_value = response.url
-      }
-    })
+    const index = swiperData.findIndex((item: setInfoForm) => item.set_name == response.set_name)
+    // swiperData[index].set_value = response.url
+    swiperData[index].set_value = `${response.url}?t=${Date.now()}`
+    // swiperData.forEach((item: setInfoForm,index) => {
+    //   if (response.set_name == item.set_name) {
+    //     swiperData[index].set_value = response.url
+    //   }
+    // })
     ElMessage({
       message: "修改轮播图成功",
       type: 'success',
@@ -219,6 +218,10 @@ const beforeSwiperUpload: UploadProps["beforeUpload"] = (rawFile) => {
 </script>
 
 <style lang="scss" scoped>
+.set-content {
+  height: 100%;
+}
+
 .setting-info-wrapper {
   .setting-info-content {
     display: flex;

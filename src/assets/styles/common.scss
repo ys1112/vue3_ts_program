@@ -1,11 +1,12 @@
-.common-wrapper {
+*{
   box-sizing: border-box;
-  height: calc(100vh - 120px);
-  margin: 16px;
-  padding: 16px;
-  border-radius: 10px;
-  background-color: #FAFAFA;
-  .common-content {
-    margin-bottom: 16px;
+}
+.common-wrapper {
+    height: calc(100vh - 120px);
+    .common-content {
+    margin: 16px;
+    padding: 16px;
+    border-radius: 10px;
+    background-color: #fafafa;
   }
 }

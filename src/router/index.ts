@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import Login from "@/views/login/Login.vue"
 import Menu from "@/views/menus/Menu.vue"
 import Home from "@/views/home/Home.vue"
-import System from "@/views/system/System.vue";
+import Overview from "@/views/overview/Overview.vue";
 import Setting from "@/views/setting/SysSetting.vue";
 import ProductManager from "@/views/user_manage/ProductManager.vue";
 const router = createRouter({
@@ -30,9 +30,9 @@ const router = createRouter({
           component: Home,
         },
         {
-          name: "system",
-          path: "/system",
-          component: System,
+          name: "overview",
+          path: "/overview",
+          component: Overview,
         },
         {
           name: "product_manager",

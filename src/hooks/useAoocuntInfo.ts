@@ -2,12 +2,12 @@
 import { reactive, ref } from "vue"
 import { type UploadProps, ElMessage } from "element-plus"
 // pinia存储用户的数据
-import { useInfoStore } from "@/store/userInfo"
+import { useUserInfoStore } from "@/store/userInfoStore"
 // 修改用户数据的接口
 import { bindAccount, updateName, updateGender, updateEmail } from "@/api/user"
 
 export default function () {
-  const infoStore = useInfoStore()
+  const infoStore = useUserInfoStore()
   const { userInfo } = reactive(infoStore)
   // 修改密码弹窗实例
   const resetDialogRef = ref()

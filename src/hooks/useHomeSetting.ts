@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue"
 import { type UploadProps, ElMessage } from "element-plus"
 // pinia存储的公司信息和首页轮播图数据
-import { useSettingStore } from "@/store/settingInfo"
+import { useSettingStore } from "@/store/settingInfoStore"
 // 修改用户数据的接口
 import { setCompanyInfo } from "@/api/setting"
 
