@@ -34,7 +34,7 @@
               <el-menu-item index="message_manager">消息管理员</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="员工管理">
-              <el-menu-item index="user_list">员工列表</el-menu-item>
+              <el-menu-item index="user_list">用户列表</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 

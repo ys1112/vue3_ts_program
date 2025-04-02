@@ -190,6 +190,7 @@ const handleSwiperSuccess: UploadProps["onSuccess"] = async (
   if (response.status == 0) {
     const index = swiperData.findIndex((item: setInfoForm) => item.set_name == response.set_name)
     // swiperData[index].set_value = response.url
+    // 服务端图片url不变内能改变导致不更新问题
     swiperData[index].set_value = `${response.url}?t=${Date.now()}`
     // swiperData.forEach((item: setInfoForm,index) => {
     //   if (response.set_name == item.set_name) {

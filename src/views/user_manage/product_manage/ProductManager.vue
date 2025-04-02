@@ -23,10 +23,10 @@
             <el-table-column prop="name" label="姓名" />
             <el-table-column prop="department" label="部门" />
             <el-table-column prop="email" label="邮箱" />
-            <el-table-column prop="operate" label="操作">
+            <el-table-column prop="operate" label="操作" align="center">
               <template #default="scope">
-                <el-button type="success">编辑</el-button>
-                <el-button type="danger">删除</el-button>
+                <el-button type="success" @click="editUserInfo(scope.row)">编辑</el-button>
+                <el-button type="danger" @click="deleteUserInfo(scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -41,20 +41,35 @@
 
     </div>
   </div>
+  <CreateAdminDialog :identity="identity" ref="createDialogRef"></CreateAdminDialog>
+  <EditUserDialog :identity="identity" ref="editDialogRef"></EditUserDialog>
+  <DeleteUserDialog :deleteInfo="deleteInfo" ref="deleteDialogRef"></DeleteUserDialog>
 </template>
 
 <script lang="ts" setup name="ProductManager">
 import { onBeforeMount, reactive, ref } from 'vue';
 import { ElMessage } from "element-plus"
-import { useUserInfoStore } from "@/store/userInfoStore";
 import { useDebounce } from '@/hooks/useDebounce'
+import useUserManage from '@/hooks/useUserManage'
+import CreateAdminDialog from "../components/CreateAdminDialog.vue";
+import EditUserDialog from "../components/EditUserDialog.vue";
+import DeleteUserDialog from "../components/DeleteUserDialog.vue";
+import emitter from "@/utils/emitter";
 interface getUserListData {
   identity: string
   department?: string
   status?: string
   search_value?: string
 }
-const { getList } = useUserInfoStore()
+const identity = ref('产品管理员')
+const deleteInfo = reactive({
+  id:0,
+  tip:'是否去掉此用户的管理员职位？删除后此用户将重新展现在用户列表中。'
+})
+const createDialogRef = ref()
+const editDialogRef = ref()
+const deleteDialogRef = ref()
+const {getList} = useUserManage()
 // 搜索关键字
 const searchValue = ref('')
 // 分页数据
@@ -108,8 +123,17 @@ const searchAccount = useDebounce(() => {
 }, 800)
 
 // 添加产品管理员
-const addProductManager = () => { }
-
+const addProductManager = () => { 
+  createDialogRef.value.open()
+}
+const editUserInfo = (scope:any)=>{
+  emitter.emit('editInfo', scope)
+  editDialogRef.value.open()
+}
+const deleteUserInfo = (scope:any)=>{
+  deleteInfo.id = scope
+  deleteDialogRef.value.open()
+}
 </script>
 
 <style lang="scss" scoped>

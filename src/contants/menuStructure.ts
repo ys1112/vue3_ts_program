@@ -7,7 +7,7 @@ export const MENU_CONFIG = {
         product_manager: "产品管理员",
         user_manager: "用户管理员",
         message_manager: "消息管理员",
-        user_list: "员工列表",
+        user_list: "用户列表",
       },
       product_manage: {
         product_list: "产品列表",
