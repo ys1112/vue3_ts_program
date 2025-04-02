@@ -1,7 +1,13 @@
 import { defineStore } from "pinia"
 import { reactive, ref } from "vue"
-import { getUserInfo } from "@/api/user"
+import { getUserInfo, getUserList } from "@/api/user"
 import { ElMessage } from "element-plus"
+interface getUserListData {
+  identity: string
+  department?: string
+  status?: string
+  search_value?: string
+}
 export const useUserInfoStore = defineStore("userInfo", {
   state() {
     return {
@@ -31,6 +37,21 @@ export const useUserInfoStore = defineStore("userInfo", {
           message: "获取用户信息失败",
           type: "success",
         })
+      }
+    },
+    async getList(params: getUserListData) {
+      const res = await getUserList(params)
+      if (res.data.status == 0) {
+        if (res.data.results.length == 0) ElMessage.error("查询用户列表为空")
+        if (res.data.results.length > 0) {
+          ElMessage({
+            message: "获取用户列表成功",
+            type: "success",
+          })
+        }
+        return res.data.results
+      } else {
+        ElMessage.error("获取用户列表失败")
       }
     },
   },

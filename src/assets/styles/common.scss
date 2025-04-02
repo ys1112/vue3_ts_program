@@ -1,12 +1,32 @@
-*{
+* {
   box-sizing: border-box;
 }
 .common-wrapper {
-    height: calc(100vh - 120px);
-    .common-content {
+  height: calc(100vh - 120px);
+  .common-content {
     margin: 16px;
     padding: 16px;
     border-radius: 10px;
-    background-color: #fafafa;
+    // background-color: #fafafa;
+    background-color: #fff;
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      height: 48px;
+      width: 100%;
+      padding: 8px;
+    }
+
+    .table-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: calc(100% - 48px);
+      padding: 8px;
+      .table-content-footer {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
   }
 }

@@ -169,16 +169,14 @@ const selectedItem = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
   breadItems.first = ''
   breadItems.second = ''
-  for (const key in keyPath) {
-    if (+key == 0) {
-      // 面包屑第一层名称
-      breadItems.first = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
-    }
-    if (+key == 1) {
-      // 面包屑第二层名称
-      breadItems.second = MenusEnum[keyPath[key] as keyof typeof MenusEnum]
-    }
+  activeMenuItem.activeMenu = key
+  if(keyPath.length>1) {
+    breadItems.first = MenusEnum[keyPath[0] as keyof typeof MenusEnum]
+    breadItems.second = MenusEnum[keyPath[1] as keyof typeof MenusEnum]
+  } else {
+    breadItems.first = MenusEnum[keyPath[0] as keyof typeof MenusEnum]
   }
+  
   sessionStorage.setItem('breadItems', JSON.stringify(breadItems))
 }
 

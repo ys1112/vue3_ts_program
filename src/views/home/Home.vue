@@ -178,7 +178,7 @@ const openDetailDialog = (item: any) => {
 }
 
 :deep(.el-carousel__arrow) {
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 :deep(.el-table__body .el-table__row) {
@@ -195,11 +195,11 @@ const openDetailDialog = (item: any) => {
 
 :deep(.el-carousel__indicators--outside button) {
   border-radius: 4px;
-  background-color: #606266;
+  background-color: rgba(96, 98, 102, 0.5);
 }
 
 :deep(.el-carousel__indicators--outside button:hover) {
-  background-color: #606266;
+  background-color: rgba(96, 98, 102, 0.5);
 }
 
 .el-carousel {

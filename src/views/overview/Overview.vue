@@ -85,7 +85,7 @@ import { MENU_CONFIG } from '@/contants/menuStructure'
 
 import SvgIcon from "@/components/SvgIcon.vue"
 import * as echarts from 'echarts'
-const { commonInfo, getBread } = reactive(useCommonStore())
+const { activeMenuItem, getBread } = reactive(useCommonStore())
 const menus = MENU_CONFIG.MENU.menus
 
 const router = useRouter()
@@ -143,7 +143,7 @@ const state = reactive({
 const { circleUrl } = toRefs(state)
 const goCommonManage = (path: string) => {
   // 保存activeMenu
-  commonInfo.activeMenu = path
+  activeMenuItem.activeMenu = path
   // 保存面包屑
   const breadItems = getBread(menus, path)
   sessionStorage.setItem('breadItems', JSON.stringify(breadItems))

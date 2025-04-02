@@ -219,7 +219,7 @@ const beforeSwiperUpload: UploadProps["beforeUpload"] = (rawFile) => {
 
 <style lang="scss" scoped>
 .set-content {
-  height: 100%;
+  height: calc(100% + 1px);
 }
 
 .setting-info-wrapper {

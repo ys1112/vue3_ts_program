@@ -68,7 +68,7 @@ export const useSettingStore = defineStore("settingInfo",{
             set_value: "",
           },
         ],
-        mainContent: [],
+        mainContent: []as { [key: string]: any },
       })
     }
   },
