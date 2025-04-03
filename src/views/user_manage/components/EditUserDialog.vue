@@ -71,6 +71,10 @@ const departmentOptions = [
     value: "组织部",
     label: "组织部",
   },
+  {
+    value: "企管部",
+    label: "企管部",
+  },
 ]
 const editDialogVisible = ref(false)
 const editRuleFormRef = ref<FormInstance>()
@@ -116,7 +120,6 @@ onMounted(() => {
       }
     })
     console.log(editData);
-    
   })
 })
 // 在组件卸载时解绑set-info事件
@@ -124,7 +127,7 @@ onUnmounted(() => {
   emitter.off('editInfo')
 })
 
-function handleClose(done: () => void) {
+const handleClose = (done: () => void) => {
   editRuleFormRef.value?.resetFields()
   done()
 }
@@ -156,8 +159,8 @@ defineExpose({
 
 <style lang="scss" scoped>
 .edit-form {
-  height: 400px;
-  padding: 40px 0;
+  height: 352px;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;

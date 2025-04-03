@@ -74,6 +74,10 @@ const departmentOptions = [
     value: "组织部",
     label: "组织部",
   },
+  {
+    value: "企管部",
+    label: "企管部",
+  },
 ]
 const createDialogVisible = ref(false)
 const createRuleFormRef = ref<FormInstance>()
@@ -120,7 +124,7 @@ const rules = reactive<FormRules<createAdminData>>({
   ],
 })
 
-function handleClose(done: () => void) {
+const handleClose = (done: () => void) => {
   createRuleFormRef.value?.resetFields()
   done()
 }
@@ -152,8 +156,8 @@ defineExpose({
 
 <style lang="scss" scoped>
 .create-form {
-  height: 440px;
-  padding: 24px 0;
+  height: 416px;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -165,4 +169,5 @@ defineExpose({
 //   line-height: 40px;
 //   font-size: 16px;
 // }
+
 </style>

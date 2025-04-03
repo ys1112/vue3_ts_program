@@ -23,7 +23,7 @@
             <el-table-column prop="name" label="姓名" />
             <el-table-column prop="department" label="部门" />
             <el-table-column prop="email" label="邮箱" />
-            <el-table-column prop="operate" label="操作" align="center">
+            <el-table-column prop="operate" label="操作">
               <template #default="scope">
                 <el-button type="success" @click="editUserInfo(scope.row)">编辑</el-button>
                 <el-button type="danger" @click="deleteUserInfo(scope.row.id)">删除</el-button>
@@ -43,18 +43,17 @@
   </div>
   <CreateAdminDialog :identity="identity" ref="createDialogRef"></CreateAdminDialog>
   <EditUserDialog :identity="identity" ref="editDialogRef"></EditUserDialog>
-  <DeleteUserDialog :deleteInfo="deleteInfo" ref="deleteDialogRef"></DeleteUserDialog>
 </template>
 
 <script lang="ts" setup name="ProductManager">
-import { onBeforeMount, reactive, ref } from 'vue';
-import { ElMessage } from "element-plus"
+import { onBeforeMount, reactive, ref,markRaw,h  } from 'vue';
+import { ElMessage, ElMessageBox } from "element-plus"
 import { useDebounce } from '@/hooks/useDebounce'
 import useUserManage from '@/hooks/useUserManage'
 import CreateAdminDialog from "../components/CreateAdminDialog.vue";
 import EditUserDialog from "../components/EditUserDialog.vue";
-import DeleteUserDialog from "../components/DeleteUserDialog.vue";
 import emitter from "@/utils/emitter";
+import { WarnTriangleFilled } from '@element-plus/icons-vue'
 interface getUserListData {
   identity: string
   department?: string
@@ -62,14 +61,10 @@ interface getUserListData {
   search_value?: string
 }
 const identity = ref('产品管理员')
-const deleteInfo = reactive({
-  id:0,
-  tip:'是否去掉此用户的管理员职位？删除后此用户将重新展现在用户列表中。'
-})
+
 const createDialogRef = ref()
 const editDialogRef = ref()
-const deleteDialogRef = ref()
-const {getList} = useUserManage()
+const { getList } = useUserManage()
 // 搜索关键字
 const searchValue = ref('')
 // 分页数据
@@ -98,7 +93,7 @@ const userData = reactive({
 })
 onBeforeMount(async () => {
   const params = {
-    identity: '用户'
+    identity: identity.value
   }
   getAdminList(params)
 })
@@ -123,21 +118,61 @@ const searchAccount = useDebounce(() => {
 }, 800)
 
 // 添加产品管理员
-const addProductManager = () => { 
+const addProductManager = () => {
   createDialogRef.value.open()
 }
-const editUserInfo = (scope:any)=>{
+const editUserInfo = (scope: any) => {
   emitter.emit('editInfo', scope)
   editDialogRef.value.open()
 }
-const deleteUserInfo = (scope:any)=>{
-  deleteInfo.id = scope
-  deleteDialogRef.value.open()
+const deleteUserInfo = (scope: any) => {
+  const params = {
+    id:scope
+  }
+  ElMessageBox(
+    {
+      title:'删除操作',
+      message:h('div', { class: 'delete-tip', innerHTML: '是否去掉此用户的管理员职位？删除后此用户将重新展现在用户列表中。' }),
+      customClass: 'custom-message-box',
+      showCancelButton: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      icon: markRaw(WarnTriangleFilled),
+      dangerouslyUseHTMLString: true,
+    }
+  )
+    .then(() => {
+      // 降级操作
+      ElMessage({
+        type: 'success',
+        message: '降级操作成功',
+      })
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消操作',
+      })
+    })
 }
 </script>
 
 <style lang="scss" scoped>
 .product-manager-content {
   height: 100%;
+}
+</style>
+<style>
+.custom-message-box {
+  min-width: 600px;
+  text-align: center;
+}
+
+.delete-tip {
+  height: 64px;
+  line-height: 64px;
+  font-size: 16px;
 }
 </style>

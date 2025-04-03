@@ -37,7 +37,7 @@ onUnmounted(() => {
 const comfirm = () => {
   detailDialogVisible.value = false;
 };
-function handleClose(done: () => void) {
+const handleClose = (done: () => void) => {
   done()
 }
 const open = () => {

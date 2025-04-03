@@ -129,7 +129,7 @@ const setInfo = async () => {
   ElMessage.error(setTitle.value + '失败,' + '请检查网络后重试')
 }
 
-function handleClose(done: () => void) {
+const handleClose = (done: () => void) => {
   done()
 }
 

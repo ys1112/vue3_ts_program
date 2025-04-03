@@ -118,7 +118,7 @@ const toResetPassword = (formEl: FormInstance | undefined) => {
   })
 }
 
-function handleClose(done: () => void) {
+const handleClose = (done: () => void) => {
   resetFormRef.value?.resetFields()
   done()
 }

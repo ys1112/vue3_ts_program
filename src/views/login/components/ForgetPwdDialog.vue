@@ -121,7 +121,7 @@ const rules = reactive<FormRules<ForgetForm>>({
   ],
 })
 
-function handleClose(done: () => void) {
+const handleClose = (done: () => void) => {
   confirmFormRef.value?.resetFields()
   ruleFormRef.value?.resetFields()
   done()
