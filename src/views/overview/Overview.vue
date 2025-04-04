@@ -10,16 +10,16 @@
             <div class="user-info-belongs">
               <el-image style="width: 100px; height: 100px;border-radius: 50%;" :src="userInfo.image_url || circleUrl"
                 fit="cover" />
-              <p>所属部门：总裁办</p>
-              <p>所属公司：济南晏鲸创意设计有限公司</p>
+              <p>所属部门：{{userInfo.department}}</p>
+              <p>所属公司：{{ conmapyData[0].set_value }}</p>
             </div>
             <!-- 用户信息右侧 -->
             <div class="user-info-detail">
-              <p>姓名：李清</p>
-              <p>性别：女</p>
-              <p>身份：超级管理员</p>
-              <p>分管领域：超级管理</p>
-              <p>权限：最高权限</p>
+              <p>姓名：{{userInfo.name}}</p>
+              <p>性别：{{userInfo.gender}}</p>
+              <p>身份：{{userInfo.identity}}</p>
+              <p>分管领域：{{userInfo.department}}</p>
+              <p>权限：{{ getPermission(userInfo.identity)}}</p>
             </div>
           </div>
         </el-col>
@@ -80,6 +80,7 @@
 import { ref, reactive, onMounted, toRefs } from 'vue'
 import { useCommonStore } from '@/store/commonStore'
 import { useUserInfoStore } from '@/store/userInfoStore'
+import { useSettingStore } from '@/store//settingInfoStore'
 import { useRouter } from 'vue-router'
 import { MENU_CONFIG } from '@/contants/menuStructure'
 
@@ -96,7 +97,9 @@ const loginCountRef = ref(null)
 const announcementLevelRef = ref(null)
 
 const infoStore = useUserInfoStore()
+const settingStore = useSettingStore()
 const { userInfo } = reactive(infoStore)
+const { companyInfo:{conmapyData} } = reactive(settingStore)
 const commonManages = reactive([
   {
     id: 1,
@@ -136,6 +139,14 @@ const commonManages = reactive([
     path: 'setting'
   }
 ])
+const getPermission = (identity:string)=>{
+  if(identity == '系统管理员') {
+    return '最高权限'
+  } else  {
+    return identity
+  }
+}
+
 const state = reactive({
   circleUrl:
     'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',

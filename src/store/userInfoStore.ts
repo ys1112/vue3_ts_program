@@ -21,6 +21,7 @@ export const useUserInfoStore = defineStore("userInfo", {
         image_url: "",
         id: "",
       }),
+      isUsersUpdate:ref(false)
     }
   },
   actions: {

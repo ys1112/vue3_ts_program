@@ -1,9 +1,8 @@
 <template>
-  <el-dialog v-model="editDialogVisible" :title="`编辑${identity}`" width="560" :before-close="handleClose"
-    destroy-on-close>
+  <el-dialog v-model="editDialogVisible" :title="`编辑${identity}`" width="560" :before-close="handleClose" destroy-on-close>
     <el-form :model="editData" :rules="rules" ref="editRuleFormRef" label-position="left" class="edit-form">
       <el-form-item style="margin-left: 12px;" label="账号" prop="account">
-        <el-input disabled v-model="editData.account" style="width: 240px">
+        <el-input disabled v-model="account" style="width: 240px">
         </el-input>
       </el-form-item>
       <el-form-item label="姓名" prop="name">
@@ -38,12 +37,15 @@
 </template>
 
 <script lang="ts" setup name="EditAdimnDialog">
-import { reactive, ref, onMounted, onUnmounted } from 'vue';
+import { reactive, ref, onMounted, onUnmounted, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
 import emitter from '@/utils/emitter'
 import useUserManage from "@/hooks/useUserManage";
+import { useUserInfoStore } from "@/store/userInfoStore";
+import { updateUser } from "@/api/user";
 defineProps(['identity'])
 const { validateEmail, validateName } = useUserManage()
+const { isUsersUpdate } = toRefs(useUserInfoStore())
 const genderOptions = [
   {
     value: "男",
@@ -79,15 +81,16 @@ const departmentOptions = [
 const editDialogVisible = ref(false)
 const editRuleFormRef = ref<FormInstance>()
 interface editAdminData {
-  account: string
+  id: string,
   name: string
   gender: string
   email: string
   identity: string
   department: string
 }
+const account = ref('')
 const editData: editAdminData = reactive({
-  account: '',
+  id: '',
   name: '',
   gender: '',
   email: '',
@@ -114,22 +117,20 @@ const rules = reactive<FormRules<editAdminData>>({
 // 在组件挂载时绑定setInfo事件
 onMounted(() => {
   emitter.on('editInfo', (value: any) => {
+    account.value = value.account
     Object.keys(editData).forEach((key) => {
       if (value.hasOwnProperty(key)) {
         editData[key as keyof typeof editData] = value[key] || ''
       }
     })
-    console.log(editData);
   })
 })
 // 在组件卸载时解绑set-info事件
 onUnmounted(() => {
   emitter.off('editInfo')
 })
-
-const handleClose = (done: () => void) => {
+const handleClose = () => {
   editRuleFormRef.value?.resetFields()
-  done()
 }
 const open = () => {
   editDialogVisible.value = true
@@ -145,6 +146,19 @@ const toEdite = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
+      // 编辑操作
+      const params = editData
+      const res = await updateUser(params)
+      if (res.data.status == 0) {
+        ElMessage({
+          message: "编辑用户信息成功",
+          type: "success",
+        })
+        editDialogVisible.value = false
+        isUsersUpdate.value = true
+      } else {
+        ElMessage("编辑用户信息失败，请稍后再试")
+      }
       console.log('submit!')
     } else {
       console.log('error submit!')
@@ -171,6 +185,4 @@ defineExpose({
 //   height: 40px;
 //   line-height: 40px;
 //   font-size: 16px;
-// }
-
-</style>
+// }</style>

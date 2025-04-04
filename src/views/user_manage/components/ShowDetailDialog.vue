@@ -1,11 +1,11 @@
 <template>
-  <el-dialog v-model="detailDialogVisible" align="center" title="用户信息" width="640" @close="handleClose"
+  <el-dialog v-model="detailDialogVisible" align="center" title="用户信息" width="640" :before-close="handleClose"
     destroy-on-close>
     <div class="user-info-body">
       <el-row :gutter="16">
         <el-col :span="10">
           <div class="user-info-avatar">
-            <el-image class="avatar-img" :src="userInfo.image_url" fit="cover" />
+            <el-image class="avatar-img" :src="userInfo.image_url || circleUrl" fit="cover" />
           </div>
         </el-col>
         <el-col :span="14">
@@ -30,7 +30,7 @@
         <el-button size="large" @click="weightOperate" type="primary" link>
           赋权
         </el-button>
-        <el-button size="large" @click="deleteUser" type="primary" link>
+        <el-button size="large" @click="toDeleteUser" type="primary" link>
           删除用户
         </el-button>
       </div>
@@ -39,26 +39,28 @@
 </template>
 
 <script lang="ts" setup name="ShowDetailDialog">
-import { ref, h, defineEmits, markRaw } from 'vue';
+import { ref, h, markRaw, toRefs, watchEffect } from 'vue';
 import { ElMessage, ElMessageBox, ElRadio, ElRadioGroup, ElButton } from "element-plus"
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
+import { useUserInfoStore } from "@/store/userInfoStore";
+import { empowerUser, deleteUser } from "@/api/user";
 import emitter from '@/utils/emitter'
+import { id } from 'element-plus/es/locale/index.mjs';
+import ShowDetailDialog from '@/views/home/showDetailDialog/ShowDetailDialog.vue';
+const { isUsersUpdate } = toRefs(useUserInfoStore())
 const detailDialogVisible = ref(false)
 const selectedValue = ref('用户管理员')
+const circleUrl = ref('https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png')
 const editRef = ref()
-const isModifyData = ref(false)
 const userInfo = ref({} as { [key: string]: any })
-const emit = defineEmits(['close'])
 const handleClose = (done: () => void) => {
-  emit('close', isModifyData.value)
-  // done()
+  done()
 }
 const open = (item: any, ref: any) => {
   detailDialogVisible.value = true
   userInfo.value = item
   editRef.value = ref
 }
-
 
 defineExpose({
   open
@@ -67,6 +69,9 @@ defineExpose({
 const editUser = () => {
   emitter.emit('editInfo', userInfo.value)
   editRef.value.open()
+  if (isUsersUpdate.value) {
+    detailDialogVisible.value = false
+  }
 }
 
 // 赋权操作弹窗
@@ -97,6 +102,11 @@ const weightOperate = () => {
                 { value: '产品管理员' },
                 () => '产品管理员'
               ),
+              h(
+                ElRadio,
+                { value: '消息管理员' },
+                () => '消息管理员'
+              ),
             ]
           }
         ),
@@ -104,7 +114,7 @@ const weightOperate = () => {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
       center: true,
-      beforeClose: (action: any, instance: any, done: any) => {
+      beforeClose: async (action: any, instance: any, done: any) => {
         if (action === 'confirm') {
           if (!selectedValue.value) {
             return ElMessage({
@@ -113,10 +123,22 @@ const weightOperate = () => {
             })
           }
           // 处理赋权操作
-          // 1.赋权失败提示
-          // 2.赋权成功提示，关闭弹窗，重新获取列表
-          detailDialogVisible.value = false
-          isModifyData.value = true
+          // 1.赋权失败提示 2.赋权成功提示，关闭弹窗，重新获取列表
+          const params = {
+            id: userInfo.value.id,
+            identity: selectedValue.value
+          }
+          const res = await empowerUser(params)
+          if (res.data.status == 0) {
+            ElMessage({
+              message: `赋权为${selectedValue.value}成功`,
+              type: "success",
+            })
+            detailDialogVisible.value = false
+            isUsersUpdate.value = true
+          } else {
+            ElMessage('赋权失败，请稍后再试')
+          }
           done()
         } else {
           done()
@@ -134,9 +156,11 @@ const weightOperate = () => {
       })
     })
 }
-const deleteUser = () => {
+// 删除用户
+const toDeleteUser = () => {
   const params = {
-    id: userInfo.value.id
+    id: +userInfo.value.id,
+    account: userInfo.value.account
   }
   ElMessageBox(
     {
@@ -150,17 +174,29 @@ const deleteUser = () => {
       center: true,
       icon: markRaw(WarnTriangleFilled),
       dangerouslyUseHTMLString: true,
+      beforeClose: async (action: any, instance: any, done: any) => {
+        if (action === 'confirm') {
+          // 删除
+          const res = await deleteUser(params)
+          if (res.data.status == 0) {
+            detailDialogVisible.value = false
+            isUsersUpdate.value = true
+            ElMessage({
+              type: 'success',
+              message: '删除用户成功',
+            })
+          } else {
+            ElMessage('删除用户失败，请稍后再试')
+          }
+          done()
+        } else {
+          done()
+        }
+      },
     }
   )
     .then(() => {
-      // 降级操作
 
-      detailDialogVisible.value = false
-      isModifyData.value = true
-      ElMessage({
-        type: 'success',
-        message: '删除成功',
-      })
     })
     .catch(() => {
       ElMessage({
@@ -169,6 +205,15 @@ const deleteUser = () => {
       })
     })
 }
+watchEffect(() => {
+  console.log(isUsersUpdate.value);
+
+  if (!isUsersUpdate.value) {
+    console.log(123);
+
+    detailDialogVisible.value = false
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -204,5 +249,9 @@ const deleteUser = () => {
   height: 64px;
   line-height: 64px;
   font-size: 16px;
+}
+
+.el-image__inner {
+  width: 200px;
 }
 </style>

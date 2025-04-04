@@ -6,7 +6,7 @@
       <div class="table-header">
         <!-- 结构顶部左侧搜索框域 -->
         <div class="table-header-left">
-          <el-input v-model="searchValue" @input="searchAccount" style="width: 240px" placeholder="输入账号进行搜索" />
+          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px" placeholder="输入账号进行搜索" />
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts" setup name="ProductManager">
-import { onBeforeMount, reactive, ref,markRaw,h  } from 'vue';
+import { onBeforeMount, reactive, ref, markRaw, h, watch, toRefs, watchEffect } from 'vue';
 import { ElMessage, ElMessageBox } from "element-plus"
 import { useDebounce } from '@/hooks/useDebounce'
 import useUserManage from '@/hooks/useUserManage'
@@ -54,6 +54,8 @@ import CreateAdminDialog from "../components/CreateAdminDialog.vue";
 import EditUserDialog from "../components/EditUserDialog.vue";
 import emitter from "@/utils/emitter";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
+import { useUserInfoStore } from "@/store/userInfoStore";
+import { downgradeAdmin } from "@/api/user";
 interface getUserListData {
   identity: string
   department?: string
@@ -61,6 +63,7 @@ interface getUserListData {
   search_value?: string
 }
 const identity = ref('产品管理员')
+const { isUsersUpdate } = toRefs(useUserInfoStore())
 
 const createDialogRef = ref()
 const editDialogRef = ref()
@@ -110,7 +113,7 @@ const getAdminList = async (params: getUserListData) => {
 const searchAccount = useDebounce(() => {
   if (searchValue.value.trim() || !searchValue.value) {
     const params = {
-      identity: '用户',
+      identity: identity.value,
       search_value: searchValue.value
     }
     getAdminList(params)
@@ -125,14 +128,14 @@ const editUserInfo = (scope: any) => {
   emitter.emit('editInfo', scope)
   editDialogRef.value.open()
 }
-const deleteUserInfo = (scope: any) => {
+const deleteUserInfo = (id: any) => {
   const params = {
-    id:scope
+    id: +id
   }
   ElMessageBox(
     {
-      title:'删除操作',
-      message:h('div', { class: 'delete-tip', innerHTML: '是否去掉此用户的管理员职位？删除后此用户将重新展现在用户列表中。' }),
+      title: '删除操作',
+      message: h('div', { class: 'delete-tip', innerHTML: '是否去掉此用户的管理员职位？删除后此用户将重新展现在用户列表中。' }),
       customClass: 'custom-message-box',
       showCancelButton: true,
       confirmButtonText: '确认',
@@ -141,14 +144,36 @@ const deleteUserInfo = (scope: any) => {
       center: true,
       icon: markRaw(WarnTriangleFilled),
       dangerouslyUseHTMLString: true,
+      beforeClose: async (action: any, instance: any, done: any) => {
+        if (action === 'confirm') {
+          // 降级操作
+          const res = await downgradeAdmin(params)
+          if (res.data.status == 0) {
+            ElMessage({
+              type: 'success',
+              message: '降级操作成功',
+            })
+            isUsersUpdate.value = true
+          } else {
+            ElMessage('降级操作失败，请稍后再试')
+          }
+          done()
+        } else {
+          done()
+        }
+      },
     }
   )
     .then(() => {
       // 降级操作
-      ElMessage({
-        type: 'success',
-        message: '降级操作成功',
-      })
+      // const res = await downgradeAdmin(params)
+      // if (res.data.status == 0) {
+      //   ElMessage({
+      //     type: 'success',
+      //     message: '降级操作成功',
+      //   })
+      //   isUsersUpdate.value = true
+      // }
     })
     .catch(() => {
       ElMessage({
@@ -157,6 +182,21 @@ const deleteUserInfo = (scope: any) => {
       })
     })
 }
+
+watchEffect(() => {
+  if (isUsersUpdate.value) {
+    const params = {
+      identity: identity.value
+    }
+    getAdminList(params)
+    isUsersUpdate.value = !isUsersUpdate.value
+  }
+})
+
+// const stopWatch = watch(isUsersUpdate,(newVal,oldVal)=>{
+//   console.log('isUsersUpdate变化了',newVal,oldVal);
+// },{deep:true})
+
 </script>
 
 <style lang="scss" scoped>

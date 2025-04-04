@@ -42,9 +42,11 @@
 </template>
 
 <script lang="ts" setup name="CreateAdimnDialog">
-import { reactive, ref } from 'vue';
+import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
 import useUserManage from "@/hooks/useUserManage";
+import { useUserInfoStore } from "@/store/userInfoStore";
+import { createAdmin } from "@/api/user";
 defineProps(['identity'])
 const { validateEmail, validatePassword, validateName } = useUserManage()
 const genderOptions = [
@@ -80,6 +82,7 @@ const departmentOptions = [
   },
 ]
 const createDialogVisible = ref(false)
+const { isUsersUpdate } = toRefs(useUserInfoStore())
 const createRuleFormRef = ref<FormInstance>()
 interface createAdminData {
   account: string
@@ -96,7 +99,7 @@ const createData: createAdminData = reactive({
   name: '',
   gender: '',
   email: '',
-  identity: '',
+  identity: '产品管理员',
   department: '',
 })
 
@@ -123,7 +126,6 @@ const rules = reactive<FormRules<createAdminData>>({
     { required: true, message: '请选择部门', trigger: 'blur' }
   ],
 })
-
 const handleClose = (done: () => void) => {
   createRuleFormRef.value?.resetFields()
   done()
@@ -142,7 +144,19 @@ const toCreate = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      console.log('submit!')
+      // 添加操作
+      const params = createData
+      const res = await createAdmin(params)
+      if (res.data.status == 0) {
+        ElMessage({
+          message: "添加产品管理员成功",
+          type: "success",
+        })
+      } else {
+        ElMessage("添加产品管理员失败，请稍后再试")
+      }
+      createDialogVisible.value = false
+      isUsersUpdate.value = true
     } else {
       console.log('error submit!')
     }
@@ -168,6 +182,4 @@ defineExpose({
 //   height: 40px;
 //   line-height: 40px;
 //   font-size: 16px;
-// }
-
-</style>
+// }</style>

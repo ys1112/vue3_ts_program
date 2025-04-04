@@ -35,6 +35,7 @@ interface downgradeAdminData {
   id: number
 }
 interface updateUserData {
+  id: string
   name: string
   gender: string
   email: string
@@ -162,12 +163,12 @@ export const downgradeAdmin = (data: downgradeAdminData) => {
   })
 }
 // 编辑用户账号信息 updateUser put
-export const updateUser = (id: id, data: updateUserData) => {
-  const { name, gender, email, department } = data
+export const updateUser = (data: updateUserData) => {
+  const { id, name, gender, email, department } = data
   return instance({
     url: "/user/updateUser",
     method: "PUT",
-    params: id,
+    params: {id:id},
     data: {
       name,
       gender,

@@ -64,10 +64,11 @@
 </template>
 
 <script lang="ts" setup name="UserList">
-import { onBeforeMount, reactive, ref, h, nextTick } from 'vue';
+import { onBeforeMount, reactive, ref, h,toRefs,watchEffect } from 'vue';
 import { useDebounce } from '@/hooks/useDebounce'
 import useUserManage from '@/hooks/useUserManage'
-import { ElMessage, ElMessageBox, ElRadio, ElRadioGroup, ElButton } from "element-plus"
+import { useUserInfoStore } from "@/store/userInfoStore";
+import { ElMessage, ElMessageBox, ElButton } from "element-plus"
 import { freezeUser, unfreezeUser, empowerUser, deleteUser } from '@/api/user';
 import ShowDetailDialog from "../components/ShowDetailDialog.vue";
 import EditUserDialog from "../components/EditUserDialog.vue";
@@ -77,6 +78,7 @@ interface getUserListData {
   status?: string
   search_value?: string
 }
+const { isUsersUpdate } = toRefs(useUserInfoStore())
 const detailDialogRef = ref()
 const editDialogRef = ref()
 const departmentOptions = [
@@ -222,7 +224,7 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
       cancelButtonText: '取消',
       type: 'warning',
       center: true,
-      dangerouslyUseHTMLString: true,
+      showCancelButton: true,
     }
   )
     .then(async () => {
@@ -232,6 +234,7 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
       if (info.isFreeze == 0) {
         const res = await freezeUser(params)
         if (res.data.status == 0) {
+          isUsersUpdate.value = true
           ElMessage({
             type: 'success',
             message: '冻结用户成功',
@@ -241,9 +244,9 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
         }
       }
       if (info.isFreeze == 1) {
-        console.log(222);
         const res = await unfreezeUser(params)
         if (res.data.status == 0) {
+          isUsersUpdate.value = true
           ElMessage({
             type: 'success',
             message: '解冻用户成功',
@@ -252,10 +255,6 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
           ElMessage.error('解冻用户失败')
         }
       }
-      const params1 = {
-        identity: identity.value
-      }
-      getAdminList(params1)
     })
     .catch(() => {
       ElMessage({
@@ -273,73 +272,24 @@ const handleCurrentChange = (val: number) => {
   console.log(`current page: ${val}`)
 }
 
-
-const selectedValue = ref()
-
 const showDetail = (row: any, column: any, event: Event) => {
   detailDialogRef.value.open(row, editDialogRef.value)
 }
 
-// 赋权操作弹窗
-const weightOperate = () => {
-  ElMessageBox(
-    {
-      title: '赋权操作',
-      message: () =>
-        h(
-          ElRadioGroup,
-          {
-            modelValue: selectedValue.value,        // 绑定值
-            'onUpdate:modelValue': (val) => {  // 监听值更新
-              selectedValue.value = val
-            }
-          },
-          {
-            // 通过函数返回子节点 插槽名 default 对应默认插槽
-            default: () => [
-              h(
-                ElRadio,
-                { value: '用户管理员' },
-                // 通过函数返回子节点 
-                () => '用户管理员'
-              ),
-              h(
-                ElRadio,
-                { value: '产品管理员' },
-                () => '产品管理员'
-              ),
-            ]
-          }
-        ),
-      showCancelButton: true,
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      cancelButtonClass: '',
-      confirmButtonClass: '',
-      center: true,
-      beforeClose: (action: any, instance: any, done: any) => {
-        if (action === 'confirm') {
-          done()
-        } else {
-          done()
-        }
-      },
-    }
-  )
-    .then((action) => {
-
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'info',
-        message: '取消操作',
-      })
-    })
-}
 const handleClose = (value:boolean) =>{
+  // 若数据修改，重新获取列表
   console.log(value);
   
 }
+watchEffect(() => {
+  if (isUsersUpdate.value) {
+    const params = {
+      identity: identity.value
+    }
+    getAdminList(params)
+    isUsersUpdate.value = !isUsersUpdate.value
+  }
+})
 </script>
 
 <style lang="scss" scoped>
