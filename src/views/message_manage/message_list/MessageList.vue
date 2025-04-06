@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup name="MessageList">
-import { onBeforeMount, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { ElMessage } from "element-plus"
 // 搜索关键字
 const searchValue = ref('')

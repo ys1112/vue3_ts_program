@@ -23,7 +23,17 @@
             <el-table-column prop="name" label="姓名" />
             <el-table-column prop="department" label="部门" />
             <el-table-column prop="email" label="邮箱" />
-            <el-table-column prop="operate" label="操作">
+            <el-table-column prop="create_time" label="创建时间">
+              <template #default="scope">
+                {{ scope.row.create_time.split('.')[0] }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="update_time" label="更新时间">
+              <template #default="scope">
+                {{ scope?.row.update_time ? scope?.row.update_time.split('.')[0] : '--' }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="operate" label="操作" width="180">
               <template #default="scope">
                 <el-button type="success" @click="editUserInfo(scope.row)">编辑</el-button>
                 <el-button type="danger" @click="deleteUserInfo(scope.row.id)">删除</el-button>
@@ -46,7 +56,7 @@
 </template>
 
 <script lang="ts" setup name="ProductManager">
-import { onBeforeMount, reactive, ref, markRaw, h, watch, toRefs, watchEffect } from 'vue';
+import { onMounted, reactive, ref, markRaw, h, watch, toRefs, watchEffect } from 'vue';
 import { ElMessage, ElMessageBox } from "element-plus"
 import { useDebounce } from '@/hooks/useDebounce'
 import useUserManage from '@/hooks/useUserManage'
@@ -94,7 +104,7 @@ const handleCurrentChange = (val: number) => {
 const userData = reactive({
   userList: [] as { [key: string]: any }
 })
-onBeforeMount(async () => {
+onMounted(() => {
   const params = {
     identity: identity.value
   }
@@ -105,7 +115,7 @@ onBeforeMount(async () => {
 const getAdminList = async (params: getUserListData) => {
   const userList = await getList(params)
   pageInfo.total = userList.length
-  pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
+  pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize < 1
   userData.userList = userList
 }
 
@@ -155,7 +165,7 @@ const deleteUserInfo = (id: any) => {
             })
             isUsersUpdate.value = true
           } else {
-            ElMessage('降级操作失败，请稍后再试')
+            ElMessage.error('降级操作失败，请稍后再试')
           }
           done()
         } else {

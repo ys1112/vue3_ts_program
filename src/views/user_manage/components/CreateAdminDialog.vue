@@ -46,6 +46,7 @@ import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
 import useUserManage from "@/hooks/useUserManage";
 import { useUserInfoStore } from "@/store/userInfoStore";
+import { useSettingStore } from "@/store/settingInfoStore";
 import { createAdmin } from "@/api/user";
 defineProps(['identity'])
 const { validateEmail, validatePassword, validateName } = useUserManage()
@@ -59,28 +60,35 @@ const genderOptions = [
     label: "女",
   },
 ]
-const departmentOptions = [
-  {
-    value: "总裁办",
-    label: "总裁办",
-  },
-  {
-    value: "产品部",
-    label: "产品部",
-  },
-  {
-    value: "销售部",
-    label: "销售部",
-  },
-  {
-    value: "组织部",
-    label: "组织部",
-  },
-  {
-    value: "企管部",
-    label: "企管部",
-  },
-]
+const { departmentInfo } = useSettingStore()
+const departmentOptions = departmentInfo.map(item=>{
+  return {
+    value:item,
+    label:item
+  }
+})
+// const departmentOptions = [
+//   {
+//     value: "总裁办",
+//     label: "总裁办",
+//   },
+//   {
+//     value: "产品部",
+//     label: "产品部",
+//   },
+//   {
+//     value: "销售部",
+//     label: "销售部",
+//   },
+//   {
+//     value: "组织部",
+//     label: "组织部",
+//   },
+//   {
+//     value: "企管部",
+//     label: "企管部",
+//   },
+// ]
 const createDialogVisible = ref(false)
 const { isUsersUpdate } = toRefs(useUserInfoStore())
 const createRuleFormRef = ref<FormInstance>()

@@ -137,7 +137,7 @@ const weightOperate = () => {
             detailDialogVisible.value = false
             isUsersUpdate.value = true
           } else {
-            ElMessage('赋权失败，请稍后再试')
+            ElMessage.error('赋权失败，请稍后再试')
           }
           done()
         } else {
@@ -186,7 +186,7 @@ const toDeleteUser = () => {
               message: '删除用户成功',
             })
           } else {
-            ElMessage('删除用户失败，请稍后再试')
+            ElMessage.error('删除用户失败，请稍后再试')
           }
           done()
         } else {
@@ -238,6 +238,9 @@ watchEffect(() => {
 .dialog-footer {
   margin-right: 24px;
 }
+:deep(.el-image__inner) {
+  width: 200px;
+}
 </style>
 <style>
 .custom-message-box {
@@ -251,7 +254,4 @@ watchEffect(() => {
   font-size: 16px;
 }
 
-.el-image__inner {
-  width: 200px;
-}
 </style>

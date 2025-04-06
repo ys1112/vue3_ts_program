@@ -42,6 +42,7 @@ import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'elem
 import emitter from '@/utils/emitter'
 import useUserManage from "@/hooks/useUserManage";
 import { useUserInfoStore } from "@/store/userInfoStore";
+import { useSettingStore } from "@/store/settingInfoStore";
 import { updateUser } from "@/api/user";
 defineProps(['identity'])
 const { validateEmail, validateName } = useUserManage()
@@ -56,28 +57,35 @@ const genderOptions = [
     label: "女",
   },
 ]
-const departmentOptions = [
-  {
-    value: "总裁办",
-    label: "总裁办",
-  },
-  {
-    value: "产品部",
-    label: "产品部",
-  },
-  {
-    value: "销售部",
-    label: "销售部",
-  },
-  {
-    value: "组织部",
-    label: "组织部",
-  },
-  {
-    value: "企管部",
-    label: "企管部",
-  },
-]
+const { departmentInfo } = useSettingStore()
+const departmentOptions = departmentInfo.map(item=>{
+  return {
+    value:item,
+    label:item
+  }
+})
+// const departmentOptions = [
+//   {
+//     value: "总裁办",
+//     label: "总裁办",
+//   },
+//   {
+//     value: "产品部",
+//     label: "产品部",
+//   },
+//   {
+//     value: "销售部",
+//     label: "销售部",
+//   },
+//   {
+//     value: "组织部",
+//     label: "组织部",
+//   },
+//   {
+//     value: "企管部",
+//     label: "企管部",
+//   },
+// ]
 const editDialogVisible = ref(false)
 const editRuleFormRef = ref<FormInstance>()
 interface editAdminData {
@@ -129,8 +137,9 @@ onMounted(() => {
 onUnmounted(() => {
   emitter.off('editInfo')
 })
-const handleClose = () => {
+const handleClose = (done:()=>void) => {
   editRuleFormRef.value?.resetFields()
+  done()
 }
 const open = () => {
   editDialogVisible.value = true

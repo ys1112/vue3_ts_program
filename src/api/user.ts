@@ -168,7 +168,7 @@ export const updateUser = (data: updateUserData) => {
   return instance({
     url: "/user/updateUser",
     method: "PUT",
-    params: {id:id},
+    params: { id: id },
     data: {
       name,
       gender,

@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
-import { reactive, ref } from "vue"
-import { getAllSwiper, getCompanyInfo } from "@/api/setting"
+import { reactive, ref, toRef, toRefs } from "vue"
+import { getAllSwiper, getCompanyInfo,getDepartment,getProduct } from "@/api/setting"
 import { ElMessage } from "element-plus"
 
 export const useSettingStore = defineStore("settingInfo",{
@@ -69,7 +69,9 @@ export const useSettingStore = defineStore("settingInfo",{
           },
         ],
         mainContent: []as { [key: string]: any },
-      })
+      }),
+      departmentInfo:ref([]as string[]),
+      productInfo:ref([]as string[])
     }
   },
   actions:{
@@ -96,7 +98,30 @@ export const useSettingStore = defineStore("settingInfo",{
           type: "success",
         })
       }
-    }
+    },
+    async  getDepartmentInfo() {
+      const res = await getDepartment()
+      if (res.data.status == 0) {
+        this.departmentInfo = JSON.parse(res.data.results.set_value)
+      } else {
+        ElMessage({
+          message: "获取部门信息失败",
+          type: "success",
+        })
+      }
+    },
+    async  getProductInfo() {
+      const res = await getProduct()
+      if (res.data.status == 0 && res.data.results.set_value) {
+        if(!res.data.results.set_value) return
+        this.productInfo = JSON.parse(res.data.results.set_value)
+      } else {
+        ElMessage({
+          message: "获取商品信息失败",
+          type: "success",
+        })
+      }
+    },
   },
   persist: {
     key: "settingInfos", // 自定义存储键名

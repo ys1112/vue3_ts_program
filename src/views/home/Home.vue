@@ -60,7 +60,7 @@
 
 <script lang="ts" setup name="Home">
 import ShowDetailDialog from "@/views/home/showDetailDialog/ShowDetailDialog.vue";
-import { onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
 // pinia存储的公司信息和首页轮播图数据
 import { useSettingStore } from "@/store/settingInfoStore"
@@ -77,7 +77,7 @@ const { swipers, companyInfo } = reactive(settingStore)
 const getCompanyTitle = (item: string) => {
   return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
 }
-// onMounted( () => {
+// onMounted(() => {
 //   setTimeout(()=>{
 //     companyInfos.list = companyInfo.conmapyData.filter((item: any, index) => { return index > 0 })
 //   },10)

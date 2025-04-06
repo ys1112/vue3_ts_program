@@ -38,7 +38,7 @@
             </el-menu-item-group>
           </el-sub-menu>
 
-          <el-sub-menu index="4">
+          <el-sub-menu index="product_manage">
             <template #title>
               <el-icon>
                 <Box />
@@ -53,7 +53,7 @@
             </el-menu-item-group>
           </el-sub-menu>
 
-          <el-sub-menu index="5">
+          <el-sub-menu index="message_manage">
             <template #title>
               <el-icon>
                 <ChatLineSquare />
@@ -134,14 +134,14 @@
 </template>
 <script lang="ts" setup name="Menu">
 import Breadcrumb from "@/components/BreadCrumb.vue";
-import { reactive, toRefs, ref, onBeforeMount } from 'vue'
+import { reactive, toRefs, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useCommonStore } from '@/store/commonStore'
 import { useSettingStore } from '@/store/settingInfoStore'
 import { MenusEnum } from '@/contants/MenusEnum'
 
-onBeforeMount(() => {
+onMounted(() => {
   // 保证刷新activeName位置
   for (const key in MenusEnum) {
     if (breadItems.second == MenusEnum[key as keyof typeof MenusEnum]) {
@@ -184,11 +184,11 @@ const LogOut = () => {
   // 写在上面，不然重置时会去读取storage里面的值，导致清除不干净
   localStorage.clear()
   sessionStorage.clear()
-  const stores = [useCommonStore(),useSettingStore(), useUserInfoStore()]
-  stores.forEach((store) => {
-    store.$reset(); // 重置状态到初始值
-    localStorage.removeItem(store.$id);
-  });
+  // const stores = [useCommonStore(),useSettingStore(), useUserInfoStore()]
+  // stores.forEach((store) => {
+  //   store.$reset(); // 重置状态到初始值
+  //   localStorage.removeItem(store.$id);
+  // });
   router.replace('/login')
 }
 </script>

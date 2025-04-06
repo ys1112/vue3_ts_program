@@ -1,7 +1,7 @@
 <template>
   <div class="common-wrapper">
     <div class="common-content set-content">
-      <el-tabs v-model="activeName" class="demo-tabs">
+      <el-tabs v-model="activeName" class="demo-tabs" @tab-click="changeTab">
         <!-- 账号详情 -->
         <el-tab-pane label="账号详情" name="accountInfo">
           <div class="setting-info-wrapper">
@@ -92,7 +92,40 @@
           </div>
         </el-tab-pane>
         <!-- 其他设置 -->
-        <el-tab-pane label="其他设置" name="otherSetting">其他设置</el-tab-pane>
+        <el-tab-pane label="其他设置" name="otherSetting">
+          <div class="other-set-wrapper">
+            <div class="set-info-content">
+              <div class="set-item">
+                <span class="set-title">部门设置：</span>
+                <el-tag v-for="tag in departmentTags" size="large" :key="tag" closable :disable-transitions="false"
+                  @close="handleDepartmentClose(tag)">
+                  {{ tag }}
+                </el-tag>
+                <el-input v-if="departmentVisible" ref="departmentInputRef" v-model="inputDepartmentValue" class="w85"
+                  size="default" @keyup.enter="handleDepartmentConfirm" @blur="handleDepartmentConfirm" />
+                <el-button v-else class="button-new-tag" size="default" @click="showDepartmentInput">
+                  + New Tag
+                </el-button>
+              </div>
+            </div>
+
+
+            <div class="set-info-content">
+              <div class="set-item">
+                <span class="set-title">产品设置：</span>
+                <el-tag v-for="tag in productTags" size="large" :key="tag" closable :disable-transitions="false"
+                  @close="handleProductClose(tag)">
+                  {{ tag }}
+                </el-tag>
+                <el-input v-if="productVisible" ref="productInputRef" v-model="inputProductValue" class="w85"
+                  size="default" @keyup.enter="handleProductConfirm" @blur="handleProductConfirm" />
+                <el-button v-else class="button-new-tag" size="default" @click="showProductInput">
+                  + New Tag
+                </el-button>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -102,14 +135,14 @@
 
 <script lang="ts" setup name="Setting">
 import { reactive, ref, nextTick } from "vue"
-import { type UploadProps, ElMessage } from "element-plus"
+import { type UploadProps, ElMessage, type InputInstance, type TabsPaneContext } from "element-plus"
 import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
 import { SwiperEnum } from '@/contants/SwiperEnum'
 import ResetDialog from "@/views/setting/resetPassword/ResetDialog.vue";
 import SetInfoDialog from "@/views/setting/setCompanyInfo/SetInfoDialog.vue";
 import emitter from '@/utils/emitter'
 import SvgIcon from "@/components/SvgIcon.vue"
-import { setCompanyInfo } from "@/api/setting";
+import { setCompanyInfo, setDepartment, getDepartment, setProduct, getProduct } from "@/api/setting";
 // 引入防抖函数
 import { useDebounce } from '@/hooks/useDebounce'
 
@@ -124,13 +157,25 @@ import { useSettingStore } from "@/store/settingInfoStore"
 const setInfoDialogRef = ref()
 const settingStore = useSettingStore()
 // pinia存储的数据
-const { swipers: { swiperData }, companyInfo: { conmapyData } } = reactive(settingStore)
+const { swipers: { swiperData }, companyInfo: { conmapyData }, departmentInfo, productInfo, getDepartmentInfo, getProductInfo } = reactive(settingStore)
 interface setInfoForm {
   id?: number
   set_name: string
   set_value: string
 }
 
+// 其他设置数据
+// 部门设置
+const inputDepartmentValue = ref('')
+const departmentTags = ref([] as string[])
+const departmentVisible = ref(false)
+const departmentInputRef = ref<InputInstance>()
+
+// 产品设置 
+const inputProductValue = ref('')
+const productTags = ref([] as string[])
+const productVisible = ref(false)
+const productInputRef = ref<InputInstance>()
 
 // 账号详情
 const {
@@ -202,9 +247,6 @@ const handleSwiperSuccess: UploadProps["onSuccess"] = async (
       type: 'success',
     })
   }
-
-  // userInfo.image_url = response.url
-
 }
 
 // 上传文件限制
@@ -214,6 +256,129 @@ const beforeSwiperUpload: UploadProps["beforeUpload"] = (rawFile) => {
     return false
   }
   return true
+}
+
+const changeTab = (pane: TabsPaneContext, ev: Event) => {
+  if (pane.paneName == 'otherSetting') {
+    departmentTags.value = departmentInfo
+    productTags.value = productInfo
+  }
+}
+
+// 其他设置
+// 删除部门标签的按钮事件
+const handleDepartmentClose = async (tag: string) => {
+  departmentTags.value.splice(departmentTags.value.indexOf(tag), 1)
+  //删除操作
+  const params = {
+    department: JSON.stringify(departmentTags.value)
+  }
+  const res = await setDepartment(params)
+  if (res.data.status == 0) {
+    getDepartmentInfo()
+    ElMessage({
+      message: "删除成功",
+      type: 'success',
+    })
+  } else {
+    ElMessage.error('删除失败')
+  }
+}
+
+const showDepartmentInput = () => {
+  departmentVisible.value = true
+  nextTick(() => {
+    departmentInputRef.value!.input!.focus()
+  })
+}
+// 输入框失去焦点或enter键
+const handleDepartmentConfirm = async () => {
+  if (inputDepartmentValue.value.trim() && !departmentTags.value.includes(inputDepartmentValue.value)) {
+    departmentTags.value.push(inputDepartmentValue.value)
+    // 新增操作
+    const params = {
+      department: JSON.stringify(departmentTags.value)
+    }
+    const res = await setDepartment(params)
+    if (res.data.status == 0) {
+      getDepartmentInfo()
+      ElMessage({
+        message: "添加成功",
+        type: 'success',
+      })
+    } else {
+      ElMessage.error('添加失败')
+    }
+    departmentVisible.value = false
+    inputDepartmentValue.value = ''
+  } else if (departmentTags.value.includes(inputDepartmentValue.value)) {
+    ElMessage.error('部门名重复')
+    nextTick(() => {
+      departmentInputRef.value!.input!.focus()
+    })
+  } else {
+    departmentVisible.value = false
+    inputDepartmentValue.value = ''
+  }
+}
+
+
+
+
+// 删除产品标签的按钮事件
+const handleProductClose = async (tag: string) => {
+  productTags.value.splice(productTags.value.indexOf(tag), 1)
+  //删除操作
+  const params = {
+    product: JSON.stringify(productTags.value)
+  }
+  const res = await setProduct(params)
+  if (res.data.status == 0) {
+    getProductInfo()
+    ElMessage({
+      message: "删除成功",
+      type: 'success',
+    })
+  } else {
+    ElMessage.error('删除失败')
+  }
+}
+
+const showProductInput = () => {
+  productVisible.value = true
+  nextTick(() => {
+    productInputRef.value!.input!.focus()
+  })
+}
+// 输入框失去焦点或enter键
+const handleProductConfirm = async () => {
+  if (inputProductValue.value.trim() && !productTags.value.includes(inputProductValue.value)) {
+    productTags.value.push(inputProductValue.value)
+    // 新增操作
+    const params = {
+      product: JSON.stringify(productTags.value)
+    }
+    const res = await setProduct(params)
+    if (res.data.status == 0) {
+      getProductInfo()
+      ElMessage({
+        message: "添加成功",
+        type: 'success',
+      })
+    } else {
+      ElMessage.error('添加失败')
+    }
+    productVisible.value = false
+    inputProductValue.value = ''
+  } else if (productTags.value.includes(inputProductValue.value)) {
+    ElMessage.error('产品名重复')
+    nextTick(() => {
+      productInputRef.value!.input!.focus()
+    })
+  } else {
+    productVisible.value = false
+    inputProductValue.value = ''
+  }
 }
 
 </script>
@@ -271,6 +436,28 @@ const beforeSwiperUpload: UploadProps["beforeUpload"] = (rawFile) => {
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
+}
+
+.other-set-wrapper {
+  .set-info-content {
+    display: flex;
+    align-items: center;
+    margin: 32px 32px 0;
+
+    .set-item {
+      display: flex;
+      gap: 1rem;
+
+      .set-title {
+        display: inline-block;
+        line-height: 32px;
+      }
+    }
+  }
+}
+
+.w85 {
+  width: 85px;
 }
 </style>
 <style>

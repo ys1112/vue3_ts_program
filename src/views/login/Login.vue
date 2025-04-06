@@ -105,11 +105,24 @@ import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useSettingStore } from '@/store/settingInfoStore'
+import { useCommonStore } from '@/store/commonStore'
 
-const {getInfo} = useUserInfoStore()
-const {getSettingInfo} = useSettingStore()
+const { getInfo } = useUserInfoStore()
+const { getSettingInfo,getDepartmentInfo,getProductInfo } = useSettingStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 
+const stores = [useCommonStore(), useSettingStore(), useUserInfoStore()]
+stores.forEach((store) => {
+  store.$reset(); // 重置状态到初始值
+  localStorage.removeItem(store.$id);
+});
+onMounted(() => {
+  const stores = [useCommonStore(), useSettingStore(), useUserInfoStore()]
+  stores.forEach((store) => {
+    store.$reset(); // 重置状态到初始值
+    localStorage.removeItem(store.$id);
+  });
+})
 const router = useRouter()
 const activeName = ref('first')
 // 表单验证规则
@@ -170,7 +183,7 @@ const rules = reactive<FormRules<formData>>({
   ],
 })
 
-const forgetPwd = ()=> {
+const forgetPwd = () => {
   forgetDialogRef.value.open()
 }
 
@@ -187,6 +200,8 @@ const toLogin = (formEl: FormInstance | undefined) => {
         const { token } = res.data
         getInfo(res.data.results.id)
         getSettingInfo()
+        getDepartmentInfo()
+        getProductInfo()
         localStorage.setItem('token', token)
         router.push('/home')
       } else {
@@ -370,4 +385,5 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   line-height: 36px;
   font-size: 16px;
 }
+
 </style>
