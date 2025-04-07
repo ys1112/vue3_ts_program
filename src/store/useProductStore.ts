@@ -4,7 +4,7 @@ import { reactive, ref } from "vue"
 export const useProductStore = defineStore("product", {
   state() {
     return {
-      
+      isProductUpdate:ref(false)
     }
   },
   actions: {

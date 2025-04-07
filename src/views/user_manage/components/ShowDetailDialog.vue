@@ -45,8 +45,6 @@ import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { empowerUser, deleteUser } from "@/api/user";
 import emitter from '@/utils/emitter'
-import { id } from 'element-plus/es/locale/index.mjs';
-import ShowDetailDialog from '@/views/home/showDetailDialog/ShowDetailDialog.vue';
 const { isUsersUpdate } = toRefs(useUserInfoStore())
 const detailDialogVisible = ref(false)
 const selectedValue = ref('用户管理员')

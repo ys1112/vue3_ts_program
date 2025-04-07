@@ -5,11 +5,11 @@
       <div class="table-header">
         <!-- 结构顶部左侧搜索框域 -->
         <div class="table-header-left">
-          <el-input v-model="searchValue" clearable style="width: 240px" placeholder="输入出库编号进行搜索" />
+          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px" placeholder="输入出库编号进行搜索" />
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
-          <el-button type="primary">添加用户管理员</el-button>
+          <el-button type="primary" @click="getOuts()">刷新</el-button>
         </div>
       </div>
       <!-- 表格主体 -->
@@ -33,8 +33,8 @@
                 <el-table-column prop="audit_memo" label="审核备注" show-overflow-tooltip />
                 <el-table-column prop="operate" label="操作" fixed="right" width="200">
                   <template #default="scope">
-                    <el-button type="danger">驳回</el-button>
-                    <el-button type="success">同意</el-button>
+                    <!-- <el-button type="success">同意</el-button> -->
+                    <el-button type="danger" @click="deleteData(scope.row.id)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -51,9 +51,13 @@
 </template>
 
 <script lang="ts" setup name="DeliveryList">
-import { onMounted, reactive, ref } from 'vue';
-import { ElMessage, type TabsPaneContext } from "element-plus"
-import { getOutProducts,searchOutProducts } from '@/api/product';
+import { onMounted, reactive, ref,markRaw,h,toRefs,watchEffect } from 'vue';
+import { ElMessage, type TabsPaneContext ,ElMessageBox} from "element-plus"
+import { getOutProducts,searchOutProduct,deleteDelivery } from '@/api/product';
+import { useDebounce } from '@/hooks/useDebounce'
+import { WarnTriangleFilled } from '@element-plus/icons-vue'
+import { useProductStore } from "@/store/useProductStore";
+const { isProductUpdate } = toRefs(useProductStore())
 
 onMounted(()=>{
   getOuts()
@@ -86,15 +90,84 @@ const getOuts = async ()=>{
     pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
     productData.value = res.data.results
   }
-  getOutProducts()
 }
-
+// 输入账号进行搜索
+const searchAccount = useDebounce(async () => {
+  if (searchValue.value.trim() || !searchValue.value) {
+    const params = {
+      search_value: searchValue.value
+    }
+    const res = await searchOutProduct(params)
+    if (res.data.status == 0) {
+      ElMessage({
+        type: 'success',
+        message: '搜索列表成功',
+      })
+      const list = res.data.results
+      pageInfo.total = list.length
+      pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
+      productData.value = res.data.results
+    } else {
+      ElMessage.error('搜索列表失败')
+    }
+  }
+}, 800)
 const handleSizeChange = (val: number) => {
   console.log(`${val} items per page`)
 }
 const handleCurrentChange = (val: number) => {
   console.log(`current page: ${val}`)
 }
+const deleteData = (id:string)=>{
+  const params = {
+    id:+id
+  }
+  ElMessageBox(
+    {
+      title: '删除操作',
+      message: h('div', { class: 'delete-tip', innerHTML: '请慎重操作,删除该出库记录后将无法恢复' }),
+      customClass: 'custom-message-box',
+      showCancelButton: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      icon: markRaw(WarnTriangleFilled),
+      dangerouslyUseHTMLString: true,
+      beforeClose: async (action: any, instance: any, done: any) => {
+        if (action === 'confirm') {
+          const res = await deleteDelivery(params)
+          if (res.data.status == 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除成功',
+            })
+            isProductUpdate.value = true
+          } else {
+            ElMessage.error('删除失败，请稍后再试')
+          }
+          done()
+        } else {
+          done()
+        }
+      },
+    }
+  )
+    .then(() => {
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消操作',
+      })
+    })
+}
+watchEffect(() => {
+  if (isProductUpdate.value) {
+    getOuts()
+    isProductUpdate.value = !isProductUpdate.value
+  }
+})
 </script>
 
 <style lang="scss" scoped>

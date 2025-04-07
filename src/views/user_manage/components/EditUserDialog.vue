@@ -190,8 +190,4 @@ defineExpose({
   align-items: center;
 }
 
-// :deep(.el-form-item__label) {
-//   height: 40px;
-//   line-height: 40px;
-//   font-size: 16px;
-// }</style>
+</style>
