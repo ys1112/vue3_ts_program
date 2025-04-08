@@ -15,7 +15,7 @@ interface publishData {
 }
 
 interface updateCorpData {
-  id: number
+  id: string
   message_title: string
   message_publish_department: string
   message_receipt_object: string
@@ -23,7 +23,7 @@ interface updateCorpData {
   message_content: string
 }
 interface updateSysData {
-  id: number
+  id: string
   message_title: string
   message_content: string
 }

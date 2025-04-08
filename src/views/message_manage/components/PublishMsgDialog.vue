@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="publishDialogVisible" align-center :title="publishTitle" width="50%" :before-close="handleClose"
+  <el-dialog v-model="publishDialogVisible" align-center :title="msgCate? '公司公告' : '系统消息'" width="50%" :before-close="handleClose"
     destroy-on-close>
     <el-form :model="publishMsgData" :rules="rules" ref="publishRuleFormRef" :label-position="labelPosition"
       label-width="auto" class="publish-form">
@@ -7,7 +7,7 @@
         <el-input v-model="publishMsgData.message_title" style="width: 240px" placeholder="请输入主题">
         </el-input>
       </el-form-item>
-      <el-form-item label="发布部门" prop="message_publish_department">
+      <el-form-item v-if="msgCate" label="发布部门" prop="message_publish_department">
         <el-select v-model="publishMsgData.message_publish_department" placeholder="请选择发布部门" style="width: 240px">
           <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -22,12 +22,13 @@
             :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="接收部门" prop="message_receipt_object">
-        <el-select v-model="publishMsgData.message_receipt_object" placeholder="请选择接收部门" style="width: 240px">
+      <el-form-item v-if="msgCate" label="接收部门" prop="message_receipt_object">
+        <el-select v-model="publishMsgData.message_receipt_object" :multiple="false" filterable allow-create default-first-option
+        :reserve-keyword="false" placeholder="请选择接收部门" style="width: 240px">
           <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="公告等级" prop="message_level">
+      <el-form-item v-if="msgCate" label="公告等级" prop="message_level">
         <el-select v-model="publishMsgData.message_level" placeholder="请选择公告等级" style="width: 240px">
           <el-option v-for="item in levelOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -38,10 +39,10 @@
     </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="cancelCreate(publishRuleFormRef)">
+        <el-button @click="cancelPublish(publishRuleFormRef)">
           取消
         </el-button>
-        <el-button type="primary" @click="toCreate(publishRuleFormRef)">
+        <el-button type="primary" @click="toPublish(publishRuleFormRef)">
           确认
         </el-button>
       </div>
@@ -66,7 +67,7 @@ const departmentOptions = departmentInfo.map(item => {
   }
 })
 
-const publishTitle = ref('')
+const msgCate = ref(0)
 const labelPosition = ref<FormProps['labelPosition']>('right')
 
 const levelOptions = [
@@ -177,45 +178,47 @@ const handleClose = (done: () => void) => {
   done()
 }
 const open = (type: number) => {
-  publishTitle.value = type == 0 ? '公司公告' : '系统消息'
+  msgCate.value = type 
   if (type) {
     msgCateOptions[1].disabled = true
+    msgCateOptions[0].disabled = false
   } else {
+    msgCateOptions[1].disabled = false
     msgCateOptions[0].disabled = true
   }
   publishDialogVisible.value = true
 }
 
-const cancelCreate = (formEl: FormInstance | undefined) => {
+const cancelPublish = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
   publishDialogVisible.value = false
 }
 
-const toCreate = (formEl: FormInstance | undefined) => {
+const toPublish = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
       console.log(publishMsgData);
 
       // 添加操作
-      // const params = publishMsgData
-      // const res = await createProduct(params)
-      // if (res.data.status == 0) {
-      //   publishRuleFormRef.value?.resetFields()
-      //   ElMessage({
-      //     message: "添加产品成功",
-      //     type: "success",
-      //   })
-      //   publishDialogVisible.value = false
-      //   isProductUpdate.value = true
-      // } else if (res.data.status == 1) {
-      //   ElMessage.error(res.data.message)
-      // } else {
-      //   ElMessage.error("添加产品失败，请稍后再试")
-      //   publishRuleFormRef.value?.resetFields()
-      //   publishDialogVisible.value = false
-      // }
+      const params = publishMsgData
+      const res = await publishMsg(params)
+      if (res.data.status == 0) {
+        publishRuleFormRef.value?.resetFields()
+        ElMessage({
+          message: "发布消息成功",
+          type: "success",
+        })
+        publishDialogVisible.value = false
+        isMessageUpdate.value = true
+      } else if (res.data.status == 1) {
+        ElMessage.error(res.data.message)
+      } else {
+        ElMessage.error("发布消息失败，请稍后再试")
+        publishRuleFormRef.value?.resetFields()
+        publishDialogVisible.value = false
+      }
 
     } else {
       console.log('error submit!')

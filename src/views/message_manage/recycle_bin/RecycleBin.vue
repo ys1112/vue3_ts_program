@@ -12,11 +12,15 @@
             <el-table-column prop="message_title" label="公告主题" min-width="120"/>
             <el-table-column prop="message_category" label="所属类别" min-width="120" />
             <el-table-column prop="message_publish_name" label="发布人" min-width="120" />
-            <el-table-column prop="message_publish_department" label="发布部门" min-width="120" />
+            <el-table-column prop="message_publish_department" label="发布部门" min-width="120">
+              <template #default="scope">
+                {{ scope.row.message_publish_department || '-' }}
+              </template>
+            </el-table-column>
             <el-table-column prop="message_receipt_object" label="接收对象" min-width="120" />
             <el-table-column prop="message_delete_time" label="删除日期" min-width="120">
               <template #default="scope">
-                {{ scope.row.product_audit_time.split('.')[0] }}
+                {{ scope.row.message_delete_time.split('.')[0] }}
               </template>
             </el-table-column>
             <el-table-column prop="operate" label="操作" fixed="right" width="200">

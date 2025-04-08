@@ -8,8 +8,8 @@
           <div class="table-header">
             <!-- 结构顶部左侧select搜索 -->
             <div class="table-header-left">
-              <el-select clearable v-model="fliterData.message_publish_department" @change="filterMessage" placeholder="选择部门进行筛选"
-                size="default" style="height: 32px; width: 240px">
+              <el-select clearable v-model="fliterData.message_publish_department" @change="filterMessage"
+                placeholder="选择部门进行筛选" size="default" style="height: 32px; width: 240px">
                 <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label"
                   :value="item.value" />
               </el-select>
@@ -56,8 +56,8 @@
                 <el-table-column prop="message_click_number" label="阅读人数" width="128" />
                 <el-table-column prop="operate" label="操作" fixed="right" width="200">
                   <template #default="scope">
-                    <el-button type="success">修改</el-button>
-                    <el-button type="danger">删除</el-button>
+                    <el-button type="success" @click="editCorpMsg(scope.row)">修改</el-button>
+                    <el-button type="danger" @click="deleteMessage(scope.row.id)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -73,13 +73,13 @@
         <!-- 系统消息 -->
         <el-tab-pane label="系统消息" name="systemList">
           <!-- 结构顶部搜索框和按钮区域 -->
-          <div class="table-header" >
+          <div class="table-header">
             <!-- 结构顶部左侧搜索框域 -->
             <div class="table-header-left">
             </div>
             <!-- 结构顶部右侧按钮区域 -->
             <div class="table-header-right">
-              <el-button type="primary">发布系统消息</el-button>
+              <el-button type="primary" @click="publishSysMsg">发布系统消息</el-button>
             </div>
           </div>
           <!-- 表格主体 -->
@@ -89,17 +89,22 @@
               <el-table :data="systemData" border style="width: 100%" :scrollbar-always-on="true">
                 <el-table-column prop="id" label="id" width="48" />
                 <el-table-column prop="message_title" label="公告主题" width="280" />
-                <el-table-column prop="message_publish_name" label="发布者" min-width="100"/>
+                <el-table-column prop="message_publish_name" label="发布者" min-width="100" />
                 <el-table-column prop="message_click_number" label="阅读人数" min-width="100" />
                 <el-table-column prop="message_create_time" label="发布时间" width="240">
                   <template #default="scope">
                     {{ scope?.row.message_create_time ? scope?.row.message_create_time.split('.')[0] : '--' }}
                   </template>
                 </el-table-column>
+                <el-table-column prop="message_update_time" label="最新编辑时间" width="240">
+                  <template #default="scope">
+                    {{ scope?.row.message_update_time ? scope?.row.message_update_time.split('.')[0] : '--' }}
+                  </template>
+                </el-table-column>
                 <el-table-column prop="operate" label="操作" fixed="right" width="240">
                   <template #default="scope">
-                    <el-button type="success">修改</el-button>
-                    <el-button type="danger">删除</el-button>
+                    <el-button type="success"@click="editSysMsg(scope.row)">修改</el-button>
+                    <el-button type="danger" @click="deleteMessage(scope.row.id)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -116,19 +121,29 @@
     </div>
   </div>
   <PublishMsgDialog ref="publishMsgRef"></PublishMsgDialog>
+  <EditMsgDialog ref="editMsgRef"></EditMsgDialog>
+  <EditSysMsgDialog ref="editSysMsgRef"></EditSysMsgDialog>
 </template>
 
 <script lang="ts" setup name="MessageList">
 import PublishMsgDialog from "../components/PublishMsgDialog.vue";
+import EditMsgDialog from "../components/EditMsgDialog.vue";
+import EditSysMsgDialog from "../components/EditSysMsgDialog.vue";
 import { onMounted, reactive, ref, h, watchEffect, toRefs, markRaw } from 'vue';
 import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
-import { getCorpMsg, getSysMsg,filterMsg } from "@/api/message";
+import { WarnTriangleFilled } from '@element-plus/icons-vue'
+import { getCorpMsg, getSysMsg, filterMsg, deleteMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
+import { useMessageStore } from "@/store/useMessageStore";
+const { isMessageUpdate } = toRefs(useMessageStore())
 const activeName = ref('messageList')
 const publishMsgRef = ref()
+const editMsgRef = ref()
+const editSysMsgRef = ref()
 onMounted(() => {
   getCropMsgList()
 })
+
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   if (tab.paneName == 'systemList') {
     // 获取系统消息列表
@@ -138,6 +153,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     getCropMsgList()
   }
 }
+
 // 公告管理
 // 搜索关键字
 const fliterData = reactive({
@@ -145,6 +161,7 @@ const fliterData = reactive({
   message_level: ''
 })
 const { departmentInfo } = useSettingStore()
+
 const departmentOptions = departmentInfo.map(item => {
   return {
     value: item,
@@ -165,7 +182,7 @@ const pageInfo = reactive({
   isSinglePage: false,
 })
 // 筛选公司消息
-const filterMessage = async() => {
+const filterMessage = async () => {
   fliterData.message_publish_department = fliterData.message_publish_department || ''
   const res = await filterMsg(fliterData)
   if (res.data.status == 0) {
@@ -181,13 +198,66 @@ const filterMessage = async() => {
 }
 
 // 发布消息
-const publishMsg = ()=>{
+const publishMsg = () => {
   publishMsgRef.value.open(1)
 }
+const editCorpMsg = (scope: any) => {
+  editMsgRef.value.open(scope)
+}
+const editSysMsg = (scope:any)=>{
+  editSysMsgRef.value.open(scope)
+}
+const deleteMessage = async (id: string) => {
+  const params = {
+    id: +id
+  }
+  ElMessageBox(
+    {
+      title: '删除操作',
+      message: h('div', { class: 'delete-tip', innerHTML: '是否删除该消息,删除后此消息将展现在回收站中。' }),
+      customClass: 'custom-message-box',
+      showCancelButton: true,
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      icon: markRaw(WarnTriangleFilled),
+      dangerouslyUseHTMLString: true,
+      beforeClose: async (action: any, instance: any, done: any) => {
+        if (action === 'confirm') {
+          const res = await deleteMsg(params)
+          if (res.data.status == 0) {
+            ElMessage({
+              type: 'success',
+              message: '删除消息成功',
+            })
+            isMessageUpdate.value = true
+          } else {
+            ElMessage.error('删除消息失败，请稍后再试')
+          }
+          done()
+        } else {
+          done()
+        }
+      },
+    }
+  )
+    .then(() => {
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: '取消操作',
+      })
+    })
+}
 
-const getAllList = () =>{
-  fliterData.message_publish_department= ''
-  fliterData.message_level= ''
+
+
+// 获取所有公司信息按钮
+const getAllList = () => {
+  fliterData.message_publish_department = ''
+  fliterData.message_level = ''
   getCropMsgList()
 }
 // 获取公司消息列表
@@ -211,6 +281,9 @@ const handleSizeChange = (val: number) => {
 const handleCurrentChange = (val: number) => {
   console.log(`current page: ${val}`)
 }
+
+
+
 
 
 // 系统消息
@@ -241,6 +314,21 @@ const getSysMsgList = async () => {
     systemData.value = res.data.results
   }
 }
+
+const publishSysMsg = () => {
+  publishMsgRef.value.open(0)
+}
+watchEffect(() => {
+  if (isMessageUpdate.value) {
+    if (activeName.value == 'systemList') {
+      getSysMsgList()
+
+    } else {
+      getCropMsgList()
+    }
+    isMessageUpdate.value = !isMessageUpdate.value
+  }
+})
 
 </script>
 

@@ -13,7 +13,7 @@
 
 // 封装富文本编辑器组件
 
-import { ref, watch, shallowRef, onBeforeUnmount } from 'vue';
+import { ref, watch, shallowRef, onBeforeUnmount, onMounted, nextTick } from 'vue';
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { useDebounce } from "@/hooks/useDebounce";
 import { useFormItem } from 'element-plus'
@@ -28,7 +28,11 @@ const currentClass = ref('editor-default')
 
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef()
-
+onMounted(() => {
+  nextTick(() => {
+    valueHtml.value = props.editValue
+  })
+})
 // mode
 const mode = ref('default')
 
@@ -108,16 +112,16 @@ const handleCreated = (editor: any) => {
 // 值变化
 const handleChange = useDebounce(() => {
   emit('update:editValue', valueHtml.value)
-  formItem?.validate('change').catch(() => {})
+  formItem?.validate('change').catch(() => { })
 
 }, 300)
 // 失去焦点
 const handleBlur = () => {
-  formItem?.validate('blur').catch(() => {})
+  formItem?.validate('blur').catch(() => { })
 }
 // 聚焦
 const handleFocus = () => {
-  formItem?.validate('focus').catch(() => {})
+  formItem?.validate('focus').catch(() => { })
   if (formItem?.validateState == 'error') {
     return
   }
