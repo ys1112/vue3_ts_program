@@ -105,25 +105,26 @@
                     {{ scope.row.product_apply_date.split('.')[0] }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="apply_memo" label="出库申请备注" show-overflow-tooltip width="120"/>
+                <el-table-column prop="apply_memo" label="出库申请备注" show-overflow-tooltip width="120" />
                 <el-table-column prop="product_out_audit_person" label="审核人" width="120" />
                 <el-table-column prop="product_audit_time" label="审核时间" width="188">
                   <template #default="scope">
                     {{ scope.row.product_apply_date.split('.')[0] }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="audit_memo" label="审核备注" show-overflow-tooltip width="120"/>
+                <el-table-column prop="audit_memo" label="审核备注" show-overflow-tooltip width="120" />
 
                 <el-table-column prop="operate" label="操作" fixed="right" width="300">
                   <template #default="scope">
+                    <el-button type="success" v-if="scope.row.product_out_status == 2"
+                      @click="resubmitApply(scope.row.id)">再次提交</el-button>
                     <el-button type="success" v-if="scope.row.product_out_status == 1"
                       @click="approve(scope.row)">同意</el-button>
                     <el-button type="danger" v-if="scope.row.product_out_status == 1"
                       @click="reject(scope.row)">驳回</el-button>
-                    <el-button type="primary" v-if="scope.row.product_out_status == 1 || scope.row.product_out_status == 2"
+                    <el-button type="primary"
+                      v-if="scope.row.product_out_status == 1 || scope.row.product_out_status == 2"
                       @click="cancel(scope.row.id)">撤销申请</el-button>
-                    <el-button type="success" v-if="scope.row.product_out_status == 2"
-                      @click="resubmitApply(scope.row.id)">再次提交</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -325,7 +326,7 @@ const getOutList = async () => {
     })
     const list = res.data.results
     pageInfo1.total = list.length
-    pageInfo1.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
+    pageInfo1.isSinglePage = pageInfo1.total / pageInfo1.pageSize > 1
     applyData.value = res.data.results
   }
 }

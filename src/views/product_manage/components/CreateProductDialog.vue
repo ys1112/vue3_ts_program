@@ -137,20 +137,7 @@ const createData: createProductData = reactive({
   product_create_person: '',
   in_memo: '',
 })
-const validateCate = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请选择产品类别'))
-  } else {
-    callback()
-  }
-}
-const validateUnit = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请选择产品单位'))
-  } else {
-    callback()
-  }
-}
+
 const rules = reactive<FormRules<createProductData>>({
   product_id: [
     { required: true, message: '请输入入库编号', trigger: 'blur' },
