@@ -149,3 +149,12 @@ export const getDepartmentMsg = (data: departmentData) => {
     data,
   })
 }
+
+// 更新点击数
+export const updateClick = (data: operateData) => {
+  return instance({
+    url: "/msg/updateClick",
+    method: "POST",
+    data,
+  })
+}

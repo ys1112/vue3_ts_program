@@ -252,7 +252,7 @@ const handleSwiperSuccess: UploadProps["onSuccess"] = async (
 // 上传文件限制
 const beforeSwiperUpload: UploadProps["beforeUpload"] = (rawFile) => {
   if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error("Avatar picture size can not exceed 2MB!")
+    ElMessage.error("文件大小超过2MB!")
     return false
   }
   return true
