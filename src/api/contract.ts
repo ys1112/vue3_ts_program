@@ -3,14 +3,13 @@ import instance from "@/http/index"
 interface commonData {
   id: number
 }
-interface filterData {
-  file_name: string
-}
+
 // 获取公司消息列表
-export const getContract = () => {
+export const getContract = (params:any) => {
   return instance({
     url: "/file/getFiles",
     method: "GET",
+    params
   })
 }
 
@@ -32,11 +31,3 @@ export const updateDownload = (data: commonData) => {
   })
 }
 
-// 筛选文件
-export const filterFiles = (data: filterData) => {
-  return instance({
-    url: "/file/filterFiles",
-    method: "POST",
-    data,
-  })
-}

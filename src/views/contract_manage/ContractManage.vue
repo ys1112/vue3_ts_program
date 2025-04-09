@@ -21,12 +21,12 @@
       <div class="table-content">
         <!-- 表格内容部分 -->
         <div class="table-content-body">
-          <el-table :data="fileData" border style="width: 100%">
+          <el-table :data="fileData" :key="tableKey" max-height="600" border style="width: 100%">
             <el-table-column prop="id" label="id" width="48" />
             <el-table-column prop="file_name" label="合同名">
               <template #default="scope">
-                <el-link type="primary" @click="updateDownloadNum(scope.row.id);scope.row.download_number++" :href="scope.row.file_url"
-                  target="_blank">{{ scope.row.file_name
+                <el-link type="primary" @click="updateDownloadNum(scope.row.id); scope.row.download_number++"
+                  :href="scope.row.file_url" target="_blank">{{ scope.row.file_name
                   }}</el-link>
               </template>
             </el-table-column>
@@ -49,8 +49,9 @@
         <!-- 表格底部分页栏 -->
         <div class="table-content-footer">
           <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-            layout="total, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
-            @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            layout="total, sizes, prev, pager, next" :total="pageInfo.total"
+            :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </div>
       </div>
     </div>
@@ -60,7 +61,7 @@
 <script lang="ts" setup name="ContractManage">
 import { onMounted, reactive, ref, markRaw, h, toRefs, watchEffect } from 'vue';
 import { ElMessage, type UploadProps, type TabsPaneContext, ElMessageBox } from "element-plus"
-import { getContract, filterFiles, deleteContract, updateDownload } from '@/api/contract';
+import { getContract, deleteContract, updateDownload } from '@/api/contract';
 import { useDebounce } from '@/hooks/useDebounce'
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useContractStore } from "@/store/useContractStore";
@@ -69,15 +70,17 @@ import { downloadFile } from '@/utils/downloader';
 const { userInfo: { name: upload_person } } = useUserInfoStore()
 const { isContractUpdate } = toRefs(useContractStore())
 
-onMounted(async() => {
-  const flag = await getFiles() 
-  if(flag) {
+onMounted(async () => {
+  // 第一次进页面提示,后续改动调用接口刷新页面,不提示,更友好
+  const flag = await getFiles()
+  if (flag) {
     ElMessage({
       type: 'success',
       message: '获取合同列表成功',
     })
   }
 })
+const tableKey = ref(0);
 // 搜索关键字
 const searchValue = ref('')
 // 用于判断是否下载成功还是点击取消下载
@@ -97,10 +100,15 @@ const pageInfo = reactive({
 })
 
 const getFiles = async () => {
-  const res = await getContract()
+  const params = {
+    pageNum: pageInfo.currentPage,
+    pageSize: pageInfo.pageSize,
+    keyword: searchValue.value
+  }
+  const res = await getContract(params)
   if (res.data.status == 0) {
-    const list = res.data.results
-    pageInfo.total = list.length
+    tableKey.value++
+    pageInfo.total = res.data.total || 0
     pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
     fileData.value = res.data.results
     return true
@@ -112,22 +120,7 @@ const getFiles = async () => {
 // 输入文件进行搜索
 const searchFileName = useDebounce(async () => {
   if (searchValue.value.trim() || !searchValue.value) {
-    const params = {
-      file_name: searchValue.value
-    }
-    const res = await filterFiles(params)
-    if (res.data.status == 0) {
-      ElMessage({
-        type: 'success',
-        message: '搜索列表成功',
-      })
-      const list = res.data.results
-      pageInfo.total = list.length
-      pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
-      fileData.value = res.data.results
-    } else {
-      ElMessage.error('搜索列表失败')
-    }
+    getFiles()
   }
 }, 800)
 
@@ -155,18 +148,21 @@ const handleFileSuccess: UploadProps["onSuccess"] = async (
 }
 
 const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`)
+  pageInfo.pageSize = val
+  getFiles()
 }
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+  getFiles()
 }
 
-// 下载
+// 下载,封装下载函数,可以实现用户选择下载位置
 const downloadContract = async (info: any) => {
   isSuccess.value = await downloadFile(info.file_url, info.file_name, isSuccess.value);
   // 判断是否更新下载次数
-  isSuccess.value && updateDownloadNum(info.id)
-  info.download_number++
+  if (isSuccess.value) {
+    updateDownloadNum(info.id)
+    info.download_number++
+  }
   isSuccess.value = true
 }
 
@@ -228,7 +224,7 @@ const updateDownloadNum = async (id: number) => {
     id
   }
   const res = await updateDownload(params)
-  if(res.data.status == 0) {
+  if (res.data.status == 0) {
     ElMessage({
       message: "下载成功",
       type: 'success',

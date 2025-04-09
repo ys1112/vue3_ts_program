@@ -97,31 +97,34 @@
             <div class="set-info-content">
               <div class="set-item">
                 <span class="set-title">部门设置：</span>
-                <el-tag v-for="tag in departmentTags" size="large" :key="tag" closable :disable-transitions="false"
-                  @close="handleDepartmentClose(tag)">
-                  {{ tag }}
-                </el-tag>
-                <el-input v-if="departmentVisible" ref="departmentInputRef" v-model="inputDepartmentValue" class="w85"
-                  size="default" @keyup.enter="handleDepartmentConfirm" @blur="handleDepartmentConfirm" />
-                <el-button v-else class="button-new-tag" size="default" @click="showDepartmentInput">
-                  + New Tag
-                </el-button>
+                <div class="set-content">
+                  <el-tag v-for="tag in departmentTags" size="large" :key="tag" closable :disable-transitions="false"
+                    @close="handleDepartmentClose(tag)">
+                    {{ tag }}
+                  </el-tag>
+                  <el-input v-if="departmentVisible" ref="departmentInputRef" v-model="inputDepartmentValue" class="w85"
+                    size="default" @keyup.enter="handleDepartmentConfirm" @blur="handleDepartmentConfirm" />
+                  <el-button v-else class="button-new-tag" size="default" @click="showDepartmentInput">
+                    + New Tag
+                  </el-button>
+                </div>
               </div>
             </div>
-
 
             <div class="set-info-content">
               <div class="set-item">
                 <span class="set-title">产品设置：</span>
-                <el-tag v-for="tag in productTags" size="large" :key="tag" closable :disable-transitions="false"
-                  @close="handleProductClose(tag)">
-                  {{ tag }}
-                </el-tag>
-                <el-input v-if="productVisible" ref="productInputRef" v-model="inputProductValue" class="w85"
-                  size="default" @keyup.enter="handleProductConfirm" @blur="handleProductConfirm" />
-                <el-button v-else class="button-new-tag" size="default" @click="showProductInput">
-                  + New Tag
-                </el-button>
+                <div class="set-content">
+                  <el-tag v-for="tag in productTags" size="large" :key="tag" closable :disable-transitions="false"
+                    @close="handleProductClose(tag)">
+                    {{ tag }}
+                  </el-tag>
+                  <el-input v-if="productVisible" ref="productInputRef" v-model="inputProductValue" class="w85"
+                    size="default" @keyup.enter="handleProductConfirm" @blur="handleProductConfirm" />
+                  <el-button v-else class="button-new-tag" size="default" @click="showProductInput">
+                    + New Tag
+                  </el-button>
+                </div>
               </div>
             </div>
           </div>
@@ -446,11 +449,17 @@ const handleProductConfirm = async () => {
 
     .set-item {
       display: flex;
-      gap: 1rem;
 
       .set-title {
         display: inline-block;
+        width: 116px;
         line-height: 32px;
+      }
+
+      .set-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
       }
     }
   }

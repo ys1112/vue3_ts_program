@@ -6,7 +6,7 @@ interface getUserListData {
   identity: string
   department?: string
   status?: string
-  search_value?: string
+  keyword?: string
 }
 export const useUserInfoStore = defineStore("userInfo", {
   state() {

@@ -91,7 +91,7 @@ const toAudit = (formEl: FormInstance | undefined) => {
             type: "success",
           })
         } else {
-          ElMessage("同意申请失败，请稍后再试")
+          ElMessage.error("同意申请失败，请稍后再试")
         }
         auditRuleFormRef.value?.resetFields()
         auditDialogVisible.value = false
@@ -104,7 +104,7 @@ const toAudit = (formEl: FormInstance | undefined) => {
             type: "success",
           })
         } else {
-          ElMessage("驳回申请失败，请稍后再试")
+          ElMessage.error("驳回申请失败，请稍后再试")
         }
         auditRuleFormRef.value?.resetFields()
         auditDialogVisible.value = false

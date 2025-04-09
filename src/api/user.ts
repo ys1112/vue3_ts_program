@@ -42,14 +42,16 @@ interface updateUserData {
   department: string
 }
 interface getUserListData {
+  pageNum: number
+  pageSize: number
   identity: string
   department?: string
   status?: string
-  search_value?: string
+  keyword?: string
 }
 // interface searchUserListData {
 //   identity: string
-//   search_value: string
+//   keyword: string
 // }
 interface freezeUserData {
   id: number
@@ -178,11 +180,11 @@ export const updateUser = (data: updateUserData) => {
   })
 }
 // 获取用户列表 getUserList get
-export const getUserList = (data: getUserListData) => {
+export const getUserList = (params: getUserListData) => {
   return instance({
     url: "/user/getUserList",
     method: "GET",
-    params: data,
+    params,
   })
 }
 // // 搜索用户列表 searchUserList get

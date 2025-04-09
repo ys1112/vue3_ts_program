@@ -1,9 +1,5 @@
 import instance from "@/http/index"
 
-interface filterData {
-  message_publish_department: string
-  message_level: string
-}
 interface publishData {
   message_title: string
   message_category: string
@@ -34,29 +30,23 @@ interface departmentData {
   message_publish_department:string
 }
 // 获取公司消息列表
-export const getCorpMsg = () => {
+export const getCorpMsg = (params:any) => {
   return instance({
     url: "/msg/getCorpMsg",
     method: "GET",
+    params
   })
 }
 
 // 获取系统消息列表
-export const getSysMsg = () => {
+export const getSysMsg = (params:any) => {
   return instance({
     url: "/msg/getSysMsg",
     method: "GET",
+    params
   })
 }
 
-// 筛选公司消息
-export const filterMsg = (data: filterData) => {
-  return instance({
-    url: "/msg/filterMsg",
-    method: "POST",
-    data,
-  })
-}
 
 // 发布消息
 export const publishMsg = (data: publishData) => {
@@ -101,10 +91,11 @@ export const deleteMsg = (data: operateData) => {
 }
 
 // 获取系统消息列表
-export const getRecycleMsg = () => {
+export const getRecycleMsg = (params:any) => {
   return instance({
     url: "/msg/getRecycleMsg",
     method: "GET",
+    params
   })
 }
 

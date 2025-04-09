@@ -1,7 +1,4 @@
 import instance from "@/http/index"
-interface searchData {
-  search_value?: string
-}
 interface createProductData {
   product_id: string
   product_name: string
@@ -40,18 +37,11 @@ interface operateData {
   id: number
 }
 // 获取产品信息
-export const getProductInfo = () => {
+export const getProductInfo = (params:any) => {
   return instance({
     url: "/pro/getProducts",
     method: "GET",
-  })
-}
-// 搜索
-export const searchProductInfo = (data?: searchData) => {
-  return instance({
-    url: "/pro/searchProducts",
-    method: "POST",
-    data,
+    params
   })
 }
 
@@ -146,20 +136,14 @@ export const deleteProduct = (data: deleteProductData) => {
 }
 
 // 获取申请出库产品信息
-export const getApplyProducts = () => {
+export const getApplyProducts = (params:any) => {
   return instance({
     url: "/pro/getApplyProducts",
     method: "GET",
+    params
   })
 }
-// 搜索申请出库产品信息
-export const searchApplyProducts = (data?: searchData) => {
-  return instance({
-    url: "/pro/searchApplyProducts",
-    method: "POST",
-    data,
-  })
-}
+
 // 同意申请
 export const approveApply = (data: auditData) => {
   return instance({
@@ -200,18 +184,11 @@ export const resubmit = (data: operateData) => {
 }
 
 // 获取已出库产品信息
-export const getOutProducts = () => {
+export const getOutProducts = (params:any) => {
   return instance({
     url: "/pro/getOutProducts",
     method: "GET",
-  })
-}
-// 搜索已出库产品信息
-export const searchOutProduct = (data?: searchData) => {
-  return instance({
-    url: "/pro/searchOutProduct",
-    method: "POST",
-    data,
+    params
   })
 }
 

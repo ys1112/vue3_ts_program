@@ -6,7 +6,8 @@
       <div class="table-header">
         <!-- 结构顶部左侧搜索框域 -->
         <div class="table-header-left">
-          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px" placeholder="输入账号进行搜索" />
+          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px"
+            placeholder="输入账号进行搜索" />
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
@@ -17,7 +18,7 @@
       <div class="table-content">
         <!-- 表格内容部分 -->
         <div class="table-content-body">
-          <el-table :data="userData.userList" border style="width: 100%">
+          <el-table :data="userData.userList" :key="tableKey" max-height="600" border style="width: 100%">
             <el-table-column prop="id" label="id" width="48" />
             <el-table-column prop="account" label="账号" width="180" />
             <el-table-column prop="name" label="姓名" />
@@ -44,8 +45,9 @@
         <!-- 表格底部分页栏 -->
         <div class="table-content-footer">
           <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-            layout="total, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
-            @size-change="handleSizeChange" :background="pageInfo.background" @current-change="handleCurrentChange" />
+            layout="total, sizes, prev, pager, next" :total="pageInfo.total"
+            :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </div>
       </div>
 
@@ -66,14 +68,19 @@ import emitter from "@/utils/emitter";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { downgradeAdmin } from "@/api/user";
-interface getUserListData {
-  identity: string
-  department?: string
-  status?: string
-  search_value?: string
-}
+onMounted(async () => {
+  const flag = await getAdminList()
+  if (flag) {
+    ElMessage({
+      message: "获取产品管理员列表成功",
+      type: "success",
+    })
+  }
+})
 const identity = ref('产品管理员')
 const { isUsersUpdate } = toRefs(useUserInfoStore())
+// 通过 key 强制表格在分页时重新渲染
+const tableKey = ref(0);
 
 const createDialogRef = ref()
 const editDialogRef = ref()
@@ -90,43 +97,41 @@ const pageInfo = reactive({
   total: 0,
   // 隐藏
   isSinglePage: false,
-  background: false
 })
 
 const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`)
+  pageInfo.pageSize = val
+  getAdminList()
 }
 
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+  getAdminList()
 }
 
 const userData = reactive({
   userList: [] as { [key: string]: any }
 })
-onMounted(() => {
-  const params = {
-    identity: identity.value
-  }
-  getAdminList(params)
-})
 
 // 获取用户列表事件
-const getAdminList = async (params: getUserListData) => {
-  const userList = await getList(params)
-  pageInfo.total = userList.length
-  pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize < 1
-  userData.userList = userList
+const getAdminList = async () => {
+  const params = {
+    pageNum: pageInfo.currentPage,
+    pageSize: pageInfo.pageSize,
+    identity: identity.value,
+    keyword: searchValue.value
+  }
+  const data = await getList(params)
+  pageInfo.total = data.total
+  pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
+  userData.userList = data.results
+  tableKey.value++
+  return true
 }
 
 // 输入账号进行搜索
 const searchAccount = useDebounce(() => {
   if (searchValue.value.trim() || !searchValue.value) {
-    const params = {
-      identity: identity.value,
-      search_value: searchValue.value
-    }
-    getAdminList(params)
+    getAdminList()
   }
 }, 800)
 
@@ -195,10 +200,7 @@ const deleteUserInfo = (id: any) => {
 
 watchEffect(() => {
   if (isUsersUpdate.value) {
-    const params = {
-      identity: identity.value
-    }
-    getAdminList(params)
+    getAdminList()
     isUsersUpdate.value = !isUsersUpdate.value
   }
 })

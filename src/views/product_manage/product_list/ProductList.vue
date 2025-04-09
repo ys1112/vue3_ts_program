@@ -20,7 +20,8 @@
           <div class="product-table">
             <!-- 表格内容部分 -->
             <div class="product-table-body">
-              <el-table :data="productData" border style="width: 100%" :scrollbar-always-on="true">
+              <el-table :data="productData" :key="tableKey" max-height="600" border style="width: 100%"
+                :scrollbar-always-on="false">
                 <el-table-column prop="id" label="id" width="48" />
                 <el-table-column prop="product_id" label="入库编号" width="128" />
                 <el-table-column prop="product_name" label="产品名称" width="128" />
@@ -65,9 +66,10 @@
             </div>
             <!-- 表格底部分页栏 -->
             <div class="product-table-footer">
-              <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-                layout="total, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
-                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+              <el-pagination v-model:current-page="pageInfo.currentPage"
+                :page-size="pageInfo.pageSize" layout="total, sizes, prev, pager, next" :total="pageInfo.total"
+                :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
+                @current-change="handleCurrentChange" />
             </div>
           </div>
         </el-tab-pane>
@@ -90,9 +92,9 @@
             <!-- 表格内容部分 -->
             <!-- id, 出库id，出库数量，出库总价，申请人，申请时间，出库备注 -->
             <div class="product-table-body">
-              <el-table :data="applyData" border style="width: 100%">
+              <el-table :data="applyData" :key="tableKey" max-height="600" border style="width: 100%">
                 <el-table-column prop="id" label="id" width="48" />
-                <el-table-column prop="product_out_id" label="出库编号" width="128" />
+                <el-table-column prop="product_out_id" label="出库编号" width="160" />
                 <el-table-column prop="product_name" label="出库产品名称" width="128" />
                 <el-table-column prop="product_category" label="出库产品类别" width="128" />
                 <el-table-column prop="product_unit" label="单位" width="96" />
@@ -131,9 +133,10 @@
             </div>
             <!-- 表格底部分页栏 -->
             <div class="product-table-footer">
-              <el-pagination v-model:current-page="pageInfo1.currentPage" :page-size="pageInfo1.pageSize"
-                layout="total, prev, pager, next" :total="pageInfo1.total" :hide-on-single-page="pageInfo1.isSinglePage"
-                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+              <el-pagination v-model:current-page="pageInfo1.currentPage"
+                :page-size="pageInfo1.pageSize" layout="total, sizes, prev, pager, next" :total="pageInfo1.total"
+                :hide-on-single-page="pageInfo1.isSinglePage" @size-change="handleSizeChange1"
+                @current-change="handleCurrentChange1" />
             </div>
           </div>
         </el-tab-pane>
@@ -151,9 +154,7 @@ import { onMounted, reactive, ref, h, watchEffect, toRefs, markRaw } from 'vue';
 import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
 import {
   getProductInfo,
-  searchProductInfo,
   getApplyProducts,
-  searchApplyProducts,
   deleteProduct,
   cancelApply,
   resubmit,
@@ -171,17 +172,24 @@ const editProductRef = ref()
 const applyProductRef = ref()
 const auditApplyRef = ref()
 const { isProductUpdate } = toRefs(useProductStore())
-const handleClick = (tab: TabsPaneContext, event: Event) => {
+const handleClick = async (tab: TabsPaneContext, event: Event) => {
   if (tab.paneName == 'auditList') {
     // 获取出库申请审核列表
-    getOutList()
+    const flag = await getOutList()
+    flag && ElMessage({
+      type: 'success',
+      message: '获取出库申请列表成功',
+    })
   } else {
-    getProductList()
+    const flag = await getProductList()
+    flag && ElMessage({
+      type: 'success',
+      message: '获取产品列表成功',
+    })
   }
 }
-interface searchData {
-  search_value?: string
-}
+const tableKey = ref(0);
+
 // 搜索关键字
 const searchValue = ref('')
 // 产品列表
@@ -217,46 +225,42 @@ const pageInfo1 = reactive({
 
 
 
-onMounted(() => {
-  getProductList()
+onMounted(async () => {
+  const flag = await getProductList()
+  flag && ElMessage({
+    type: 'success',
+    message: '获取产品列表成功',
+  })
 })
 const getProductList = async () => {
-  const res = await getProductInfo()
+  const params = {
+    pageNum: pageInfo.currentPage,
+    pageSize: pageInfo.pageSize,
+    keyword: searchValue.value
+  }
+  const res = await getProductInfo(params)
   if (res.data.status == 0) {
-    ElMessage({
-      type: 'success',
-      message: '获取产品列表成功',
-    })
-    const list = res.data.results
-    pageInfo.total = list.length
+    tableKey.value++
+    pageInfo.total = res.data.total || 0
     pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
     productData.value = res.data.results
+    return true
   }
 }
 const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`)
+  pageInfo.pageSize = val
+  getProductList()
 }
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+  getProductList()
 }
+
+
 
 // 输入账号进行搜索
 const searchAccount = useDebounce(async () => {
   if (searchValue.value.trim() || !searchValue.value) {
-    const params = {
-      search_value: searchValue.value
-    }
-    const res = await searchProductInfo(params)
-    if (res.data.status == 0) {
-      ElMessage({
-        type: 'success',
-        message: '搜索产品列表成功',
-      })
-      const list = res.data.results
-      pageInfo.total = list.length
-      pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
-      productData.value = res.data.results
-    }
+    getProductList()
   }
 }, 800)
 const addProduct = () => {
@@ -318,36 +322,34 @@ const handleDelete = (id: string) => {
 
 // 出库申请列表
 const getOutList = async () => {
-  const res = await getApplyProducts()
+  const params = {
+    pageNum: pageInfo1.currentPage,
+    pageSize: pageInfo1.pageSize,
+    keyword: searchValue1.value
+  }
+  const res = await getApplyProducts(params)
   if (res.data.status == 0) {
-    ElMessage({
-      type: 'success',
-      message: '获取出库申请列表成功',
-    })
-    const list = res.data.results
-    pageInfo1.total = list.length
+    tableKey.value++
+    pageInfo1.total = res.data.total || 0
     pageInfo1.isSinglePage = pageInfo1.total / pageInfo1.pageSize > 1
     applyData.value = res.data.results
+    return true
   }
+}
+
+
+const handleSizeChange1 = (val: number) => {
+  pageInfo1.pageSize = val
+  getOutList()
+}
+const handleCurrentChange1 = (val: number) => {
+  getOutList()
 }
 
 // 输入出库编号进行搜索
 const searchAccount1 = useDebounce(async () => {
   if (searchValue1.value.trim() || !searchValue1.value) {
-    const params = {
-      search_value: searchValue1.value
-    }
-    const res = await searchApplyProducts(params)
-    if (res.data.status == 0) {
-      ElMessage({
-        type: 'success',
-        message: '搜索出库申请列表成功',
-      })
-      const list = res.data.results
-      pageInfo1.total = list.length
-      pageInfo1.isSinglePage = pageInfo1.total / pageInfo1.pageSize > 1
-      applyData.value = res.data.results
-    }
+    getOutList()
   }
 }, 800)
 // 同意审批
@@ -457,6 +459,8 @@ watchEffect(() => {
     .product-table-footer {
       display: flex;
       justify-content: flex-end;
+      // padding: 24px 0;
+      // border-top: 2px solid #e4e7ed;
     }
   }
 }

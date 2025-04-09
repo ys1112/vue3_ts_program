@@ -48,7 +48,7 @@ import useUserManage from "@/hooks/useUserManage";
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { createAdmin } from "@/api/user";
-defineProps(['identity'])
+const props = defineProps(['identity'])
 const { validateEmail, validatePassword, validateName } = useUserManage()
 const genderOptions = [
   {
@@ -107,7 +107,7 @@ const createData: createAdminData = reactive({
   name: '',
   gender: '',
   email: '',
-  identity: '产品管理员',
+  identity: props.identity,
   department: '',
 })
 
@@ -156,14 +156,14 @@ const toCreate = (formEl: FormInstance | undefined) => {
       const params = createData
       const res = await createAdmin(params)
       if (res.data.status == 0) {
-        ElMessage({
-          message: "添加产品管理员成功",
+      createDialogVisible.value = false
+      ElMessage({
+          message: `添加${props.identity}成功`,
           type: "success",
         })
       } else {
-        ElMessage("添加产品管理员失败，请稍后再试")
+        ElMessage.error(`添加${props.identity}失败，请稍后再试`)
       }
-      createDialogVisible.value = false
       isUsersUpdate.value = true
     } else {
       console.log('error submit!')

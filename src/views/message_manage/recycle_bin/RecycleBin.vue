@@ -2,14 +2,23 @@
   <div class="common-wrapper">
     <div class="common-content recycle-bin-content">
       <!-- 结构顶部搜索框和按钮区域 -->
-      
+      <div class="table-header">
+        <!-- 结构顶部左侧搜索框域 -->
+        <div class="table-header-left">
+          <el-input v-model="searchValue" clearable @input="searchMsg" style="width: 240px" placeholder="输入公告主题进行搜索" />
+        </div>
+        <!-- 结构顶部右侧按钮区域 -->
+        <div class="table-header-right">
+          <el-button type="primary" @click="refreshData">刷新</el-button>
+        </div>
+      </div>
       <!-- 表格主体 -->
       <div class="table-content">
         <!-- 表格内容部分 -->
         <div class="table-content-body">
-          <el-table :data="recycleData" border style="width: 100%">
+          <el-table :data="recycleData" :key="tableKey" max-height="600" border style="width: 100%">
             <el-table-column prop="id" label="id" width="48" />
-            <el-table-column prop="message_title" label="公告主题" min-width="120"/>
+            <el-table-column prop="message_title" label="公告主题" show-overflow-tooltip min-width="120" />
             <el-table-column prop="message_category" label="所属类别" min-width="120" />
             <el-table-column prop="message_publish_name" label="发布人" min-width="120" />
             <el-table-column prop="message_publish_department" label="发布部门" min-width="120">
@@ -34,8 +43,9 @@
         <!-- 表格底部分页栏 -->
         <div class="table-content-footer">
           <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-            layout="total, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
-            @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            layout="total, sizes, prev, pager, next" :total="pageInfo.total"
+            :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </div>
       </div>
     </div>
@@ -45,17 +55,22 @@
 <script lang="ts" setup name="RecycleBin">
 import { onMounted, reactive, ref, markRaw, h, toRefs, watchEffect } from 'vue';
 import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
-import { getRecycleMsg,restoreMsg,deleteRecycleMsg } from '@/api/message';
+import { getRecycleMsg, restoreMsg, deleteRecycleMsg } from '@/api/message';
 import { useDebounce } from '@/hooks/useDebounce'
-import { QuestionFilled,WarnTriangleFilled } from '@element-plus/icons-vue'
+import { QuestionFilled, WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useMessageStore } from "@/store/useMessageStore";
 const { isMessageUpdate } = toRefs(useMessageStore())
 
-onMounted(() => {
-  getMsg()
+onMounted(async () => {
+  const flag = await getMsg()
+  flag && ElMessage({
+    type: 'success',
+    message: '获取回收站消息列表成功',
+  })
 })
+const tableKey = ref(0);
 // 搜索关键字
-// const searchValue = ref('')
+const searchValue = ref('')
 // 产品列表
 const recycleData = ref([] as { [key: string]: any })
 // 分页数据
@@ -71,27 +86,45 @@ const pageInfo = reactive({
 })
 
 const getMsg = async () => {
-  const res = await getRecycleMsg()
+  const params = {
+    pageNum: pageInfo.currentPage,
+    pageSize: pageInfo.pageSize,
+    keyword: searchValue.value
+  }
+  const res = await getRecycleMsg(params)
   if (res.data.status == 0) {
-    ElMessage({
-      type: 'success',
-      message: '获取回收站消息列表成功',
-    })
-    const list = res.data.results
-    pageInfo.total = list.length
+    tableKey.value++
+    pageInfo.total = res.data.total || 0
     pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
     recycleData.value = res.data.results
+    return true
   }
 }
 // 输入账号进行搜索
 
 const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`)
+  pageInfo.pageSize = val
+  getMsg()
 }
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+  getMsg()
 }
-const restoreMessage =(id: string)=>{
+
+const refreshData = async () => {
+  getMsg()
+  const flag = await getMsg()
+  flag && ElMessage({
+    type: 'success',
+    message: '刷新成功',
+  })
+}
+
+const searchMsg = useDebounce(async () => {
+  if (searchValue.value.trim() || !searchValue.value) {
+    getMsg()
+  }
+}, 800)
+const restoreMessage = (id: string) => {
   const params = {
     id: +id
   }

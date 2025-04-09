@@ -8,12 +8,12 @@
           <div class="table-header">
             <!-- 结构顶部左侧select搜索 -->
             <div class="table-header-left">
-              <el-select clearable v-model="fliterData.message_publish_department" @change="filterMessage"
+              <el-select clearable v-model="fliterData.department" @change="filterMessage"
                 placeholder="选择部门进行筛选" size="default" style="height: 32px; width: 240px">
                 <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label"
                   :value="item.value" />
               </el-select>
-              <el-radio-group @change="filterMessage" v-model="fliterData.message_level" style="margin-left: 40px;">
+              <el-radio-group @change="filterMessage" v-model="fliterData.messageLevel" style="margin-left: 40px;">
                 <el-radio value="一般" size="default">一般</el-radio>
                 <el-radio value="重要" size="default">重要</el-radio>
                 <el-radio value="必要" size="default">必要</el-radio>
@@ -29,9 +29,9 @@
           <div class="message-table">
             <!-- 表格内容部分 -->
             <div class="message-table-body">
-              <el-table :data="corpMsgData" border style="width: 100%" :scrollbar-always-on="true">
+              <el-table :data="corpMsgData" :key="tableKey" max-height="600" border style="width: 100%" :scrollbar-always-on="false">
                 <el-table-column prop="id" label="id" width="48" />
-                <el-table-column prop="message_title" label="公告主题" />
+                <el-table-column prop="message_title" show-overflow-tooltip min-width="128" label="公告主题" />
                 <el-table-column prop="message_category" label="消息类别" width="128" />
                 <el-table-column prop="message_publish_department" label="发布部门" width="128" />
                 <el-table-column prop="message_publish_name" label="发布人" width="96" />
@@ -65,7 +65,7 @@
             <!-- 表格底部分页栏 -->
             <div class="message-table-footer">
               <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-                layout="total, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
+                layout="total, sizes, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
                 @size-change="handleSizeChange" @current-change="handleCurrentChange" />
             </div>
           </div>
@@ -86,9 +86,9 @@
           <div class="message-table">
             <!-- 表格内容部分 -->
             <div class="message-table-body">
-              <el-table :data="systemData" border style="width: 100%" :scrollbar-always-on="true">
+              <el-table :data="systemData" :key="tableKey" max-height="600" border style="width: 100%" :scrollbar-always-on="false">
                 <el-table-column prop="id" label="id" width="48" />
-                <el-table-column prop="message_title" label="公告主题" width="280" />
+                <el-table-column prop="message_title" label="公告主题" show-overflow-tooltip min-width="128" />
                 <el-table-column prop="message_publish_name" label="发布者" min-width="100" />
                 <el-table-column prop="message_click_number" label="阅读人数" min-width="100" />
                 <el-table-column prop="message_create_time" label="发布时间" width="240">
@@ -112,8 +112,8 @@
             <!-- 表格底部分页栏 -->
             <div class="message-table-footer">
               <el-pagination v-model:current-page="pageInfo1.currentPage" :page-size="pageInfo1.pageSize"
-                layout="total, prev, pager, next" :total="pageInfo1.total" :hide-on-single-page="pageInfo1.isSinglePage"
-                @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+                layout="total, sizes, prev, pager, next" :total="pageInfo1.total" :hide-on-single-page="pageInfo1.isSinglePage"
+                @size-change="handleSizeChange1" @current-change="handleCurrentChange1" />
             </div>
           </div>
         </el-tab-pane>
@@ -132,7 +132,7 @@ import EditSysMsgDialog from "../components/EditSysMsgDialog.vue";
 import { onMounted, reactive, ref, h, watchEffect, toRefs, markRaw } from 'vue';
 import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
-import { getCorpMsg, getSysMsg, filterMsg, deleteMsg } from "@/api/message";
+import { getCorpMsg, getSysMsg, deleteMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { useMessageStore } from "@/store/useMessageStore";
 const { isMessageUpdate } = toRefs(useMessageStore())
@@ -140,25 +140,38 @@ const activeName = ref('messageList')
 const publishMsgRef = ref()
 const editMsgRef = ref()
 const editSysMsgRef = ref()
-onMounted(() => {
-  getCropMsgList()
+const tableKey = ref(0);
+onMounted(async() => {
+  const flag = await getCropMsgList()
+    flag && ElMessage({
+      type: 'success',
+      message: '获取公司公告列表成功',
+    })
 })
 
-const handleClick = (tab: TabsPaneContext, event: Event) => {
+const handleClick =async (tab: TabsPaneContext, event: Event) => {
   if (tab.paneName == 'systemList') {
     // 获取系统消息列表
-    getSysMsgList()
+    const flag = await getSysMsgList()
+    flag && ElMessage({
+      type: 'success',
+      message: '获取系统消息列表成功',
+    })
   } else {
     // 获取公告管理列表
-    getCropMsgList()
+    const flag = await getCropMsgList()
+    flag && ElMessage({
+      type: 'success',
+      message: '获取公司公告列表成功',
+    })
   }
 }
 
 // 公告管理
 // 搜索关键字
 const fliterData = reactive({
-  message_publish_department: '',
-  message_level: ''
+  department: '',
+  messageLevel: ''
 })
 const { departmentInfo } = useSettingStore()
 
@@ -182,19 +195,8 @@ const pageInfo = reactive({
   isSinglePage: false,
 })
 // 筛选公司消息
-const filterMessage = async () => {
-  fliterData.message_publish_department = fliterData.message_publish_department || ''
-  const res = await filterMsg(fliterData)
-  if (res.data.status == 0) {
-    ElMessage({
-      type: 'success',
-      message: '筛选公司消息列表成功',
-    })
-    const list = res.data.results
-    pageInfo.total = list.length
-    pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
-    corpMsgData.value = res.data.results
-  }
+const filterMessage = () => {
+  getCropMsgList()
 }
 
 // 发布消息
@@ -256,30 +258,35 @@ const deleteMessage = async (id: string) => {
 
 // 获取所有公司信息按钮
 const getAllList = () => {
-  fliterData.message_publish_department = ''
-  fliterData.message_level = ''
+  fliterData.department = ''
+  fliterData.messageLevel = ''
   getCropMsgList()
 }
 // 获取公司消息列表
 const getCropMsgList = async () => {
-  const res = await getCorpMsg()
+  const params = {
+    pageNum: pageInfo.currentPage,
+    pageSize: pageInfo.pageSize,
+    department:fliterData.department,
+    messageLevel:fliterData.messageLevel
+  }
+  const res = await getCorpMsg(params)
   if (res.data.status == 0) {
-    ElMessage({
-      type: 'success',
-      message: '获取公司公告列表成功',
-    })
-    const list = res.data.results
-    pageInfo.total = list.length
+    
+    tableKey.value++
+    pageInfo.total = res.data.total || 0
     pageInfo.isSinglePage = pageInfo.total / pageInfo.pageSize > 1
     corpMsgData.value = res.data.results
+    return true
   }
 }
 
 const handleSizeChange = (val: number) => {
-  console.log(`${val} items per page`)
+  pageInfo.pageSize = val
+  getCropMsgList()
 }
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+  getCropMsgList()
 }
 
 
@@ -302,22 +309,32 @@ const pageInfo1 = reactive({
 
 // 获取系统消息列表
 const getSysMsgList = async () => {
-  const res = await getSysMsg()
+  const params = {
+    pageNum: pageInfo.currentPage,
+    pageSize: pageInfo.pageSize,
+  }
+  const res = await getSysMsg(params)
   if (res.data.status == 0) {
-    ElMessage({
-      type: 'success',
-      message: '获取系统消息列表成功',
-    })
-    const list = res.data.results
-    pageInfo1.total = list.length
+    tableKey.value++
+    pageInfo1.total = res.data.total || 0
     pageInfo1.isSinglePage = pageInfo1.total / pageInfo1.pageSize > 1
     systemData.value = res.data.results
+    return true
   }
 }
 
 const publishSysMsg = () => {
   publishMsgRef.value.open(0)
 }
+
+const handleSizeChange1 = (val: number) => {
+  pageInfo1.pageSize = val
+  getSysMsgList()
+}
+const handleCurrentChange1 = (val: number) => {
+  getSysMsgList()
+}
+
 watchEffect(() => {
   if (isMessageUpdate.value) {
     if (activeName.value == 'systemList') {

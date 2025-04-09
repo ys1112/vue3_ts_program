@@ -211,7 +211,7 @@ const toEdit = (formEl: FormInstance | undefined) => {
           type: "success",
         })
       } else {
-        ElMessage("修改产品失败，请稍后再试")
+        ElMessage.error("修改产品失败，请稍后再试")
       }
       editDialogVisible.value = false
     } else {

@@ -123,7 +123,7 @@ const toApply = (formEl: FormInstance | undefined) => {
       } else if (res.data.status == 1) {
         ElMessage.error(res.data.message)
       } else {
-        ElMessage("申请出库失败，请稍后再试")
+        ElMessage.error("申请出库失败，请稍后再试")
         applyRuleFormRef.value?.resetFields()
         applyDialogVisible.value = false
       }

@@ -166,7 +166,7 @@ const toEdite = (formEl: FormInstance | undefined) => {
         editDialogVisible.value = false
         isUsersUpdate.value = true
       } else {
-        ElMessage("编辑用户信息失败，请稍后再试")
+        ElMessage.error("编辑用户信息失败，请稍后再试")
       }
       console.log('submit!')
     } else {
