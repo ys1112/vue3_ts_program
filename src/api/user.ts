@@ -180,7 +180,7 @@ export const updateUser = (data: updateUserData) => {
   })
 }
 // 获取用户列表 getUserList get
-export const getUserList = (params: getUserListData) => {
+export const getUserList = (params: any) => {
   return instance({
     url: "/user/getUserList",
     method: "GET",
