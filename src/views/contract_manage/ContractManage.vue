@@ -22,7 +22,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="fileData" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column type="index" width="50" />
+            <el-table-column type="index" label="id" width="50" />
             <el-table-column prop="file_name" label="合同名">
               <template #default="scope">
                 <el-link type="primary" @click="updateDownloadNum(scope.row.id); scope.row.download_number++"
@@ -41,7 +41,7 @@
             <el-table-column prop="operate" label="操作" fixed="right" width="240">
               <template #default="scope">
                 <el-button type="success" @click="downloadContract(scope.row)">下载文件</el-button>
-                <el-button type="danger" @click="deleteFile(scope.row.id)">删除</el-button>
+                <el-button type="danger" @click="deleteFile(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -67,6 +67,7 @@ import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useContractStore } from "@/store/useContractStore";
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { downloadFile } from '@/utils/downloader';
+import { trackRecord } from "@/utils/tracker";
 const { userInfo: { name: upload_person } } = useUserInfoStore()
 const { isContractUpdate } = toRefs(useContractStore())
 
@@ -137,6 +138,7 @@ const handleFileSuccess: UploadProps["onSuccess"] = async (
   uploadFile,
 ) => {
   if (response.status == 0) {
+    await trackRecord('contract', 'upload', response.fileName)
     ElMessage({
       message: "上传文件成功",
       type: 'success',
@@ -168,9 +170,9 @@ const downloadContract = async (info: any) => {
 
 
 // 删除
-const deleteFile = (id: string) => {
+const deleteFile = (row: any) => {
   const params = {
-    id: +id
+    id: +row.id
   }
   ElMessageBox(
     {
@@ -188,6 +190,7 @@ const deleteFile = (id: string) => {
         if (action === 'confirm') {
           const res = await deleteContract(params)
           if (res.data.status == 0) {
+            await trackRecord('contract', 'delete', row.file_name)
             ElMessage({
               type: 'success',
               message: '删除成功',

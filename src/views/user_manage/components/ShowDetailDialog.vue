@@ -44,6 +44,7 @@ import { ElMessage, ElMessageBox, ElRadio, ElRadioGroup, ElButton } from "elemen
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { empowerUser, deleteUser } from "@/api/user";
+import { trackRecord } from "@/utils/tracker";
 import emitter from '@/utils/emitter'
 const { isUsersUpdate } = toRefs(useUserInfoStore())
 const detailDialogVisible = ref(false)
@@ -177,6 +178,7 @@ const toDeleteUser = () => {
           // 删除
           const res = await deleteUser(params)
           if (res.data.status == 0) {
+            await trackRecord('user', 'delete', userInfo.value.account)
             detailDialogVisible.value = false
             isUsersUpdate.value = true
             ElMessage({
@@ -236,6 +238,7 @@ watchEffect(() => {
 .dialog-footer {
   margin-right: 24px;
 }
+
 :deep(.el-image__inner) {
   width: 200px;
 }
@@ -251,5 +254,4 @@ watchEffect(() => {
   line-height: 64px;
   font-size: 16px;
 }
-
 </style>

@@ -7,6 +7,11 @@ interface insertData {
   account: string
   operate?: string
 }
+interface OperData {
+  operate_account: string
+  operate_content: string
+  operate_level: string
+}
 
 // 获取操作日志列表
 export const getOperLog = (params:any) => {
@@ -27,7 +32,7 @@ export const deleteOperLog = (data: deleteData) => {
 }
 
 // 插入操作记录
-export const recordOper = (data: insertData) => {
+export const recordOper = (data: OperData) => {
   return instance({
     url: "/operate_log/recordOper",
     method: "POST",

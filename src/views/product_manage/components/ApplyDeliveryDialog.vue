@@ -38,6 +38,7 @@ import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
 import { useProductStore } from "@/store/useProductStore";
 import { applyDelivery } from "@/api/product";
+import { trackRecord } from "@/utils/tracker";
 import { useUserInfoStore } from "@/store/userInfoStore";
 const labelPosition = ref<FormProps['labelPosition']>('right')
 const { userInfo } = toRefs(useUserInfoStore())
@@ -45,7 +46,7 @@ const { userInfo } = toRefs(useUserInfoStore())
 const applyDialogVisible = ref(false)
 const { isProductUpdate } = toRefs(useProductStore())
 const applyRuleFormRef = ref<FormInstance>()
-
+const productName = ref('')
 
 interface applyOutData {
   id: string
@@ -61,20 +62,7 @@ const applyData: applyOutData = reactive({
   product_out_apply_person: userInfo.value.name,
   apply_memo: '',
 })
-const validateCate = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请选择产品类别'))
-  } else {
-    callback()
-  }
-}
-const validateUnit = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请选择产品单位'))
-  } else {
-    callback()
-  }
-}
+
 const rules = reactive<FormRules<applyOutData>>({
   product_out_id: [
     { required: true, message: '请输入出库编号', trigger: 'blur' },
@@ -95,8 +83,9 @@ const handleClose = (done: () => void) => {
   applyRuleFormRef.value?.resetFields()
   done()
 }
-const open = (id: any) => {
-  applyData.id = id
+const open = (row: any) => {
+  applyData.id = row.id
+  productName.value = row.product_name
   applyDialogVisible.value = true
 }
 
@@ -114,6 +103,7 @@ const toApply = (formEl: FormInstance | undefined) => {
       const params = applyData
       const res = await applyDelivery(params)
       if (res.data.status == 0) {
+        await trackRecord('product', 'apply', productName.value)
         ElMessage({
           message: "申请出库成功",
           type: "success",

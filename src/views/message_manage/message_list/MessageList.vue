@@ -30,7 +30,7 @@
             <!-- 表格内容部分 -->
             <div class="message-table-body">
               <el-table :data="corpMsgData" :key="tableKey" max-height="600" border style="width: 100%" :scrollbar-always-on="false">
-                <el-table-column type="index" width="50" />
+                <el-table-column type="index" label="id" width="50" />
                 <el-table-column prop="message_title" show-overflow-tooltip min-width="128" label="公告主题" />
                 <el-table-column prop="message_category" label="消息类别" width="128" />
                 <el-table-column prop="message_publish_department" label="发布部门" width="128" />
@@ -57,7 +57,7 @@
                 <el-table-column prop="operate" label="操作" fixed="right" width="200">
                   <template #default="scope">
                     <el-button type="success" @click="editCorpMsg(scope.row)">修改</el-button>
-                    <el-button type="danger" @click="deleteMessage(scope.row.id)">删除</el-button>
+                    <el-button type="danger" @click="deleteMessage(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -87,7 +87,7 @@
             <!-- 表格内容部分 -->
             <div class="message-table-body">
               <el-table :data="systemData" :key="tableKey" max-height="600" border style="width: 100%" :scrollbar-always-on="false">
-                <el-table-column type="index" width="50" />
+                <el-table-column type="index" label="id" width="50" />
                 <el-table-column prop="message_title" label="公告主题" show-overflow-tooltip min-width="128" />
                 <el-table-column prop="message_publish_name" label="发布者" min-width="100" />
                 <el-table-column prop="message_click_number" label="阅读人数" min-width="100" />
@@ -104,7 +104,7 @@
                 <el-table-column prop="operate" label="操作" fixed="right" width="240">
                   <template #default="scope">
                     <el-button type="success"@click="editSysMsg(scope.row)">修改</el-button>
-                    <el-button type="danger" @click="deleteMessage(scope.row.id)">删除</el-button>
+                    <el-button type="danger" @click="deleteMessage(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -135,6 +135,7 @@ import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { getCorpMsg, getSysMsg, deleteMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { useMessageStore } from "@/store/useMessageStore";
+import { trackRecord } from "@/utils/tracker";
 const { isMessageUpdate } = toRefs(useMessageStore())
 const activeName = ref('messageList')
 const publishMsgRef = ref()
@@ -209,9 +210,9 @@ const editCorpMsg = (scope: any) => {
 const editSysMsg = (scope:any)=>{
   editSysMsgRef.value.open(scope)
 }
-const deleteMessage = async (id: string) => {
+const deleteMessage = async (row: any) => {
   const params = {
-    id: +id
+    id: +row.id
   }
   ElMessageBox(
     {
@@ -229,7 +230,8 @@ const deleteMessage = async (id: string) => {
         if (action === 'confirm') {
           const res = await deleteMsg(params)
           if (res.data.status == 0) {
-            ElMessage({
+          await trackRecord('message', 'delete', row.message_title,row.message_category)
+          ElMessage({
               type: 'success',
               message: '删除消息成功',
             })

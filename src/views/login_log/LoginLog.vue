@@ -17,11 +17,12 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="loginData" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column type="index" width="50" />
-            <el-table-column prop="account" label="登录账号" show-overflow-tooltip min-width="120" />
-            <el-table-column prop="name" label="姓名" min-width="120" />
-            <el-table-column prop="email" label="联系方式" min-width="120" />
-            <el-table-column prop="login_time" label="登录时间" min-width="120">
+            <el-table-column type="index" label="id" width="50" />
+            <el-table-column prop="account" label="登录账号" min-width="240" />
+            <el-table-column prop="identity" label="身份" min-width="240" />
+            <el-table-column prop="name" label="姓名" min-width="240" />
+            <el-table-column prop="email" label="联系方式" min-width="240" />
+            <el-table-column prop="login_time" label="登录时间" min-width="240">
               <template #default="scope">
                 {{ scope.row.login_time.split('.')[0] }}
               </template>

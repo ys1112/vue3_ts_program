@@ -31,6 +31,7 @@ import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
 import { useProductStore } from "@/store/useProductStore";
 import { approveApply, rejectApply } from "@/api/product";
+import { trackRecord } from "@/utils/tracker";
 import { useUserInfoStore } from "@/store/userInfoStore";
 const labelPosition = ref<FormProps['labelPosition']>('right')
 const { userInfo } = toRefs(useUserInfoStore())
@@ -39,6 +40,7 @@ const auditDialogVisible = ref(false)
 const { isProductUpdate } = toRefs(useProductStore())
 const auditRuleFormRef = ref<FormInstance>()
 const isApprove = ref('')
+const productName = ref('')
 
 interface auditData {
   id: string
@@ -66,6 +68,7 @@ const handleClose = (done: () => void) => {
 }
 const open = (info: any, key: string) => {
   auditData.id = info.id
+  productName.value = info.product_name
   isApprove.value = key
   auditDialogVisible.value = true
 }
@@ -85,6 +88,7 @@ const toAudit = (formEl: FormInstance | undefined) => {
       if (isApprove.value == 'approve') {
         const res = await approveApply(params)
         if (res.data.status == 0) {
+          await trackRecord('product', 'agree', productName.value)
           isProductUpdate.value = true
           ElMessage({
             message: "同意申请成功",
@@ -98,6 +102,7 @@ const toAudit = (formEl: FormInstance | undefined) => {
       } else {
         const res = await rejectApply(params)
         if (res.data.status == 0) {
+          await trackRecord('product', 'reject', productName.value)
           isProductUpdate.value = true
           ElMessage({
             message: "驳回申请成功",

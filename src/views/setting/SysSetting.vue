@@ -145,6 +145,7 @@ import ResetDialog from "@/views/setting/resetPassword/ResetDialog.vue";
 import SetInfoDialog from "@/views/setting/setCompanyInfo/SetInfoDialog.vue";
 import emitter from '@/utils/emitter'
 import SvgIcon from "@/components/SvgIcon.vue"
+import { trackRecord } from "@/utils/tracker";
 import { setCompanyInfo, setDepartment, getDepartment, setProduct, getProduct } from "@/api/setting";
 // 引入防抖函数
 import { useDebounce } from '@/hooks/useDebounce'
@@ -207,10 +208,9 @@ const setCompanyName = useDebounce(async (item: setInfoForm) => {
     set_name: item.set_name,
     set_value: item.set_value
   }
-
   const res = await setCompanyInfo(data)
-
   if (res.data.status == 0) {
+    await trackRecord('setting', 'corp', '公司名称')
     return ElMessage({
       message: "修改公司名称成功",
       type: 'success',
@@ -236,6 +236,7 @@ const handleSwiperSuccess: UploadProps["onSuccess"] = async (
   uploadFile,
 ) => {
   if (response.status == 0) {
+    await trackRecord('setting', 'corp', getSwiperTitle(response.set_name))
     const index = swiperData.findIndex((item: setInfoForm) => item.set_name == response.set_name)
     // swiperData[index].set_value = response.url
     // 服务端图片url不变内能改变导致不更新问题

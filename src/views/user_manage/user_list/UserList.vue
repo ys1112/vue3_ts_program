@@ -4,7 +4,8 @@
       <div class="table-header">
         <!-- 结构顶部左侧搜索框域 -->
         <div class="table-header-left">
-          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px" placeholder="输入账号进行搜索" />
+          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px"
+            placeholder="输入账号进行搜索" />
           <el-select @change="selectToFilter" clearable v-model="departmentSelected" placeholder="请选择部门进行筛选"
             style="width: 240px;margin-left: 16px;">
             <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -20,13 +21,14 @@
       <div class="table-content">
         <!-- 表格内容部分 -->
         <div class="table-content-body">
-          <el-table :data="userData.userList" :key="tableKey" max-height="600" border style="width: 100%;" @row-dblclick="showDetail">
-            <el-table-column type="index" width="50" />
+          <el-table :data="userData.userList" :key="tableKey" max-height="600" border style="width: 100%;"
+            @row-dblclick="showDetail">
+            <el-table-column type="index" label="id" width="50" />
             <el-table-column prop="account" label="账号" max-width="180" />
-            <el-table-column prop="name" label="姓名" max-width="120"/>
-            <el-table-column prop="gender" label="性别" max-width="120"/>
-            <el-table-column prop="identity" label="身份" max-width="120"/>
-            <el-table-column prop="department" label="部门" max-width="120"/>
+            <el-table-column prop="name" label="姓名" max-width="120" />
+            <el-table-column prop="gender" label="性别" max-width="120" />
+            <el-table-column prop="identity" label="身份" max-width="120" />
+            <el-table-column prop="department" label="部门" max-width="120" />
             <el-table-column prop="email" label="邮箱" />
             <el-table-column prop="status" label="状态" max-width="120">
               <template #default="scope">
@@ -47,9 +49,9 @@
             <el-table-column prop="operate" label="操作" width="176">
               <template #default="scope">
                 <el-button type="primary" :disabled="scope.row.status == 1"
-                  @click="frozenUser(scope.row.id)">冻结</el-button>
+                  @click="frozenUser(scope.row)">冻结</el-button>
                 <el-button type="success" :disabled="scope.row.status == 0"
-                  @click="thawUser(scope.row.id)">解冻</el-button>
+                  @click="thawUser(scope.row)">解冻</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -57,8 +59,9 @@
         <!-- 表格底部分页栏 -->
         <div class="table-content-footer">
           <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-            layout="total, sizes, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
-            @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            layout="total, sizes, prev, pager, next" :total="pageInfo.total"
+            :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" />
         </div>
       </div>
     </div>
@@ -68,7 +71,7 @@
 </template>
 
 <script lang="ts" setup name="UserList">
-import { onMounted, reactive, ref, h,toRefs,watchEffect } from 'vue';
+import { onMounted, reactive, ref, h, toRefs, watchEffect } from 'vue';
 import { useDebounce } from '@/hooks/useDebounce'
 import useUserManage from '@/hooks/useUserManage'
 import { useUserInfoStore } from "@/store/userInfoStore";
@@ -77,7 +80,8 @@ import { freezeUser, unfreezeUser, empowerUser, deleteUser } from '@/api/user';
 import ShowDetailDialog from "../components/ShowDetailDialog.vue";
 import EditUserDialog from "../components/EditUserDialog.vue";
 import { useSettingStore } from "@/store/settingInfoStore";
-onMounted(async() => {
+import { trackRecord } from "@/utils/tracker";
+onMounted(async () => {
   getUserList()
   const flag = await getUserList()
   if (flag) {
@@ -91,10 +95,10 @@ const { isUsersUpdate } = toRefs(useUserInfoStore())
 const detailDialogRef = ref()
 const editDialogRef = ref()
 const { departmentInfo } = useSettingStore()
-const departmentOptions = departmentInfo.map(item=>{
+const departmentOptions = departmentInfo.map(item => {
   return {
-    value:item,
-    label:item
+    value: item,
+    label: item
   }
 })
 // 通过 key 强制表格在分页时重新渲染
@@ -181,8 +185,8 @@ const getUserList = async () => {
     pageSize: pageInfo.pageSize,
     identity: identity.value,
     keyword: searchValue.value,
-    department:departmentSelected.value,
-    status:userStatus.value
+    department: departmentSelected.value,
+    status: userStatus.value
   }
   const data = await getList(params)
   pageInfo.total = data.total
@@ -192,15 +196,15 @@ const getUserList = async () => {
   return true
 }
 
-const frozenUser = (id: string) => {
-  useMessageBox(freezingThawingInfo.freeze, id)
+const frozenUser = (row: any) => {
+  useMessageBox(freezingThawingInfo.freeze, row)
 }
 
-const thawUser = (id: string) => {
-  useMessageBox(freezingThawingInfo.thaw, id)
+const thawUser = (row: any) => {
+  useMessageBox(freezingThawingInfo.thaw, row)
 }
 
-const useMessageBox = (info: { [key: string]: any }, id: string) => {
+const useMessageBox = (info: { [key: string]: any }, row: any) => {
   ElMessageBox(
     {
       title: info.title,
@@ -214,12 +218,13 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
   )
     .then(async () => {
       const params = {
-        id: +id
+        id: +row.id
       }
       if (info.isFreeze == 0) {
         const res = await freezeUser(params)
         if (res.data.status == 0) {
           isUsersUpdate.value = true
+          await trackRecord('user', 'freeze', row.account)
           ElMessage({
             type: 'success',
             message: '冻结用户成功',
@@ -232,6 +237,7 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
         const res = await unfreezeUser(params)
         if (res.data.status == 0) {
           isUsersUpdate.value = true
+          await trackRecord('user', 'thaw', row.account)
           ElMessage({
             type: 'success',
             message: '解冻用户成功',

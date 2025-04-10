@@ -58,6 +58,7 @@ import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
 import { useProductStore } from "@/store/useProductStore";
 import { createProduct } from "@/api/product";
+import { trackRecord } from "@/utils/tracker";
 const labelPosition = ref<FormProps['labelPosition']>('right')
 
 const unitOptions = [
@@ -191,6 +192,7 @@ const toCreate = (formEl: FormInstance | undefined) => {
       const params = createData
       const res = await createProduct(params)
       if (res.data.status == 0) {
+        await trackRecord('product', 'create', createData.product_name)
         createRuleFormRef.value?.resetFields()
         ElMessage({
           message: "添加产品成功",

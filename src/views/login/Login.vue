@@ -103,6 +103,7 @@ import { ref, reactive, onMounted } from 'vue'
 import forgetDialog from './components/ForgetPwdDialog.vue'
 import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
+import { recordLogin } from "@/api/login_log";
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useSettingStore } from '@/store/settingInfoStore'
 import { useCommonStore } from '@/store/commonStore'
@@ -193,14 +194,25 @@ const toLogin = (formEl: FormInstance | undefined) => {
     if (valid) {
       const res = await login(loginData)
       if (res.data.status == 0) {
+        const params = {
+          name:res.data.results.name,
+          account:res.data.results.account,
+          email:res.data.results.email,
+          identity:res.data.results.identity
+        }
+        await recordLogin(params)
         ElMessage({
           message: '登录成功',
           type: 'success',
         })
         const { token } = res.data
+        // 获取用户信息 存储用户信息
         getInfo(res.data.results.id)
+        // 获取公司信息和轮播图
         getSettingInfo()
+        // 获取部门设置
         getDepartmentInfo()
+        // 获取产品类别设置
         getProductInfo()
         localStorage.setItem('token', token)
         router.push('/home')

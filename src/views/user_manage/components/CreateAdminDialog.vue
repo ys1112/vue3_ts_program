@@ -48,6 +48,7 @@ import useUserManage from "@/hooks/useUserManage";
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { createAdmin } from "@/api/user";
+import { trackRecord } from "@/utils/tracker";
 const props = defineProps(['identity'])
 const { validateEmail, validatePassword, validateName } = useUserManage()
 const genderOptions = [
@@ -156,6 +157,7 @@ const toCreate = (formEl: FormInstance | undefined) => {
       const params = createData
       const res = await createAdmin(params)
       if (res.data.status == 0) {
+      await trackRecord('user','create',createData.account,props.identity)
       createDialogVisible.value = false
       ElMessage({
           message: `添加${props.identity}成功`,

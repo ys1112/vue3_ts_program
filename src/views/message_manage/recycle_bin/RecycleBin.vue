@@ -17,7 +17,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="recycleData" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column type="index" width="50" />
+            <el-table-column type="index" label="id" width="50" />
             <el-table-column prop="message_title" label="公告主题" show-overflow-tooltip min-width="120" />
             <el-table-column prop="message_category" label="所属类别" min-width="120" />
             <el-table-column prop="message_publish_name" label="发布人" min-width="120" />

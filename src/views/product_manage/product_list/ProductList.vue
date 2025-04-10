@@ -22,7 +22,7 @@
             <div class="product-table-body">
               <el-table :data="productData" :key="tableKey" max-height="600" border style="width: 100%"
                 :scrollbar-always-on="false">
-                <el-table-column type="index" width="50" />
+                <el-table-column type="index" label="id" width="50" />
                 <el-table-column prop="product_id" label="入库编号" width="128" />
                 <el-table-column prop="product_name" label="产品名称" width="128" />
                 <el-table-column prop="product_category" label="产品类别" width="128" />
@@ -53,21 +53,21 @@
                   <template #default="scope">
                     <el-button type="primary"
                       :disabled="scope.row.product_out_status == 1 || scope.row.product_out_status == 2"
-                      @click="applyProduct(scope.row.id)">申请出库</el-button>
+                      @click="applyProduct(scope.row)">申请出库</el-button>
                     <el-button type="success"
                       :disabled="scope.row.product_out_status == 1 || scope.row.product_out_status == 2"
                       @click="editProduct(scope.row)">修改</el-button>
                     <el-button type="danger"
                       :disabled="scope.row.product_out_status == 1 || scope.row.product_out_status == 2"
-                      @click="handleDelete(scope.row.id)">删除</el-button>
+                      @click="handleDelete(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
             <!-- 表格底部分页栏 -->
             <div class="product-table-footer">
-              <el-pagination v-model:current-page="pageInfo.currentPage"
-                :page-size="pageInfo.pageSize" layout="total, sizes, prev, pager, next" :total="pageInfo.total"
+              <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
+                layout="total, sizes, prev, pager, next" :total="pageInfo.total"
                 :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
                 @current-change="handleCurrentChange" />
             </div>
@@ -93,7 +93,7 @@
             <!-- id, 出库id，出库数量，出库总价，申请人，申请时间，出库备注 -->
             <div class="product-table-body">
               <el-table :data="applyData" :key="tableKey" max-height="600" border style="width: 100%">
-                <el-table-column type="index" width="50" />
+                <el-table-column type="index" label="id" width="50" />
                 <el-table-column prop="product_out_id" label="出库编号" width="160" />
                 <el-table-column prop="product_name" label="出库产品名称" width="128" />
                 <el-table-column prop="product_category" label="出库产品类别" width="128" />
@@ -119,22 +119,22 @@
                 <el-table-column prop="operate" label="操作" fixed="right" width="300">
                   <template #default="scope">
                     <el-button type="success" v-if="scope.row.product_out_status == 2"
-                      @click="resubmitApply(scope.row.id)">再次提交</el-button>
+                      @click="resubmitApply(scope.row)">再次提交</el-button>
                     <el-button type="success" v-if="scope.row.product_out_status == 1"
                       @click="approve(scope.row)">同意</el-button>
                     <el-button type="danger" v-if="scope.row.product_out_status == 1"
                       @click="reject(scope.row)">驳回</el-button>
                     <el-button type="primary"
                       v-if="scope.row.product_out_status == 1 || scope.row.product_out_status == 2"
-                      @click="cancel(scope.row.id)">撤销申请</el-button>
+                      @click="cancel(scope.row)">撤销申请</el-button>
                   </template>
                 </el-table-column>
               </el-table>
             </div>
             <!-- 表格底部分页栏 -->
             <div class="product-table-footer">
-              <el-pagination v-model:current-page="pageInfo1.currentPage"
-                :page-size="pageInfo1.pageSize" layout="total, sizes, prev, pager, next" :total="pageInfo1.total"
+              <el-pagination v-model:current-page="pageInfo1.currentPage" :page-size="pageInfo1.pageSize"
+                layout="total, sizes, prev, pager, next" :total="pageInfo1.total"
                 :hide-on-single-page="pageInfo1.isSinglePage" @size-change="handleSizeChange1"
                 @current-change="handleCurrentChange1" />
             </div>
@@ -165,6 +165,7 @@ import EditProductDialog from "../components/EditProductDialog.vue";
 import ApplyProductDialog from "../components/ApplyDeliveryDialog.vue";
 import AuditApplyDialog from "../components/AuditApplyDialog.vue";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
+import { trackRecord } from "@/utils/tracker";
 import { useProductStore } from "@/store/useProductStore";
 const activeName = ref('productList')
 const createProductRef = ref()
@@ -269,12 +270,12 @@ const addProduct = () => {
 const editProduct = (info: any) => {
   editProductRef.value.open(info)
 }
-const applyProduct = (id: string) => {
-  applyProductRef.value.open(id)
+const applyProduct = (row: any) => {
+  applyProductRef.value.open(row)
 }
-const handleDelete = (id: string) => {
+const handleDelete = (row: any) => {
   const params = {
-    id: +id
+    id: +row.id
   }
   ElMessageBox(
     {
@@ -292,6 +293,7 @@ const handleDelete = (id: string) => {
         if (action === 'confirm') {
           const res = await deleteProduct(params)
           if (res.data.status == 0) {
+            await trackRecord('product', 'delete', row.product_name)
             ElMessage({
               type: 'success',
               message: '删除产品成功',
@@ -376,15 +378,15 @@ const operateInfo = reactive({
   }
 })
 // 撤销申请
-const cancel = (id: string) => {
-  useMessageBox(operateInfo.cancel, id)
+const cancel = (row: any) => {
+  useMessageBox(operateInfo.cancel, row)
 }
 // 再次申请
-const resubmitApply = (id: string) => {
-  useMessageBox(operateInfo.resubmit, id)
+const resubmitApply = (row: any) => {
+  useMessageBox(operateInfo.resubmit, row)
 }
 
-const useMessageBox = (info: { [key: string]: any }, id: string) => {
+const useMessageBox = (info: { [key: string]: any }, row: any) => {
   ElMessageBox(
     {
       title: info.title,
@@ -398,11 +400,12 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
   )
     .then(async () => {
       const params = {
-        id: +id
+        id: +row.id
       }
       if (info.type == 0) {
         const res = await cancelApply(params)
         if (res.data.status == 0) {
+          await trackRecord('product', 'cancel', row.product_name)
           isProductUpdate.value = true
           ElMessage({
             type: 'success',
@@ -415,6 +418,7 @@ const useMessageBox = (info: { [key: string]: any }, id: string) => {
       if (info.type == 1) {
         const res = await resubmit(params)
         if (res.data.status == 0) {
+          await trackRecord('product', 'resubmit', row.product_name)
           isProductUpdate.value = true
           ElMessage({
             type: 'success',

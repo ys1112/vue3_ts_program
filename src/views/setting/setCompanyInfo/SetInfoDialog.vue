@@ -24,6 +24,7 @@ import { reactive, ref, shallowRef, onUnmounted, onBeforeUnmount, onMounted } fr
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { trackRecord } from "@/utils/tracker";
 import emitter from '@/utils/emitter'
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef()
@@ -119,6 +120,7 @@ const setInfo = async () => {
   }
   const res = await setCompanyInfo(data)
   if (res.data.status == 0) {
+    await trackRecord('setting', 'corp', CompanyInfoEnum[setInfoData.value.set_name as keyof typeof CompanyInfoEnum])
     setInfoData.value.set_value = valueHtml.value
     setInfoDialogVisible.value = false;
     return ElMessage({

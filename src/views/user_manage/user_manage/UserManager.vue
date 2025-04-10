@@ -18,7 +18,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="userData.userList" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column type="index" width="50" />
+            <el-table-column type="index" label="id" width="50" />
             <el-table-column prop="account" label="账号" width="180" />
             <el-table-column prop="name" label="姓名" />
             <el-table-column prop="department" label="部门" />
@@ -36,7 +36,7 @@
             <el-table-column prop="operate" label="操作" width="180">
               <template #default="scope">
                 <el-button type="success" @click="editUserInfo(scope.row)">编辑</el-button>
-                <el-button type="danger" @click="deleteUserInfo(scope.row.id)">删除</el-button>
+                <el-button type="danger" @click="deleteUserInfo(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -65,6 +65,7 @@ import EditUserDialog from "../components/EditUserDialog.vue";
 import emitter from "@/utils/emitter";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useUserInfoStore } from "@/store/userInfoStore";
+import { trackRecord } from "@/utils/tracker";
 import { downgradeAdmin } from "@/api/user";
 onMounted(async () => {
   const flag = await getAdminList()
@@ -142,9 +143,9 @@ const editUserInfo = (scope: any) => {
   emitter.emit('editInfo', scope)
   editDialogRef.value.open()
 }
-const deleteUserInfo = (id: any) => {
+const deleteUserInfo = (row: any) => {
   const params = {
-    id: +id
+    id: +row.id
   }
   ElMessageBox(
     {
@@ -163,6 +164,7 @@ const deleteUserInfo = (id: any) => {
           // 降级操作
           const res = await downgradeAdmin(params)
           if (res.data.status == 0) {
+            await trackRecord('user', 'downgrade', row.account, identity.value)
             ElMessage({
               type: 'success',
               message: '降级操作成功',

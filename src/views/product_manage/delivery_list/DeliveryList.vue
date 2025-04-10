@@ -18,7 +18,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="productData" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column type="index" width="50" />
+            <el-table-column type="index" label="id" width="50" />
             <el-table-column prop="product_out_id" label="出库编号" width="128" />
             <el-table-column prop="product_out_name" label="出库产品名称" width="128" />
             <el-table-column prop="product_out_number" label="出库数量" width="120" />

@@ -5,6 +5,7 @@ interface deleteData {
 }
 interface insertData {
   name: string
+  identity:string
   account: string
   email: string
 }

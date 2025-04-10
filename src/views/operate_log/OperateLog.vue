@@ -17,11 +17,11 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="operateData" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column type="index" width="50" />
-            <el-table-column prop="operate_account" label="操作者" show-overflow-tooltip min-width="120" />
-            <el-table-column prop="operate_content" label="操作內容" min-width="120" />
-            <el-table-column prop="operate_level" label="操作等级" min-width="120" />
-            <el-table-column prop="operate_time" label="操作时间" min-width="120">
+            <el-table-column type="index" label="id" width="50" />
+            <el-table-column prop="operate_account" label="操作者" width="240" />
+            <el-table-column prop="operate_content" label="操作內容" show-overflow-tooltip min-width="240"  />
+            <el-table-column prop="operate_level" label="操作等级" width="240" />
+            <el-table-column prop="operate_time" label="操作时间" min-width="240">
               <template #default="scope">
                 {{ scope.row.operate_time.split('.')[0] }}
               </template>

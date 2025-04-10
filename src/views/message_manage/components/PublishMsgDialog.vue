@@ -1,6 +1,6 @@
 <template>
-  <el-dialog v-model="publishDialogVisible" align-center :title="msgCate? '公司公告' : '系统消息'" width="50%" :before-close="handleClose"
-    destroy-on-close>
+  <el-dialog v-model="publishDialogVisible" align-center :title="msgCate ? '公司公告' : '系统消息'" width="50%"
+    :before-close="handleClose" destroy-on-close>
     <el-form :model="publishMsgData" :rules="rules" ref="publishRuleFormRef" :label-position="labelPosition"
       label-width="auto" class="publish-form">
       <el-form-item label="主题" prop="message_title">
@@ -23,8 +23,8 @@
         </el-select>
       </el-form-item>
       <el-form-item v-if="msgCate" label="接收部门" prop="message_receipt_object">
-        <el-select v-model="publishMsgData.message_receipt_object" :multiple="false" filterable allow-create default-first-option
-        :reserve-keyword="false" placeholder="请选择接收部门" style="width: 240px">
+        <el-select v-model="publishMsgData.message_receipt_object" :multiple="false" filterable allow-create
+          default-first-option :reserve-keyword="false" placeholder="请选择接收部门" style="width: 240px">
           <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -58,6 +58,7 @@ import { useProductStore } from "@/store/useProductStore";
 import { publishMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { useMessageStore } from "@/store/useMessageStore";
+import { trackRecord } from "@/utils/tracker";
 const { isMessageUpdate } = toRefs(useMessageStore())
 const { departmentInfo } = useSettingStore()
 const departmentOptions = departmentInfo.map(item => {
@@ -131,19 +132,19 @@ const validateContent = (rule: any, value: any, callback: any) => {
   // }
 }
 // 判断编辑器内容是否为空
-const isEditorContentEmpty = (html:any) => {
+const isEditorContentEmpty = (html: any) => {
   if (!html) return true
-  
+
   // 创建临时容器解析HTML
   const div = document.createElement('div')
   div.innerHTML = html
 
   // 移除空白字符和换行
   const text = div.textContent?.replace(/[\s\n]/g, '') || ''
-  
+
   // 检查图片等多媒体内容
   const hasMedia = div.querySelector('img, video, audio')
-  
+
   // 最终判断逻辑
   return text.length === 0 && !hasMedia
 }
@@ -170,7 +171,7 @@ const rules = reactive<FormRules<publishData>>({
   ],
   message_content: [
     // { required: true, message: '请输入内容', trigger: 'blur' },
-    { required: true,validator: validateContent, trigger: 'blur' },
+    { required: true, validator: validateContent, trigger: 'blur' },
   ],
 })
 const handleClose = (done: () => void) => {
@@ -178,7 +179,7 @@ const handleClose = (done: () => void) => {
   done()
 }
 const open = (type: number) => {
-  msgCate.value = type 
+  msgCate.value = type
   if (type) {
     msgCateOptions[1].disabled = true
     msgCateOptions[0].disabled = false
@@ -205,6 +206,7 @@ const toPublish = (formEl: FormInstance | undefined) => {
       const params = publishMsgData
       const res = await publishMsg(params)
       if (res.data.status == 0) {
+        await trackRecord('message', 'publish', publishMsgData.message_title, publishMsgData.message_category)
         publishRuleFormRef.value?.resetFields()
         ElMessage({
           message: "发布消息成功",
@@ -224,7 +226,7 @@ const toPublish = (formEl: FormInstance | undefined) => {
       console.log('error submit!')
     }
   })
-  
+
 }
 
 defineExpose({
