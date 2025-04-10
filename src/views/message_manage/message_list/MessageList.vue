@@ -30,7 +30,7 @@
             <!-- 表格内容部分 -->
             <div class="message-table-body">
               <el-table :data="corpMsgData" :key="tableKey" max-height="600" border style="width: 100%" :scrollbar-always-on="false">
-                <el-table-column prop="id" label="id" width="48" />
+                <el-table-column type="index" width="50" />
                 <el-table-column prop="message_title" show-overflow-tooltip min-width="128" label="公告主题" />
                 <el-table-column prop="message_category" label="消息类别" width="128" />
                 <el-table-column prop="message_publish_department" label="发布部门" width="128" />
@@ -87,7 +87,7 @@
             <!-- 表格内容部分 -->
             <div class="message-table-body">
               <el-table :data="systemData" :key="tableKey" max-height="600" border style="width: 100%" :scrollbar-always-on="false">
-                <el-table-column prop="id" label="id" width="48" />
+                <el-table-column type="index" width="50" />
                 <el-table-column prop="message_title" label="公告主题" show-overflow-tooltip min-width="128" />
                 <el-table-column prop="message_publish_name" label="发布者" min-width="100" />
                 <el-table-column prop="message_click_number" label="阅读人数" min-width="100" />

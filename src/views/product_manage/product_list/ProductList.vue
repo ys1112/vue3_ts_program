@@ -22,7 +22,7 @@
             <div class="product-table-body">
               <el-table :data="productData" :key="tableKey" max-height="600" border style="width: 100%"
                 :scrollbar-always-on="false">
-                <el-table-column prop="id" label="id" width="48" />
+                <el-table-column type="index" width="50" />
                 <el-table-column prop="product_id" label="入库编号" width="128" />
                 <el-table-column prop="product_name" label="产品名称" width="128" />
                 <el-table-column prop="product_category" label="产品类别" width="128" />
@@ -93,7 +93,7 @@
             <!-- id, 出库id，出库数量，出库总价，申请人，申请时间，出库备注 -->
             <div class="product-table-body">
               <el-table :data="applyData" :key="tableKey" max-height="600" border style="width: 100%">
-                <el-table-column prop="id" label="id" width="48" />
+                <el-table-column type="index" width="50" />
                 <el-table-column prop="product_out_id" label="出库编号" width="160" />
                 <el-table-column prop="product_name" label="出库产品名称" width="128" />
                 <el-table-column prop="product_category" label="出库产品类别" width="128" />

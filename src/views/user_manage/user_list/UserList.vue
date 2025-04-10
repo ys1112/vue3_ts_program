@@ -21,7 +21,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="userData.userList" :key="tableKey" max-height="600" border style="width: 100%;" @row-dblclick="showDetail">
-            <el-table-column prop="id" label="id" width="48" />
+            <el-table-column type="index" width="50" />
             <el-table-column prop="account" label="账号" max-width="180" />
             <el-table-column prop="name" label="姓名" max-width="120"/>
             <el-table-column prop="gender" label="性别" max-width="120"/>

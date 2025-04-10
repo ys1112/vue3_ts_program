@@ -22,7 +22,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="fileData" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column prop="id" label="id" width="48" />
+            <el-table-column type="index" width="50" />
             <el-table-column prop="file_name" label="合同名">
               <template #default="scope">
                 <el-link type="primary" @click="updateDownloadNum(scope.row.id); scope.row.download_number++"

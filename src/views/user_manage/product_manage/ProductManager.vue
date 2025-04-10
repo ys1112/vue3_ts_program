@@ -19,7 +19,7 @@
         <!-- 表格内容部分 -->
         <div class="table-content-body">
           <el-table :data="userData.userList" :key="tableKey" max-height="600" border style="width: 100%">
-            <el-table-column prop="id" label="id" width="48" />
+            <el-table-column type="index" width="50" />
             <el-table-column prop="account" label="账号" width="180" />
             <el-table-column prop="name" label="姓名" />
             <el-table-column prop="department" label="部门" />
