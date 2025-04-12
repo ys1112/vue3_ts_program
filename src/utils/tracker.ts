@@ -109,7 +109,7 @@ export const trackRecord = async (
       break
   }
   // operate_level 等级
-  if (action == "create" || action == "delete") {
+  if (action == "create" || action == "delete" || action == 'upgrade' || action == 'downgrade') {
     params.operate_level = "高级"
   } else {
     params.operate_level = "一般"

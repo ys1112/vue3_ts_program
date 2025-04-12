@@ -66,3 +66,30 @@ export const getProduct = () => {
   })
 }
 
+// 用户类别数据
+export const getUserData = () => {
+  return instance({
+    url: "/set/getUserData",
+    method: "GET",
+  })
+}
+// 获取公告等级数据
+export const getMsgLvData = () => {
+  return instance({
+    url: "/set/getMsgLvData",
+    method: "GET",
+  })
+}
+// 产品类别库存总价数据 
+export const getPriceData = () => {
+  return instance({
+    url: "/set/getPriceData",
+    method: "GET",
+  })
+}
+export const getLoginCount = () => {
+  return instance({
+    url: "/set/getLoginCount",
+    method: "GET",
+  })
+}

@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="publishDialogVisible" align-center :title="msgCate ? '公司公告' : '系统消息'" width="50%"
-    :before-close="handleClose" destroy-on-close>
+    :before-close="handleClose" :destroy-on-close="true">
     <el-form :model="publishMsgData" :rules="rules" ref="publishRuleFormRef" :label-position="labelPosition"
       label-width="auto" class="publish-form">
       <el-form-item label="主题" prop="message_title">
@@ -13,7 +13,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="发布人" prop="message_publish_name">
-        <el-input v-model="publishMsgData.message_publish_name" style="width: 240px" placeholder="请输入发布人">
+        <el-input disabled v-model="publishMsgData.message_publish_name" style="width: 240px" placeholder="请输入发布人">
         </el-input>
       </el-form-item>
       <el-form-item label="消息类别" prop="message_category">
@@ -23,9 +23,8 @@
         </el-select>
       </el-form-item>
       <el-form-item v-if="msgCate" label="接收部门" prop="message_receipt_object">
-        <el-select v-model="publishMsgData.message_receipt_object" :multiple="false" filterable allow-create
-          default-first-option :reserve-keyword="false" placeholder="请选择接收部门" style="width: 240px">
-          <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select v-model="publishMsgData.message_receipt_object" placeholder="请选择接收部门" style="width: 240px">
+          <el-option v-for="item in receiveDepartOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item v-if="msgCate" label="公告等级" prop="message_level">
@@ -51,14 +50,17 @@
 </template>
 
 <script lang="ts" setup name="PublishMsgDialog">
-import { onMounted, reactive, ref, toRefs, watch } from 'vue';
+import { reactive, ref, toRefs, watch, watchEffect } from 'vue';
 import EditorInput from "@/components/EditorInput.vue";
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
 import { useProductStore } from "@/store/useProductStore";
 import { publishMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { useMessageStore } from "@/store/useMessageStore";
+import { useUserInfoStore } from "@/store/userInfoStore";
 import { trackRecord } from "@/utils/tracker";
+import { addUnreadMsg } from "@/api/department"
+const { userInfo } = useUserInfoStore()
 const { isMessageUpdate } = toRefs(useMessageStore())
 const { departmentInfo } = useSettingStore()
 const departmentOptions = departmentInfo.map(item => {
@@ -67,8 +69,14 @@ const departmentOptions = departmentInfo.map(item => {
     label: item
   }
 })
+const receiveDepartOptions = departmentInfo.map(item => {
+  return {
+    value: item,
+    label: item
+  }
+})
 
-const msgCate = ref(0)
+const msgCate = ref()
 const labelPosition = ref<FormProps['labelPosition']>('right')
 
 const levelOptions = [
@@ -113,7 +121,7 @@ interface publishData {
 const publishMsgData: publishData = reactive({
   message_title: '',
   message_publish_department: '',
-  message_publish_name: '',
+  message_publish_name: userInfo.name,
   message_category: '',
   message_receipt_object: '',
   message_level: '',
@@ -178,7 +186,7 @@ const handleClose = (done: () => void) => {
   publishRuleFormRef.value?.resetFields()
   done()
 }
-const open = (type: number) => {
+const open = (type: boolean) => {
   msgCate.value = type
   if (type) {
     msgCateOptions[1].disabled = true
@@ -200,13 +208,20 @@ const toPublish = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.validate(async (valid) => {
     if (valid) {
-      console.log(publishMsgData);
-
       // 添加操作
       const params = publishMsgData
       const res = await publishMsg(params)
       if (res.data.status == 0) {
+        const insertId = res.data.id
         await trackRecord('message', 'publish', publishMsgData.message_title, publishMsgData.message_category)
+        // 公司公告,且为部门消息
+        if (publishMsgData.message_receipt_object && publishMsgData.message_receipt_object != '全体成员') {
+          const params = {
+            id: insertId,
+            department: publishMsgData.message_receipt_object
+          }
+          await addUnreadMsg(params)
+        }
         publishRuleFormRef.value?.resetFields()
         ElMessage({
           message: "发布消息成功",
@@ -226,8 +241,16 @@ const toPublish = (formEl: FormInstance | undefined) => {
       console.log('error submit!')
     }
   })
-
 }
+watchEffect(() => {
+  if (msgCate.value) {
+    receiveDepartOptions.unshift({
+      value: '全体成员',
+      label: '全体成员'
+    })
+
+  }
+})
 
 defineExpose({
   open

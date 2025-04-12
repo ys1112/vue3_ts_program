@@ -136,6 +136,7 @@ import { getCorpMsg, getSysMsg, deleteMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { useMessageStore } from "@/store/useMessageStore";
 import { trackRecord } from "@/utils/tracker";
+import { deleteUnreadMsg } from "@/api/department"
 const { isMessageUpdate } = toRefs(useMessageStore())
 const activeName = ref('messageList')
 const publishMsgRef = ref()
@@ -202,7 +203,7 @@ const filterMessage = () => {
 
 // 发布消息
 const publishMsg = () => {
-  publishMsgRef.value.open(1)
+  publishMsgRef.value.open(true)
 }
 const editCorpMsg = (scope: any) => {
   editMsgRef.value.open(scope)
@@ -231,6 +232,13 @@ const deleteMessage = async (row: any) => {
           const res = await deleteMsg(params)
           if (res.data.status == 0) {
           await trackRecord('message', 'delete', row.message_title,row.message_category)
+          if(row.message_receipt_object && row.message_receipt_object != '全体成员') {
+            const params = {
+              id:row.id,
+              department:row.message_receipt_object
+            }
+            await deleteUnreadMsg(params)
+          }
           ElMessage({
               type: 'success',
               message: '删除消息成功',
@@ -326,7 +334,7 @@ const getSysMsgList = async () => {
 }
 
 const publishSysMsg = () => {
-  publishMsgRef.value.open(0)
+  publishMsgRef.value.open(false)
 }
 
 const handleSizeChange1 = (val: number) => {

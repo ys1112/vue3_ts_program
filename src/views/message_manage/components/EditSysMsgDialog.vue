@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="editMsgVisible" align-center title="编辑消息" width="50%" :before-close="handleClose"
-    destroy-on-close>
+    :destroy-on-close="true">
     <el-form :model="editSysMsgData" :rules="rules" ref="editSysMsgFormRef" :label-position="labelPosition"
       label-width="auto" class="edit-form">
       <el-form-item label="主题" prop="message_title">

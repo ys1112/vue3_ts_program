@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="editDialogVisible" :title="`编辑${identity}`" width="560" :before-close="handleClose" destroy-on-close>
+  <el-dialog v-model="editDialogVisible" :title="`编辑${identity}`" width="560" :before-close="handleClose" :destroy-on-close="true">
     <el-form :model="editData" :rules="rules" ref="editRuleFormRef" label-position="left" class="edit-form">
       <el-form-item style="margin-left: 12px;" label="账号" prop="account">
         <el-input disabled v-model="account" style="width: 240px">

@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="editMsgVisible" align-center title="编辑消息" width="50%" :before-close="handleClose"
-    destroy-on-close>
+    :destroy-on-close="true">
     <el-form :model="editMsgData" :rules="rules" ref="editRuleFormRef" :label-position="labelPosition"
       label-width="auto" class="edit-form">
       <el-form-item label="主题" prop="message_title">
@@ -17,9 +17,9 @@
         </el-input>
       </el-form-item>
       <el-form-item label="接收部门" prop="message_receipt_object">
-        <el-select @change="handleChange" v-model="editMsgData.message_receipt_object" :multiple="false" filterable allow-create default-first-option
-        :reserve-keyword="false" placeholder="请选择接收部门" style="width: 240px">
-          <el-option v-for="item in departmentOptions" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select @change="handleChange" v-model="editMsgData.message_receipt_object" placeholder="请选择接收部门"
+          style="width: 240px">
+          <el-option v-for="item in receiveDepartOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="公告等级" prop="message_level">
@@ -45,16 +45,23 @@
 </template>
 
 <script lang="ts" setup name="EditMsgDialog">
-import { onMounted, reactive, ref, toRefs, watch } from 'vue';
+import { watchEffect, reactive, ref, toRefs, watch } from 'vue';
 import EditorInput from "@/components/EditorInput.vue";
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
 import { useProductStore } from "@/store/useProductStore";
 import { updateCorpMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { useMessageStore } from "@/store/useMessageStore";
+import { addUnreadMsg } from "@/api/department"
 const { isMessageUpdate } = toRefs(useMessageStore())
 const { departmentInfo } = useSettingStore()
 const departmentOptions = departmentInfo.map(item => {
+  return {
+    value: item,
+    label: item
+  }
+})
+const receiveDepartOptions = departmentInfo.map(item => {
   return {
     value: item,
     label: item
@@ -81,7 +88,7 @@ const levelOptions = [
 const editMsgVisible = ref(false)
 const editRuleFormRef = ref<FormInstance>()
 interface editData {
-  id:string
+  id: string
   message_title: string
   message_publish_department: string
   message_receipt_object: string
@@ -89,7 +96,7 @@ interface editData {
   message_content: string
 }
 const editMsgData: editData = reactive({
-  id:'',
+  id: '',
   message_title: '',
   message_publish_department: '',
   message_receipt_object: '',
@@ -109,19 +116,19 @@ const validateContent = (rule: any, value: any, callback: any) => {
   // }
 }
 // 判断编辑器内容是否为空
-const isEditorContentEmpty = (html:any) => {
+const isEditorContentEmpty = (html: any) => {
   if (!html) return true
-  
+
   // 创建临时容器解析HTML
   const div = document.createElement('div')
   div.innerHTML = html
 
   // 移除空白字符和换行
   const text = div.textContent?.replace(/[\s\n]/g, '') || ''
-  
+
   // 检查图片等多媒体内容
   const hasMedia = div.querySelector('img, video, audio')
-  
+
   // 最终判断逻辑
   return text.length === 0 && !hasMedia
 }
@@ -142,18 +149,17 @@ const rules = reactive<FormRules<editData>>({
   ],
   message_content: [
     // { required: true, message: '请输入内容', trigger: 'blur' },
-    { required: true,validator: validateContent, trigger: 'blur' },
+    { required: true, validator: validateContent, trigger: 'blur' },
   ],
 })
 const handleClose = (done: () => void) => {
   editRuleFormRef.value?.resetFields()
   done()
 }
-const handleChange = ()=>{
+const handleChange = () => {
   editMsgData.message_receipt_object = editMsgData.message_receipt_object || ''
 }
-const open = (info:any) => {
-  console.log(info);
+const open = (info: any) => {
   editMsgData.id = info.id
   message_publish_name.value = info.message_publish_name
   editMsgVisible.value = true
@@ -178,6 +184,13 @@ const toEdit = (formEl: FormInstance | undefined) => {
       const params = editMsgData
       const res = await updateCorpMsg(params)
       if (res.data.status == 0) {
+        if (editMsgData.message_receipt_object && editMsgData.message_receipt_object != '全体成员') {
+          const params = {
+            id: +editMsgData.id,
+            department: editMsgData.message_receipt_object
+          }
+          await addUnreadMsg(params)
+        }
         editRuleFormRef.value?.resetFields()
         ElMessage({
           message: "编辑公司消息成功",
@@ -197,9 +210,14 @@ const toEdit = (formEl: FormInstance | undefined) => {
       console.log('error submit!')
     }
   })
-  
-}
 
+}
+watchEffect(() => {
+  receiveDepartOptions.unshift({
+    value: '全体成员',
+    label: '全体成员'
+  })
+})
 defineExpose({
   open
 })

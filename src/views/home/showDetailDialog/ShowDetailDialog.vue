@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="detailDialogVisible" :title="detaiTitle" width="600" :before-close="handleClose" destroy-on-close>
+  <el-dialog v-model="detailDialogVisible" :title="detaiTitle" width="600" :before-close="handleClose" :destroy-on-close="true">
     <div class="dialog-body">
       <div v-html="detailInfo.set_value"></div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="createDialogVisible" title="创建产品" width="560" :before-close="handleClose" destroy-on-close>
+  <el-dialog v-model="createDialogVisible" title="创建产品" width="560" :before-close="handleClose" :destroy-on-close="true">
     <el-form :model="createData" :rules="rules" ref="createRuleFormRef" style="max-width: 560px"
       :label-position="labelPosition" label-width="auto" class="create-form">
       <el-form-item label="入库编号" prop="product_id">
@@ -59,8 +59,15 @@ import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormPr
 import { useProductStore } from "@/store/useProductStore";
 import { createProduct } from "@/api/product";
 import { trackRecord } from "@/utils/tracker";
+import { useSettingStore } from "@/store/settingInfoStore";
 const labelPosition = ref<FormProps['labelPosition']>('right')
-
+const {productInfo} = useSettingStore()
+const categoryOptions = productInfo.map(item => {
+  return {
+    value: item,
+    label: item
+  }
+})
 const unitOptions = [
   {
     value: "台",
@@ -88,32 +95,32 @@ const unitOptions = [
   }
 ]
 
-const categoryOptions = [
-  {
-    value: "通讯类‌",
-    label: "通讯类‌",
-  },
-  {
-    value: "影音类",
-    label: "影音类",
-  },
-  {
-    value: "办公类",
-    label: "办公类",
-  },
-  {
-    value: "摄影摄像类",
-    label: "摄影摄像类",
-  },
-  {
-    value: "家居类",
-    label: "家居类",
-  },
-  {
-    value: "娱乐类",
-    label: "娱乐类",
-  },
-]
+// const categoryOptions = [
+//   {
+//     value: "通讯类‌",
+//     label: "通讯类‌",
+//   },
+//   {
+//     value: "影音类",
+//     label: "影音类",
+//   },
+//   {
+//     value: "办公类",
+//     label: "办公类",
+//   },
+//   {
+//     value: "摄影摄像类",
+//     label: "摄影摄像类",
+//   },
+//   {
+//     value: "家居类",
+//     label: "家居类",
+//   },
+//   {
+//     value: "娱乐类",
+//     label: "娱乐类",
+//   },
+// ]
 
 const createDialogVisible = ref(false)
 const { isProductUpdate } = toRefs(useProductStore())

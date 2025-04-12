@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="createDialogVisible" :title="`创建${identity}`" width="560" :before-close="handleClose"
-    destroy-on-close>
+    :destroy-on-close="true">
     <el-form :model="createData" :rules="rules" ref="createRuleFormRef" label-position="left" class="create-form">
       <el-form-item label="账号" prop="account">
         <el-input v-model="createData.account" style="width: 240px" placeholder="请输入账号">

@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="auditDialogVisible" :title="`${isApprove == 'approve' ? '同意' : '驳回'}出库申请`" width="560"
-    :before-close="handleClose" destroy-on-close>
+    :before-close="handleClose" :destroy-on-close="true">
     <el-form :model="auditData" :rules="rules" ref="auditRuleFormRef" style="max-width: 560px"
       :label-position="labelPosition" label-width="auto" class="audit-form">
       <el-form-item label="审核人" prop="product_out_audit_person">

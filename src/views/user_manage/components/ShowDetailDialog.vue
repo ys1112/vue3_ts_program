@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="detailDialogVisible" align="center" title="用户信息" width="640" :before-close="handleClose"
-    destroy-on-close>
+    :destroy-on-close="true">
     <div class="user-info-body">
       <el-row :gutter="16">
         <el-col :span="10">
@@ -129,6 +129,7 @@ const weightOperate = () => {
           }
           const res = await empowerUser(params)
           if (res.data.status == 0) {
+            await trackRecord('user', 'upgrade', userInfo.value.account, selectedValue.value)
             ElMessage({
               message: `赋权为${selectedValue.value}成功`,
               type: "success",
@@ -206,11 +207,7 @@ const toDeleteUser = () => {
     })
 }
 watchEffect(() => {
-  console.log(isUsersUpdate.value);
-
   if (!isUsersUpdate.value) {
-    console.log(123);
-
     detailDialogVisible.value = false
   }
 })

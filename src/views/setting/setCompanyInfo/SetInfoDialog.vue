@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="setInfoDialogVisible" :title="setTitle" width="600" :before-close="handleClose" destroy-on-close>
+  <el-dialog v-model="setInfoDialogVisible" :title="setTitle" width="600" :before-close="handleClose" :destroy-on-close="true">
     <div style="border: 1px solid #ccc">
       <!-- wangEditor结构 -->
       <Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="editDialogVisible" title="编辑产品" width="560" :before-close="handleClose" destroy-on-close>
+  <el-dialog v-model="editDialogVisible" title="编辑产品" width="560" :before-close="handleClose" :destroy-on-close="true">
     <el-form :model="editData" :rules="rules" ref="editRuleFormRef" style="max-width: 560px"
       :label-position="labelPosition" label-width="auto" class="edit-form">
       <el-form-item label="入库编号" prop="product_id">
@@ -11,8 +11,7 @@
         </el-input>
       </el-form-item>
       <el-form-item label="产品类别" prop="product_category">
-        <el-select v-model="editData.product_category" :multiple="false" filterable allow-edit default-first-option
-          :reserve-keyword="false" placeholder="请选择产品类别" style="width: 240px">
+        <el-select v-model="editData.product_category" placeholder="请选择产品类别" style="width: 240px">
           <el-option v-for="item in categoryOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -58,6 +57,14 @@ import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
 import { useProductStore } from "@/store/useProductStore";
 import { updateProduct } from "@/api/product";
+import { useSettingStore } from "@/store/settingInfoStore";
+const {productInfo} = useSettingStore()
+const categoryOptions = productInfo.map(item => {
+  return {
+    value: item,
+    label: item
+  }
+})
 const labelPosition = ref<FormProps['labelPosition']>('right')
 
 const unitOptions = [
@@ -85,33 +92,6 @@ const unitOptions = [
     value: "箱",
     label: "箱",
   }
-]
-
-const categoryOptions = [
-  {
-    value: "通讯类‌",
-    label: "通讯类‌",
-  },
-  {
-    value: "影音类",
-    label: "影音类",
-  },
-  {
-    value: "办公类",
-    label: "办公类",
-  },
-  {
-    value: "摄影摄像类",
-    label: "摄影摄像类",
-  },
-  {
-    value: "家居类",
-    label: "家居类",
-  },
-  {
-    value: "娱乐类",
-    label: "娱乐类",
-  },
 ]
 
 const editDialogVisible = ref(false)

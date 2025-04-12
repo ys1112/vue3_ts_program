@@ -4,7 +4,8 @@
       <el-aside width="200px">
         <h4 class="mb-2 menu-title">通用后台管理系统</h4>
         <el-menu active-text-color="#ffd04b" background-color="#545c64" class="el-menu-vertical-demo"
-          :default-active="activeMenuItem.activeMenu" text-color="#fff" @select="selectedItem" router :unique-opened="true">
+          :default-active="activeMenuItem.activeMenu" text-color="#fff" @select="selectedItem" router
+          :unique-opened="true">
           <el-menu-item index="home">
             <template #title>
               <el-icon>
@@ -102,8 +103,10 @@
         <el-header>
           <div class="header-left">{{ userInfo.name || 'Undefined' }} 欢迎您登录本系统</div>
           <div class="header-right">
-            <el-icon size="20">
-              <Message />
+            <el-icon size="20" @click="viewDepartmentInfo">
+              <el-badge :value="unreadNum" :max="99" :show-zero="false" class="item">
+                <Message />
+              </el-badge>
             </el-icon>
             <div class="block">
               <el-avatar :size="24" :src="userInfo.image_url || circleUrl" />
@@ -131,17 +134,53 @@
       </el-container>
     </el-container>
   </div>
+  <ShowMsgDialog ref="msgDialogRef"></ShowMsgDialog>
 </template>
 <script lang="ts" setup name="Menu">
 import Breadcrumb from "@/components/BreadCrumb.vue";
-import { reactive, toRefs, ref, onMounted } from 'vue'
+import { reactive, toRefs, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useCommonStore } from '@/store/commonStore'
 import { useSettingStore } from '@/store/settingInfoStore'
 import { MenusEnum } from '@/contants/MenusEnum'
+import ShowMsgDialog from "./components/ShowMsgDialog.vue";
+import { io } from 'socket.io-client';
+import {
+  getDepartMsg,
+  getReadMsg,
+  deleteReadMsg
+} from "@/api/department"
 
-onMounted(() => {
+const infoStore = useUserInfoStore()
+const { userInfo, departmentMsgData, unreadNum } = toRefs(infoStore)
+
+const currentDeptId = userInfo.value.department;
+// 编码部门名称
+const encodedDeptName = encodeURIComponent(currentDeptId);
+
+// 创建 Socket 实例（替换为实际后端地址）
+const socket = io('http://127.0.0.1:3002', {
+  path: '/my-socket-path'
+});
+// const socket = io('http://127.0.0.1:3001', {
+//   autoConnect: true,       // 自动连接
+//   reconnection: true,      // 自动重连
+//   // auth: { 
+//   //   token: '用户令牌'      // 认证信息（如 JWT）
+//   // }
+// });
+
+onMounted(async () => {
+  // 连接后立即加入部门房间
+  socket.emit('joinDeptRoom', encodedDeptName);
+  // 监听本部门的新消息
+  socket.on('newMessage', (msg) => {
+    console.log('收到部门消息:', msg);
+    if (msg) {
+      getUnreadNum()
+    }
+  });
   // 保证刷新activeName位置
   for (const key in MenusEnum) {
     if (breadItems.second == MenusEnum[key as keyof typeof MenusEnum]) {
@@ -153,10 +192,15 @@ onMounted(() => {
     }
   }
 })
+
+const msgDialogRef = ref()
+
+const viewDepartmentInfo = () => {
+  msgDialogRef.value.open()
+}
+
 const commonStore = useCommonStore()
 let { activeMenuItem, breadItems, getBread } = reactive(commonStore)
-const infoStore = useUserInfoStore()
-const { userInfo } = reactive(infoStore)
 
 const router = useRouter()
 const state = reactive({
@@ -170,16 +214,31 @@ const selectedItem = (key: string, keyPath: string[]) => {
   breadItems.first = ''
   breadItems.second = ''
   activeMenuItem.activeMenu = key
-  if(keyPath.length>1) {
+  if (keyPath.length > 1) {
     breadItems.first = MenusEnum[keyPath[0] as keyof typeof MenusEnum]
     breadItems.second = MenusEnum[keyPath[1] as keyof typeof MenusEnum]
   } else {
     breadItems.first = MenusEnum[keyPath[0] as keyof typeof MenusEnum]
   }
-  
   sessionStorage.setItem('breadItems', JSON.stringify(breadItems))
 }
-
+const getUnreadNum = async () => {
+  if (localStorage.getItem('userId')) {
+    const params = {
+      id: +(localStorage.getItem('userId') as string)
+    }
+    // 获取用户未读信息read_list
+    const res = await getReadMsg(params)
+    if (res.data.status == 0 && res.data.results.read_status) {
+      userInfo.value.read_list = JSON.stringify(JSON.parse(res.data.results.read_list))
+      unreadNum.value = JSON.parse(res.data.results.read_list).length
+    }
+  }
+}
+// 定时器轮询（保底方案）
+// const getNum = setInterval(async() => {
+//   await getUnreadNum()
+// }, 60000);
 const LogOut = () => {
   // 写在上面，不然重置时会去读取storage里面的值，导致清除不干净
   localStorage.clear()
@@ -191,6 +250,10 @@ const LogOut = () => {
   // });
   router.replace('/login')
 }
+onUnmounted(() => {
+  // clearInterval(getNum)
+  socket.disconnect();
+})
 </script>
 
 <style lang="scss" scoped>
@@ -250,5 +313,11 @@ const LogOut = () => {
 
 :deep(.el-tooltip__trigger:focus-visible) {
   outline: unset;
+}
+
+.item {
+  margin-right: 12px;
+  font-style: normal;
+  cursor: pointer;
 }
 </style>

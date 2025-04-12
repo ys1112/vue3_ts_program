@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="applyDialogVisible" title="申请出库" width="560" :before-close="handleClose" destroy-on-close>
+  <el-dialog v-model="applyDialogVisible" title="申请出库" width="560" :before-close="handleClose" :destroy-on-close="true">
     <el-form :model="applyData" :rules="rules" ref="applyRuleFormRef" style="max-width: 560px"
       :label-position="labelPosition" label-width="auto" class="apply-form">
       <el-form-item label="申请出库编号" prop="product_out_id">

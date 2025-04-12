@@ -20,8 +20,12 @@ export const useUserInfoStore = defineStore("userInfo", {
         email: "",
         image_url: "",
         id: "",
-      }),
-      isUsersUpdate:ref(false)
+        read_list: "[]",
+        read_status: 0,
+      } as any),
+      isUsersUpdate: ref(false),
+      unreadNum: ref(),
+      departmentMsgData: ref(),
     }
   },
   actions: {
@@ -33,6 +37,7 @@ export const useUserInfoStore = defineStore("userInfo", {
             this.userInfo[key as keyof typeof this.userInfo] = res.data[key]
           }
         })
+        this.unreadNum = JSON.parse(res.data.read_list).length
       } else {
         ElMessage({
           message: "获取用户信息失败",
@@ -56,6 +61,11 @@ export const useUserInfoStore = defineStore("userInfo", {
       }
     },
   },
+  // getters:{
+  //   unreadNum():number{
+  //     return JSON.parse(this.userInfo.read_list).length
+  //   }
+  // },
   persist: {
     key: "userInfos", // 自定义存储键名
     storage: localStorage,

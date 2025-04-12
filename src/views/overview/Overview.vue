@@ -10,16 +10,16 @@
             <div class="user-info-belongs">
               <el-image style="width: 100px; height: 100px;border-radius: 50%;" :src="userInfo.image_url || circleUrl"
                 fit="cover" />
-              <p>所属部门：{{userInfo.department}}</p>
+              <p>所属部门：{{ userInfo.department }}</p>
               <p>所属公司：{{ conmapyData[0].set_value }}</p>
             </div>
             <!-- 用户信息右侧 -->
             <div class="user-info-detail">
-              <p>姓名：{{userInfo.name}}</p>
-              <p>性别：{{userInfo.gender}}</p>
-              <p>身份：{{userInfo.identity}}</p>
-              <p>分管领域：{{userInfo.department}}</p>
-              <p>权限：{{ getPermission(userInfo.identity)}}</p>
+              <p>姓名：{{ userInfo.name }}</p>
+              <p>性别：{{ userInfo.gender }}</p>
+              <p>身份：{{ userInfo.identity }}</p>
+              <p>分管领域：{{ userInfo.department }}</p>
+              <p>权限：{{ getPermission(userInfo.identity) }}</p>
             </div>
           </div>
         </el-col>
@@ -83,7 +83,7 @@ import { useUserInfoStore } from '@/store/userInfoStore'
 import { useSettingStore } from '@/store//settingInfoStore'
 import { useRouter } from 'vue-router'
 import { MENU_CONFIG } from '@/contants/menuStructure'
-
+import { getUserData, getMsgLvData, getPriceData, getLoginCount } from "@/api/setting";
 import SvgIcon from "@/components/SvgIcon.vue"
 import * as echarts from 'echarts'
 const { activeMenuItem, getBread } = reactive(useCommonStore())
@@ -96,10 +96,38 @@ const productCategoryRef = ref(null)
 const loginCountRef = ref(null)
 const announcementLevelRef = ref(null)
 
+// 用户类别数据[{ value: 1, name: '超级管理员' }],
+const userData = ref([])
+// 产品类别库存总价数据
+// [
+// 12000,
+//   8300,
+//   25000,
+// {
+//   value: 15200,
+//   itemStyle: {
+//     color: '#a90000'
+//   }
+// },
+// ],
+
+let categoryData = ref([] as any[])
+let allPriceData = ref([] as any[])
+
+// 公告等级数据
+// data: [
+//         { value: 12, name: '一般' },
+//         { value: 2, name: '重要' },
+//         { value: 1, name: '必要' },
+//       ],
+const msgLevelData = ref([])
+// 登录人数数据 data: [12, 5, 3, 11, 7, 16, 8],
+let loginTimeyData = ref([] as any[])
+let loginCountData = ref([] as any[])
 const infoStore = useUserInfoStore()
 const settingStore = useSettingStore()
 const { userInfo } = reactive(infoStore)
-const { companyInfo:{conmapyData} } = reactive(settingStore)
+const { companyInfo: { conmapyData } } = reactive(settingStore)
 const commonManages = reactive([
   {
     id: 1,
@@ -139,10 +167,10 @@ const commonManages = reactive([
     path: 'setting'
   }
 ])
-const getPermission = (identity:string)=>{
-  if(identity == '系统管理员') {
+const getPermission = (identity: string) => {
+  if (identity == '系统管理员') {
     return '最高权限'
-  } else  {
+  } else {
     return identity
   }
 }
@@ -162,7 +190,42 @@ const goCommonManage = (path: string) => {
     path
   })
 }
-onMounted(() => {
+
+onMounted(async () => {
+  const userRes = await getUserData()
+  if (userRes.data.status == 0) {
+    userData.value = userRes.data.results
+  }
+  const msgRes = await getMsgLvData()
+  if (msgRes.data.status == 0) {
+    msgLevelData.value = msgRes.data.results
+  }
+  const priceRes = await getPriceData()
+  if (priceRes.data.status == 0) {
+    if (priceRes.data.results.length > 0) {
+      // 创建有数序的Map键值对
+      let catePriceMap = new Map(priceRes.data.results.map((row: any) => [row.category, row.total]))
+      // 获取keys作为柱状图的X轴坐标
+      categoryData.value = [...catePriceMap.keys()] as any
+      // 获取values作为柱状图的Y轴数据
+      allPriceData.value = [...catePriceMap.values()] as any
+      // 给最大值添加样式
+      const max = Math.max(...allPriceData.value)
+      allPriceData.value = allPriceData.value.map(item => item == max ? {
+        value: item,
+        itemStyle: {
+          color: '#a90000'
+        }
+      } : item)
+    }
+  }
+  const loginRes = await getLoginCount()
+    if (loginRes.data.status == 0) {
+      let countMap = new Map(loginRes.data.results.map((row: any) => [row.date, row.count]))
+      loginTimeyData.value = [...countMap.keys()] as any
+      loginCountData.value = [...countMap.values()] as any
+  }
+
   // 管理与用户饼图
   const manageUserPie = echarts.init(manageUserRef.value);
   manageUserPie.setOption({
@@ -191,16 +254,11 @@ onMounted(() => {
             shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
         },
-        data: [
-          { value: 1, name: '超级管理员' },
-          { value: 5, name: '产品管理员' },
-          { value: 5, name: '用户管理员' },
-          { value: 35, name: '用户' },
-        ],
+        data: userData.value,
       }
     ]
   });
-  // 产品类别柱状图
+  // 产品类别柱状图 
   const productCategoryBar = echarts.init(productCategoryRef.value);
   productCategoryBar.setOption({
     title: {
@@ -212,7 +270,7 @@ onMounted(() => {
     // 数据类别分组示例
     xAxis: {
       type: 'category',
-      data: ['食品类', '服装类', '鞋帽类', '日用品类']
+      data: categoryData.value
     },
     yAxis: {
       type: 'value'
@@ -240,17 +298,7 @@ onMounted(() => {
             shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
         },
-        data: [
-          12000,
-          8300,
-          25000,
-          {
-            value: 15200,
-            itemStyle: {
-              color: '#a90000'
-            }
-          },
-        ],
+        data: allPriceData.value,
       }
     ]
   });
@@ -266,7 +314,7 @@ onMounted(() => {
     // 数据类别分组示例
     xAxis: {
       type: 'category',
-      data: ['2025-4-1', '2025-4-2', '2025-4-3', '2025-4-4', '2025-4-5', '2025-4-6', '2025-4-7',]
+      data: loginTimeyData.value
     },
     yAxis: {
       type: 'value'
@@ -283,7 +331,7 @@ onMounted(() => {
             shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
         },
-        data: [12, 5, 3, 11, 7, 16, 8],
+        data: loginCountData.value,
       }
     ]
   });
@@ -333,11 +381,7 @@ onMounted(() => {
             shadowColor: 'rgba(0, 0, 0, 0.5)'
           }
         },
-        data: [
-          { value: 12, name: '一般' },
-          { value: 2, name: '重要' },
-          { value: 1, name: '必要' },
-        ],
+        data: msgLevelData.value,
       }
     ]
   });

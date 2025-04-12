@@ -34,7 +34,7 @@
             </el-table-column>
             <el-table-column prop="operate" label="操作" fixed="right" width="200">
               <template #default="scope">
-                <el-button type="success" @click="restoreMessage(scope.row.id)">还原</el-button>
+                <el-button type="success" @click="restoreMessage(scope.row)">还原</el-button>
                 <el-button type="danger" @click="deleteData(scope.row.id)">删除</el-button>
               </template>
             </el-table-column>
@@ -59,6 +59,7 @@ import { getRecycleMsg, restoreMsg, deleteRecycleMsg } from '@/api/message';
 import { useDebounce } from '@/hooks/useDebounce'
 import { QuestionFilled, WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useMessageStore } from "@/store/useMessageStore";
+import { addUnreadMsg } from "@/api/department"
 const { isMessageUpdate } = toRefs(useMessageStore())
 
 onMounted(async () => {
@@ -123,9 +124,9 @@ const searchMsg = useDebounce(async () => {
     getMsg()
   }
 }, 800)
-const restoreMessage = (id: string) => {
+const restoreMessage = (row: any) => {
   const params = {
-    id: +id
+    id: +row.id
   }
   ElMessageBox(
     {
@@ -143,6 +144,13 @@ const restoreMessage = (id: string) => {
         if (action === 'confirm') {
           const res = await restoreMsg(params)
           if (res.data.status == 0) {
+            if (row.message_receipt_object && row.message_receipt_object != '全体成员') {
+              const params = {
+                id: row.id,
+                department: row.message_receipt_object
+              }
+              await addUnreadMsg(params)
+            }
             ElMessage({
               type: 'success',
               message: '还原成功',

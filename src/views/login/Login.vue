@@ -107,8 +107,9 @@ import { recordLogin } from "@/api/login_log";
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useSettingStore } from '@/store/settingInfoStore'
 import { useCommonStore } from '@/store/commonStore'
+import { getDepartMsg } from "@/api/department"
 
-const { getInfo } = useUserInfoStore()
+const { getInfo,userInfo } = useUserInfoStore()
 const { getSettingInfo,getDepartmentInfo,getProductInfo } = useSettingStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 
@@ -194,26 +195,40 @@ const toLogin = (formEl: FormInstance | undefined) => {
     if (valid) {
       const res = await login(loginData)
       if (res.data.status == 0) {
+        // 记录登录日志
         const params = {
           name:res.data.results.name,
           account:res.data.results.account,
           email:res.data.results.email,
           identity:res.data.results.identity
         }
+        localStorage.setItem('userId',res.data.results.id)
         await recordLogin(params)
         ElMessage({
           message: '登录成功',
           type: 'success',
         })
         const { token } = res.data
-        // 获取用户信息 存储用户信息
-        getInfo(res.data.results.id)
+        
         // 获取公司信息和轮播图
         getSettingInfo()
         // 获取部门设置
         getDepartmentInfo()
         // 获取产品类别设置
         getProductInfo()
+        // 获取用户部门信息
+        if (!res.data.results.read_status) {
+          const params = {
+            department: res.data.results.department,
+            id: res.data.results.id,
+          }
+          const departRes = await getDepartMsg(params)
+          if (departRes.data.status == 0) {
+            userInfo.read_list = JSON.stringify(res.data.read_list)
+          }
+        }
+        // 获取用户信息 存储用户信息
+        await getInfo(res.data.results.id)
         localStorage.setItem('token', token)
         router.push('/home')
       } else {

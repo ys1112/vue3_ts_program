@@ -26,27 +26,24 @@ interface updateSysData {
 interface operateData {
   id: number
 }
-interface departmentData {
-  message_publish_department:string
-}
+
 // 获取公司消息列表
-export const getCorpMsg = (params:any) => {
+export const getCorpMsg = (params: any) => {
   return instance({
     url: "/msg/getCorpMsg",
     method: "GET",
-    params
+    params,
   })
 }
 
 // 获取系统消息列表
-export const getSysMsg = (params:any) => {
+export const getSysMsg = (params: any) => {
   return instance({
     url: "/msg/getSysMsg",
     method: "GET",
-    params
+    params,
   })
 }
-
 
 // 发布消息
 export const publishMsg = (data: publishData) => {
@@ -91,11 +88,11 @@ export const deleteMsg = (data: operateData) => {
 }
 
 // 获取系统消息列表
-export const getRecycleMsg = (params:any) => {
+export const getRecycleMsg = (params: any) => {
   return instance({
     url: "/msg/getRecycleMsg",
     method: "GET",
-    params
+    params,
   })
 }
 
@@ -127,25 +124,6 @@ export const deleteRecycleMsg = (data: operateData) => {
   return instance({
     url: "/msg/deleteRecycleMsg",
     method: "DELETE",
-    data,
-  })
-}
-
-
-// 获取部门消息
-export const getDepartmentMsg = (data: departmentData) => {
-  return instance({
-    url: "/msg/getDepartmentMsg",
-    method: "POST",
-    data,
-  })
-}
-
-// 更新点击数
-export const updateClick = (data: operateData) => {
-  return instance({
-    url: "/msg/updateClick",
-    method: "POST",
     data,
   })
 }
