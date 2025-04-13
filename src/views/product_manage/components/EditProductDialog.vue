@@ -101,7 +101,7 @@ const editRuleFormRef = ref<FormInstance>()
 const product_id = ref('')
 const product_create_person = ref('')
 
-interface updateProductData {
+interface UpdateProductData {
   id: string
   product_name: string
   product_category: string
@@ -110,7 +110,7 @@ interface updateProductData {
   product_single_price: string
   in_memo: string
 }
-const editData: updateProductData = reactive({
+const editData: UpdateProductData = reactive({
   id: '',
   product_name: '',
   product_category: '',
@@ -133,7 +133,7 @@ const validateUnit = (rule: any, value: any, callback: any) => {
     callback()
   }
 }
-const rules = reactive<FormRules<updateProductData>>({
+const rules = reactive<FormRules<UpdateProductData>>({
   product_name: [
     { required: true, message: '请输入产品名称', trigger: 'blur' },
   ],

@@ -1,27 +1,27 @@
 import instance from "@/http/index"
-interface departmentData {
+interface DepartmentData {
   id:number
   department:string
 }
-interface updateReadData {
+interface UpdateReadData {
   read_id:number
   user_id:string
 }
-interface operateData {
+interface OperateData {
   id: number
 }
-interface departData {
+interface DepartData {
   department:string
 }
 // 获取部门消息
-export const getDepartMsg = (data: departmentData) => {
+export const getDepartMsg = (data: DepartmentData) => {
   return instance({
     url: "/dpm/getDepartMsg",
     method: "POST",
     data,
   })
 }
-export const getAllDepartMsg = (data: departData) => {
+export const getAllDepartMsg = (data: DepartData) => {
   return instance({
     url: "/dpm/getAllDepartMsg",
     method: "POST",
@@ -29,7 +29,7 @@ export const getAllDepartMsg = (data: departData) => {
   })
 }
 // 获取用户未读信息read_list
-export const getReadMsg = (data: operateData) => {
+export const getReadMsg = (data: OperateData) => {
   return instance({
     url: "/dpm/getReadMsg",
     method: "POST",
@@ -38,7 +38,7 @@ export const getReadMsg = (data: operateData) => {
 }
 
 // 用户点击未读消息更新用户未读信息
-export const deleteReadMsg = (data: updateReadData) => {
+export const deleteReadMsg = (data: UpdateReadData) => {
   return instance({
     url: "/dpm/deleteReadMsg",
     method: "POST",
@@ -47,7 +47,7 @@ export const deleteReadMsg = (data: updateReadData) => {
 }
 
 // 新增信息时修改所属部门成员的未读消息
-export const addUnreadMsg = (data: departmentData) => {
+export const addUnreadMsg = (data: DepartmentData) => {
   return instance({
     url: "/dpm/addUnreadMsg",
     method: "POST",
@@ -55,7 +55,7 @@ export const addUnreadMsg = (data: departmentData) => {
   })
 }
 // 删除信息时修改所属部门成员的未读消息
-export const deleteUnreadMsg = (data: departmentData) => {
+export const deleteUnreadMsg = (data: DepartmentData) => {
   return instance({
     url: "/dpm/deleteUnreadMsg",
     method: "POST",
@@ -64,7 +64,7 @@ export const deleteUnreadMsg = (data: departmentData) => {
 }
 
 // 更新点击数
-export const updateClick = (data: operateData) => {
+export const updateClick = (data: OperateData) => {
   return instance({
     url: "/dpm/updateClick",
     method: "POST",

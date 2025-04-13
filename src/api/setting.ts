@@ -1,8 +1,8 @@
 import instance from "@/http/index"
-interface departmentData {
+interface DepartmentData {
   department: string
 }
-interface productData {
+interface ProductData {
   product: string
 }
 // 获取所有轮播图
@@ -29,7 +29,7 @@ export const getCompanyInfo = ()=>{
 }
  
 // 修改部门  post
-export const setDepartment = (data: departmentData) => {
+export const setDepartment = (data: DepartmentData) => {
   const { department } = data
   return instance({
     url: "/user/setDepartment",
@@ -48,7 +48,7 @@ export const getDepartment = () => {
 }
 
 // 修改部门 setProduct post
-export const setProduct = (data: productData) => {
+export const setProduct = (data: ProductData) => {
   const { product } = data
   return instance({
     url: "/user/setProduct",

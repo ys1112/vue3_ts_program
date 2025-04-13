@@ -30,7 +30,7 @@ import { reactive, ref, } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance } from 'element-plus'
 
 // 密码数据接口
-interface resetForm {
+interface ResetForm {
   password: string
   newPassword: string
 }
@@ -41,7 +41,7 @@ const resetDialogVisible = ref(false)
 // resetFormRef表单实例对象
 const resetFormRef = ref<FormInstance>()
 // 密码数据
-const resetData: resetForm = reactive({
+const resetData: ResetForm = reactive({
   password: '',
   newPassword: ''
 })
@@ -74,7 +74,7 @@ const validateNewPassword = (rule: any, value: any, callback: any) => {
 }
 
 // 表单校验规则
-const rules = reactive<FormRules<resetForm>>({
+const rules = reactive<FormRules<ResetForm>>({
   password: [
     { required: true, message: '请输入您的原密码', trigger: 'blur' },
     { validator: validatePassword, trigger: 'blur' }

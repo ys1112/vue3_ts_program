@@ -1,21 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 // createRouter创建路由
-import Login from "@/views/login/Login.vue"
 import Menu from "@/views/menus/Menu.vue"
-import Home from "@/views/home/Home.vue"
-import Overview from "@/views/overview/Overview.vue";
-import Setting from "@/views/setting/SysSetting.vue";
-import ProductManager from "@/views/user_manage/product_manage/ProductManager.vue";
-import UserManager from "@/views/user_manage/user_manage/UserManager.vue";
-import MessageManager from "@/views/user_manage/message_manage/MessageManager.vue";
-import UserList from "@/views/user_manage/user_list/UserList.vue";
-import ProductList from "@/views/product_manage/product_list/ProductList.vue";
-import MessageList from "@/views/message_manage/message_list/MessageList.vue";
-import RecycleBin from "@/views/message_manage/recycle_bin/RecycleBin.vue";
-import DeliveryList from "@/views/product_manage/delivery_list/DeliveryList.vue";
-import ContractManage from "@/views/contract_manage/ContractManage.vue";
-import OperateLog from "@/views/operate_log/OperateLog.vue";
-import LoginLog from "@/views/login_log/LoginLog.vue";
+
 const router = createRouter({
   // 创建路由历史模式
   history: createWebHistory(),
@@ -25,86 +11,85 @@ const router = createRouter({
       redirect: "/login",
     },
     {
-      name: "login",
       path: "/login",
-      component: Login,
+      component: () => import("@/views/login/Login.vue"),
+      name: "Login",
     },
     {
-      name: "menu",
+      name: "Menu",
       path: "/menu",
       component: Menu,
       children: [
         {
-          name: "home",
+          name: "Home",
           path: "/home",
-          component: Home,
+          component: () => import("@/views/home/Home.vue"),
         },
         {
-          name: "overview",
+          name: "Overview",
           path: "/overview",
-          component: Overview,
+          component: () => import("@/views/overview/Overview.vue"),
         },
         {
-          name: "product_manager",
+          name: "ProductManager",
           path: "/product_manager",
-          component: ProductManager,
+          component: () => import("@/views/user_manage/product_manage/ProductManager.vue"),
         },
         {
-          name: "user_manager",
+          name: "UserManager",
           path: "/user_manager",
-          component: UserManager,
+          component: () => import("@/views/user_manage/user_manage/UserManager.vue"),
         },
         {
-          name: "message_manager",
+          name: "MessageManager",
           path: "/message_manager",
-          component: MessageManager,
+          component: () => import("@/views/user_manage/message_manage/MessageManager.vue"),
         },
         {
-          name: "user_list",
+          name: "UserList",
           path: "/user_list",
-          component: UserList,
+          component: () => import("@/views/user_manage/user_list/UserList.vue"),
         },
         {
-          name: "product_list",
+          name: "ProductList",
           path: "/product_list",
-          component: ProductList,
+          component: () => import("@/views/product_manage/product_list/ProductList.vue"),
         },
         {
-          name: "delivery_list",
+          name: "DeliveryList",
           path: "/delivery_list",
-          component: DeliveryList,
+          component: () => import("@/views/product_manage/delivery_list/DeliveryList.vue"),
         },
         {
-          name: "message_list",
+          name: "MessageList",
           path: "/message_list",
-          component: MessageList,
+          component: () => import("@/views/message_manage/message_list/MessageList.vue"),
         },
         {
-          name: "recycle_bin",
+          name: "RecycleBin",
           path: "/recycle_bin",
-          component: RecycleBin,
+          component: () => import("@/views/message_manage/recycle_bin/RecycleBin.vue"),
         },
         {
-          name: "contract_manage",
+          name: "ContractManage",
           path: "/contract_manage",
-          component: ContractManage,
+          component: () => import("@/views/contract_manage/ContractManage.vue"),
         },
         {
-          name: "operate_log",
+          name: "OperateLog",
           path: "/operate_log",
-          component: OperateLog,
+          component: () => import("@/views/operate_log/OperateLog.vue"),
         },
         {
-          name: "login_log",
+          name: "LoginLog",
           path: "/login_log",
-          component: LoginLog,
+          component: () => import("@/views/login_log/LoginLog.vue"),
         },
         {
-          name: "setting",
+          name: "Setting",
           path: "/setting",
-          component: Setting,
+          component: () => import("@/views/setting/SysSetting.vue"),
         },
-        
       ],
     },
   ],

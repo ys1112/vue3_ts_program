@@ -22,8 +22,8 @@
             <el-table-column prop="operate_content" label="操作內容" show-overflow-tooltip min-width="240"  />
             <el-table-column prop="operate_level" label="操作等级" width="240" >
               <template #default="scope">
-                  <el-tag v-if="scope.row.operate_level == '一般'" type="primary">一般</el-tag>
-                  <el-tag v-if="scope.row.operate_level == '高级'" type="danger">高级</el-tag>
+                  <el-tag size="small" v-if="scope.row.operate_level == '一般'" type="primary">一般</el-tag>
+                  <el-tag size="small" v-if="scope.row.operate_level == '高级'" type="danger">高级</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="operate_time" label="操作时间" min-width="240">

@@ -32,9 +32,9 @@
                 <el-table-column prop="product_all_price" label="库存总价" width="128" />
                 <el-table-column prop="product_status" label="库存状态" width="128">
                   <template #default="scope">
-                    <el-tag v-if="scope.row.product_status == '库存告急'" type="danger">库存告急</el-tag>
-                    <el-tag v-if="scope.row.product_status == '库存正常'" type="primary">库存正常</el-tag>
-                    <el-tag v-if="scope.row.product_status == '库存过剩'" type="warning">库存过剩</el-tag>
+                    <el-tag size="small" v-if="scope.row.product_status == '库存告急'" type="danger">库存告急</el-tag>
+                    <el-tag size="small" v-if="scope.row.product_status == '库存正常'" type="primary">库存正常</el-tag>
+                    <el-tag size="small" v-if="scope.row.product_status == '库存过剩'" type="warning">库存过剩</el-tag>
                   </template>
                 </el-table-column>
                 <el-table-column prop="product_create_person" label="入库负责人" width="120" />

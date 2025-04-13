@@ -87,7 +87,7 @@ const levelOptions = [
 
 const editMsgVisible = ref(false)
 const editRuleFormRef = ref<FormInstance>()
-interface editData {
+interface EditData {
   id: string
   message_title: string
   message_publish_department: string
@@ -95,7 +95,7 @@ interface editData {
   message_level: string
   message_content: string
 }
-const editMsgData: editData = reactive({
+const editMsgData: EditData = reactive({
   id: '',
   message_title: '',
   message_publish_department: '',
@@ -134,7 +134,7 @@ const isEditorContentEmpty = (html: any) => {
 }
 
 // 校验规则
-const rules = reactive<FormRules<editData>>({
+const rules = reactive<FormRules<EditData>>({
   message_title: [
     { required: true, message: '请输入主题', trigger: 'blur' },
   ],

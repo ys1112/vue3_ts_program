@@ -32,8 +32,8 @@
             <el-table-column prop="email" label="邮箱" />
             <el-table-column prop="status" label="状态" max-width="120">
               <template #default="scope">
-                <el-tag v-if="scope.row.status == '0'" type="success">正常</el-tag>
-                <el-tag v-if="scope.row.status == '1'" type="danger">冻结</el-tag>
+                <el-tag size="small" v-if="scope.row.status == '0'" type="success">正常</el-tag>
+                <el-tag size="small" v-if="scope.row.status == '1'" type="danger">冻结</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="create_time" label="创建时间">

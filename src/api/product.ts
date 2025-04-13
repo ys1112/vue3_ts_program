@@ -1,5 +1,5 @@
 import instance from "@/http/index"
-interface createProductData {
+interface CreateProductData {
   product_id: string
   product_name: string
   product_category: string
@@ -9,7 +9,7 @@ interface createProductData {
   product_create_person: string
   in_memo: string
 }
-interface updateProductData {
+interface UpdateProductData {
   id: string
   product_name: string
   product_category: string
@@ -18,22 +18,22 @@ interface updateProductData {
   product_single_price: string
   in_memo: string
 }
-interface applyOutData {
+interface ApplyOutData {
   id: string
   product_out_id: string
   product_out_number: string
   product_out_apply_person: string
   apply_memo: string
 }
-interface auditData {
+interface AuditData {
   id:string
   product_out_audit_person:string
   audit_memo:string
 }
-interface deleteProductData {
+interface DeleteProductData {
   id: number
 }
-interface operateData {
+interface OperateData {
   id: number
 }
 // 获取产品信息
@@ -46,7 +46,7 @@ export const getProductInfo = (params:any) => {
 }
 
 // 新建产品 createProduct post
-export const createProduct = (data: createProductData) => {
+export const createProduct = (data: CreateProductData) => {
   const {
     product_id,
     product_name,
@@ -74,7 +74,7 @@ export const createProduct = (data: createProductData) => {
 }
 
 // 申请出库 post
-export const applyDelivery = (data: applyOutData) => {
+export const applyDelivery = (data: ApplyOutData) => {
   const {
     id,
     product_out_id,
@@ -96,7 +96,7 @@ export const applyDelivery = (data: applyOutData) => {
 }
 
 // 编辑产品 editProduct post
-export const updateProduct = (data: updateProductData) => {
+export const updateProduct = (data: UpdateProductData) => {
   const {
     id,
     product_name,
@@ -122,7 +122,7 @@ export const updateProduct = (data: updateProductData) => {
 }
 
 // 删除产品 post
-export const deleteProduct = (data: deleteProductData) => {
+export const deleteProduct = (data: DeleteProductData) => {
   const {
     id,
   } = data
@@ -145,7 +145,7 @@ export const getApplyProducts = (params:any) => {
 }
 
 // 同意申请
-export const approveApply = (data: auditData) => {
+export const approveApply = (data: AuditData) => {
   return instance({
     url: "/pro/approveApply",
     method: "POST",
@@ -153,7 +153,7 @@ export const approveApply = (data: auditData) => {
   })
 }
 // 驳回申请
-export const rejectApply = (data: auditData) => {
+export const rejectApply = (data: AuditData) => {
   return instance({
     url: "/pro/rejectApply",
     method: "POST",
@@ -161,7 +161,7 @@ export const rejectApply = (data: auditData) => {
   })
 }
 // 撤销申请
-export const cancelApply = (data: operateData) => {
+export const cancelApply = (data: OperateData) => {
   const { id } = data
   return instance({
     url: "/pro/cancelApply",
@@ -172,7 +172,7 @@ export const cancelApply = (data: operateData) => {
   })
 }
 // 再次提交申请
-export const resubmit = (data: operateData) => {
+export const resubmit = (data: OperateData) => {
   const { id } = data
   return instance({
     url: "/pro/resubmit",
@@ -193,7 +193,7 @@ export const getOutProducts = (params:any) => {
 }
 
 // 删除已出库产品
-export const deleteDelivery = (data: deleteProductData) => {
+export const deleteDelivery = (data: DeleteProductData) => {
   const {
     id,
   } = data

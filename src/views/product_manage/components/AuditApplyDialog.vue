@@ -42,18 +42,18 @@ const auditRuleFormRef = ref<FormInstance>()
 const isApprove = ref('')
 const productName = ref('')
 
-interface auditData {
+interface AuditData {
   id: string
   product_out_audit_person: string
   audit_memo: string
 }
-const auditData: auditData = reactive({
+const auditData: AuditData = reactive({
   id: '',
   product_out_audit_person: userInfo.value.name,
   audit_memo: '',
 })
 
-const rules = reactive<FormRules<auditData>>({
+const rules = reactive<FormRules<AuditData>>({
   product_out_audit_person: [
     { required: true, message: '请输入审核人姓名', trigger: 'blur' },
   ],

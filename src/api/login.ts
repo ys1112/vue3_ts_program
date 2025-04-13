@@ -1,18 +1,18 @@
 import instance from "@/http/index"
-interface loginData {
+interface LoginData {
   account: string
   password: string
 }
-interface verifyAccountData {
+interface VerifyAccountData {
   account: string
   email: string
 }
-interface verifyResetData {
+interface VerifyResetData {
   id: string
   newPassword: string
 }
 // 注册接口
-export const register = (data:loginData)=>{
+export const register = (data:LoginData)=>{
   const { account, password } = data
   return instance({
     url:'/api/register',
@@ -25,7 +25,7 @@ export const register = (data:loginData)=>{
 }
 
 // 登录接口
-export const login = (data:loginData)=>{
+export const login = (data:LoginData)=>{
   const { account, password } = data
   return instance({
     url:'/api/login',
@@ -38,7 +38,7 @@ export const login = (data:loginData)=>{
 }
 
 // 验证账号和邮箱
-export const verifyAccount = (data:verifyAccountData)=>{
+export const verifyAccount = (data:VerifyAccountData)=>{
   const { account, email } = data
   return instance({
     url:'/user/verifyAccount',
@@ -51,7 +51,7 @@ export const verifyAccount = (data:verifyAccountData)=>{
 }
 
 // 重置密码
-export const resetPassword = (data:verifyResetData)=>{
+export const resetPassword = (data:VerifyResetData)=>{
   const { id, newPassword } = data
   return instance({
     url:'/user/resetPassword',

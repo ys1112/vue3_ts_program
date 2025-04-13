@@ -1,28 +1,28 @@
 import instance from "@/http/index"
 // bindAccount
-interface bindAccountData {
+interface BindAccountData {
   only_id: string
   url: string
   account: string
 }
-interface id {
+interface Id {
   id: string
 }
-interface uName {
+interface UName {
   name: string
 }
-interface email {
+interface Email {
   email: string
 }
-interface gender {
+interface Gender {
   gender: string
 }
-interface resetData {
+interface ResetData {
   password: string
   newPassword: string
 }
 
-interface createAdminData {
+interface CreateAdminData {
   account: string
   password: string
   name: string
@@ -31,45 +31,37 @@ interface createAdminData {
   identity: string
   department: string
 }
-interface downgradeAdminData {
+interface DowngradeAdminData {
   id: number
 }
-interface updateUserData {
+interface UpdateUserData {
   id: string
   name: string
   gender: string
   email: string
   department: string
-}
-interface getUserListData {
-  pageNum: number
-  pageSize: number
-  identity: string
-  department?: string
-  status?: string
-  keyword?: string
 }
 // interface searchUserListData {
 //   identity: string
 //   keyword: string
 // }
-interface freezeUserData {
+interface FreezeUserData {
   id: number
 }
-interface unfreezeUserData {
+interface UnfreezeUserData {
   id: number
 }
-interface empowerUserData {
+interface EmpowerUserData {
   id: number
   identity: string
 }
-interface deleteUserData {
+interface DeleteUserData {
   id: number
   account: string
 }
 
 // 获取用户信息
-export const getUserInfo = (id: id) => {
+export const getUserInfo = (id: Id) => {
   return instance({
     url: "/user/getUserInfo",
     method: "GET",
@@ -78,7 +70,7 @@ export const getUserInfo = (id: id) => {
 }
 
 // 绑定头像和账号
-export const bindAccount = (data: bindAccountData) => {
+export const bindAccount = (data: BindAccountData) => {
   const { only_id, url, account } = data
   return instance({
     url: "/user/bindAccount",
@@ -92,7 +84,7 @@ export const bindAccount = (data: bindAccountData) => {
 }
 
 // 登录后修改密码
-export const updatePassword = (id: id, data: resetData) => {
+export const updatePassword = (id: Id, data: ResetData) => {
   const { password, newPassword } = data
   return instance({
     url: "/user/updatePassword",
@@ -106,7 +98,7 @@ export const updatePassword = (id: id, data: resetData) => {
 }
 
 // 修改姓名
-export const updateName = (id: id, uName: uName) => {
+export const updateName = (id: Id, uName: UName) => {
   return instance({
     url: "/user/updateName",
     method: "PUT",
@@ -116,7 +108,7 @@ export const updateName = (id: id, uName: uName) => {
 }
 
 // 修改性别
-export const updateGender = (id: id, gender: gender) => {
+export const updateGender = (id: Id, gender: Gender) => {
   return instance({
     url: "/user/updateGender",
     method: "PUT",
@@ -126,7 +118,7 @@ export const updateGender = (id: id, gender: gender) => {
 }
 
 // 修改邮箱
-export const updateEmail = (id: id, email: email) => {
+export const updateEmail = (id: Id, email: Email) => {
   return instance({
     url: "/user/updateEmail",
     method: "PUT",
@@ -137,7 +129,7 @@ export const updateEmail = (id: id, email: email) => {
 
 // --------------------用户管理
 // 新建管理员 createAdmin post
-export const createAdmin = (data: createAdminData) => {
+export const createAdmin = (data: CreateAdminData) => {
   const { account, password, name, gender, email, identity, department } = data
   return instance({
     url: "/user/createAdmin",
@@ -154,7 +146,7 @@ export const createAdmin = (data: createAdminData) => {
   })
 }
 // 删除管理员（降级为普通用户） downgradeAdmin post
-export const downgradeAdmin = (data: downgradeAdminData) => {
+export const downgradeAdmin = (data: DowngradeAdminData) => {
   const { id } = data
   return instance({
     url: "/user/downgradeAdmin",
@@ -165,7 +157,7 @@ export const downgradeAdmin = (data: downgradeAdminData) => {
   })
 }
 // 编辑用户账号信息 updateUser put
-export const updateUser = (data: updateUserData) => {
+export const updateUser = (data: UpdateUserData) => {
   const { id, name, gender, email, department } = data
   return instance({
     url: "/user/updateUser",
@@ -196,7 +188,7 @@ export const getUserList = (params: any) => {
 //   })
 // }
 // 根据id冻结用户 freezeUser post
-export const freezeUser = (data: freezeUserData) => {
+export const freezeUser = (data: FreezeUserData) => {
   const { id } = data
   return instance({
     url: "/user/freezeUser",
@@ -207,7 +199,7 @@ export const freezeUser = (data: freezeUserData) => {
   })
 }
 // 根据id解冻用户 unfreezeUser post
-export const unfreezeUser = (data: unfreezeUserData) => {
+export const unfreezeUser = (data: UnfreezeUserData) => {
   const { id } = data
   return instance({
     url: "/user/unfreezeUser",
@@ -218,7 +210,7 @@ export const unfreezeUser = (data: unfreezeUserData) => {
   })
 }
 // 根据id和identity赋权为用户管理员或产品管理员 empowerUser post
-export const empowerUser = (data: empowerUserData) => {
+export const empowerUser = (data: EmpowerUserData) => {
   const { id, identity } = data
   return instance({
     url: "/user/empowerUser",
@@ -230,7 +222,7 @@ export const empowerUser = (data: empowerUserData) => {
   })
 }
 // 删除用户 deleteUser delete
-export const deleteUser = (data: deleteUserData) => {
+export const deleteUser = (data: DeleteUserData) => {
   const { id, account } = data
   return instance({
     url: "/user/deleteUser",

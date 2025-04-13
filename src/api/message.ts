@@ -1,6 +1,6 @@
 import instance from "@/http/index"
 
-interface publishData {
+interface PublishData {
   message_title: string
   message_category: string
   message_publish_department?: string
@@ -10,7 +10,7 @@ interface publishData {
   message_content: string
 }
 
-interface updateCorpData {
+interface UpdateCorpData {
   id: string
   message_title: string
   message_publish_department: string
@@ -18,12 +18,12 @@ interface updateCorpData {
   message_level: string
   message_content: string
 }
-interface updateSysData {
+interface UpdateSysData {
   id: string
   message_title: string
   message_content: string
 }
-interface operateData {
+interface OperateData {
   id: number
 }
 
@@ -46,7 +46,7 @@ export const getSysMsg = (params: any) => {
 }
 
 // 发布消息
-export const publishMsg = (data: publishData) => {
+export const publishMsg = (data: PublishData) => {
   return instance({
     url: "/msg/publishMsg",
     method: "POST",
@@ -55,7 +55,7 @@ export const publishMsg = (data: publishData) => {
 }
 
 // 编辑公司消息
-export const updateCorpMsg = (data: updateCorpData) => {
+export const updateCorpMsg = (data: UpdateCorpData) => {
   const {
     id,
     message_title,
@@ -79,7 +79,7 @@ export const updateCorpMsg = (data: updateCorpData) => {
 }
 
 // 删除公司消息到回收站
-export const deleteMsg = (data: operateData) => {
+export const deleteMsg = (data: OperateData) => {
   return instance({
     url: "/msg/deleteMsg",
     method: "POST",
@@ -97,7 +97,7 @@ export const getRecycleMsg = (params: any) => {
 }
 
 // 编辑系统消息
-export const updateSysMsg = (data: updateSysData) => {
+export const updateSysMsg = (data: UpdateSysData) => {
   const { id, message_title, message_content } = data
   return instance({
     url: "/msg/updateSysMsg",
@@ -111,7 +111,7 @@ export const updateSysMsg = (data: updateSysData) => {
 }
 
 // 还原消息
-export const restoreMsg = (data: operateData) => {
+export const restoreMsg = (data: OperateData) => {
   return instance({
     url: "/msg/restoreMsg",
     method: "POST",
@@ -120,10 +120,18 @@ export const restoreMsg = (data: operateData) => {
 }
 
 // 删除消息
-export const deleteRecycleMsg = (data: operateData) => {
+export const deleteRecycleMsg = (data: OperateData) => {
   return instance({
     url: "/msg/deleteRecycleMsg",
     method: "DELETE",
     data,
+  })
+}
+
+// 获取系统消息和全体成员的公司公告消息列表
+export const getAllMemberMsg = () => {
+  return instance({
+    url: "/msg/getAllMemberMsg",
+    method: "GET",
   })
 }

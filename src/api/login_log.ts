@@ -1,9 +1,9 @@
 import instance from "@/http/index"
 
-interface deleteData {
+interface DeleteData {
   id: number
 }
-interface insertData {
+interface InsertData {
   name: string
   identity:string
   account: string
@@ -19,7 +19,7 @@ export const getLoginLog = (params: any) => {
 }
 
 // 删除操作记录
-export const deleteLoginLog = (data: deleteData) => {
+export const deleteLoginLog = (data: DeleteData) => {
   return instance({
     url: "/login_log/deleteLoginLog",
     method: "DELETE",
@@ -28,7 +28,7 @@ export const deleteLoginLog = (data: deleteData) => {
 }
 
 // 插入操作记录
-export const recordLogin = (data: insertData) => {
+export const recordLogin = (data: InsertData) => {
   return instance({
     url: "/login_log/recordLogin",
     method: "POST",

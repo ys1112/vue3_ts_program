@@ -125,7 +125,7 @@ const unitOptions = [
 const createDialogVisible = ref(false)
 const { isProductUpdate } = toRefs(useProductStore())
 const createRuleFormRef = ref<FormInstance>()
-interface createProductData {
+interface CreateProductData {
   product_id: string
   product_name: string
   product_category: string
@@ -135,7 +135,7 @@ interface createProductData {
   product_create_person: string
   in_memo: string
 }
-const createData: createProductData = reactive({
+const createData: CreateProductData = reactive({
   product_id: '',
   product_name: '',
   product_category: '',
@@ -146,7 +146,7 @@ const createData: createProductData = reactive({
   in_memo: '',
 })
 
-const rules = reactive<FormRules<createProductData>>({
+const rules = reactive<FormRules<CreateProductData>>({
   product_id: [
     { required: true, message: '请输入入库编号', trigger: 'blur' },
     { min: 1, max: 12, message: '请输入入库编号', trigger: 'blur' },

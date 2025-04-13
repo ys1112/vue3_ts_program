@@ -109,7 +109,7 @@ const msgCateOptions = [
 
 const publishDialogVisible = ref(false)
 const publishRuleFormRef = ref<FormInstance>()
-interface publishData {
+interface PublishData {
   message_title: string
   message_publish_department?: string
   message_publish_name: string
@@ -118,7 +118,7 @@ interface publishData {
   message_level?: string
   message_content: string
 }
-const publishMsgData: publishData = reactive({
+const publishMsgData: PublishData = reactive({
   message_title: '',
   message_publish_department: '',
   message_publish_name: userInfo.name,
@@ -158,7 +158,7 @@ const isEditorContentEmpty = (html: any) => {
 }
 
 // 校验规则
-const rules = reactive<FormRules<publishData>>({
+const rules = reactive<FormRules<PublishData>>({
   message_title: [
     { required: true, message: '请输入主题', trigger: 'blur' },
   ],

@@ -5,6 +5,7 @@
         <!-- 账号详情 -->
         <el-tab-pane label="账号详情" name="accountInfo">
           <div class="setting-info-wrapper">
+            <span class="upload-tip">提示：点击图片框更换头像</span>
             <div class="setting-info-content">
               <span class="setting-info-item">用户头像：</span>
               <!-- 1.头像上传 -->
@@ -61,12 +62,12 @@
         </el-tab-pane>
         <!-- 公司信息 -->
         <el-tab-pane label="公司信息" name="companyInfo">
-          <div class="setting-info-wrapper">
-            <div class="setting-info-content" v-for="item in conmapyData" :key="item.id">
-              <span class="setting-info-item">{{ getCompanyTitle(item.set_name) }}:</span>
+          <div class="company-info-wrapper">
+            <div class="company-info-content" v-for="item in conmapyData" :key="item.id">
+              <span class="company-info-item">{{ getCompanyTitle(item.set_name) }}:</span>
               <!-- 公司名称 -->
               <el-input v-if="item.set_name == 'company_name'" v-model="item.set_value" style="width: 240px"
-                class="setting-info-item" />
+                class="company-info-item" />
               <el-button v-if="item.set_name == 'company_name'" type="primary"
                 @click="setCompanyName(item)">编辑公司名称</el-button>
               <el-button v-else type="success" @click="openSetInfoDialog(item)">编辑{{ getCompanyTitle(item.set_name)
@@ -162,7 +163,7 @@ const setInfoDialogRef = ref()
 const settingStore = useSettingStore()
 // pinia存储的数据
 const { swipers: { swiperData }, companyInfo: { conmapyData }, departmentInfo, productInfo, getDepartmentInfo, getProductInfo } = reactive(settingStore)
-interface setInfoForm {
+interface SetInfoForm {
   id?: number
   set_name: string
   set_value: string
@@ -203,7 +204,7 @@ const getCompanyTitle = (item: string) => {
   return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
 }
 // 修改公司名称按钮函数  使用防抖函数
-const setCompanyName = useDebounce(async (item: setInfoForm) => {
+const setCompanyName = useDebounce(async (item: SetInfoForm) => {
   const data = {
     set_name: item.set_name,
     set_value: item.set_value
@@ -220,7 +221,7 @@ const setCompanyName = useDebounce(async (item: setInfoForm) => {
 }, 500)
 
 // 打开编辑弹窗
-const openSetInfoDialog = (item: setInfoForm) => {
+const openSetInfoDialog = (item: SetInfoForm) => {
   emitter.emit('setInfo', item)
   setInfoDialogRef.value.open()
 }
@@ -237,7 +238,7 @@ const handleSwiperSuccess: UploadProps["onSuccess"] = async (
 ) => {
   if (response.status == 0) {
     await trackRecord('setting', 'corp', getSwiperTitle(response.set_name))
-    const index = swiperData.findIndex((item: setInfoForm) => item.set_name == response.set_name)
+    const index = swiperData.findIndex((item: SetInfoForm) => item.set_name == response.set_name)
     // swiperData[index].set_value = response.url
     // 服务端图片url不变内能改变导致不更新问题
     swiperData[index].set_value = `${response.url}?t=${Date.now()}`
@@ -396,7 +397,7 @@ const handleProductConfirm = async () => {
   .setting-info-content {
     display: flex;
     align-items: center;
-    margin: 32px;
+    margin: 28px 0 0 32px;
 
     .setting-info-item {
       margin-right: 32px;
@@ -404,7 +405,18 @@ const handleProductConfirm = async () => {
 
   }
 }
+.company-info-wrapper {
+  .company-info-content {
+    display: flex;
+    align-items: center;
+    margin: 40px 32px;
 
+    .company-info-item {
+      margin-right: 32px;
+    }
+
+  }
+}
 .home-info-wrapper {
   .home-info-content {
     display: flex;
@@ -428,11 +440,12 @@ const handleProductConfirm = async () => {
     }
   }
 
-  .upload-tip {
-    margin-left: 32px;
-    font-weight: 700;
-    color: var(--el-color-primary);
-  }
+}
+
+.upload-tip {
+  margin-left: 32px;
+  font-weight: 700;
+  color: var(--el-color-primary);
 }
 
 .demo-tabs>.el-tabs__content {

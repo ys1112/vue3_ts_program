@@ -1,11 +1,7 @@
 import instance from "@/http/index"
 
-interface deleteData {
+interface DeleteData {
   id: number
-}
-interface insertData {
-  account: string
-  operate?: string
 }
 interface OperData {
   operate_account: string
@@ -23,7 +19,7 @@ export const getOperLog = (params:any) => {
 }
 
 // 删除操作记录
-export const deleteOperLog = (data: deleteData) => {
+export const deleteOperLog = (data: DeleteData) => {
   return instance({
     url: "/operate_log/deleteOperLog",
     method: "DELETE",

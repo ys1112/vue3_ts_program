@@ -117,8 +117,12 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item>设置账号</el-dropdown-item>
-                  <el-dropdown-item>更改头像</el-dropdown-item>
+                  <el-dropdown-item class="navigate">
+                    <RouterLink :to="{ path: '/setting' }" active-class="active">设置账号</RouterLink>
+                  </el-dropdown-item>
+                  <el-dropdown-item class="navigate">
+                    <RouterLink :to="{ path: '/setting' }" active-class="active">更改头像</RouterLink>
+                  </el-dropdown-item>
                   <el-dropdown-item @click="LogOut">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -138,20 +142,23 @@
 </template>
 <script lang="ts" setup name="Menu">
 import Breadcrumb from "@/components/BreadCrumb.vue";
-import { reactive, toRefs, ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive, toRefs, ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useCommonStore } from '@/store/commonStore'
 import { useSettingStore } from '@/store/settingInfoStore'
 import { MenusEnum } from '@/contants/MenusEnum'
 import ShowMsgDialog from "./components/ShowMsgDialog.vue";
+import { MENU_CONFIG } from '@/contants/menuStructure'
 import { io } from 'socket.io-client';
 import {
   getDepartMsg,
   getReadMsg,
   deleteReadMsg
 } from "@/api/department"
-
+const menus = MENU_CONFIG.MENU.menus
+const router = useRouter()
+const route = useRoute()
 const infoStore = useUserInfoStore()
 const { userInfo, departmentMsgData, unreadNum } = toRefs(infoStore)
 
@@ -202,7 +209,7 @@ const viewDepartmentInfo = () => {
 const commonStore = useCommonStore()
 let { activeMenuItem, breadItems, getBread } = reactive(commonStore)
 
-const router = useRouter()
+
 const state = reactive({
   circleUrl:
     'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
@@ -225,7 +232,7 @@ const selectedItem = (key: string, keyPath: string[]) => {
 const getUnreadNum = async () => {
   if (localStorage.getItem('userId')) {
     const params = {
-      id: +(localStorage.getItem('userId') as string)
+      id: +(localStorage.getItem('userId') as unknown as string)
     }
     // 获取用户未读信息read_list
     const res = await getReadMsg(params)
@@ -254,6 +261,11 @@ onUnmounted(() => {
   // clearInterval(getNum)
   socket.disconnect();
 })
+watch(() => route.name, (newPath) => {
+  console.log(newPath);
+  // 保存面包屑
+  getBread(menus, newPath as string)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -281,6 +293,10 @@ onUnmounted(() => {
       margin-right: 12px;
     }
 
+    .navigate a {
+      text-decoration: none;
+    }
+
     .el-dropdown-link {
       display: flex;
       align-items: center;
@@ -291,6 +307,14 @@ onUnmounted(() => {
   }
 }
 
+.navigate a {
+  text-decoration: none;
+  color: #606266;
+}
+.navigate a:hover {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
 .menu-title {
   text-align: center;
   color: #fff;

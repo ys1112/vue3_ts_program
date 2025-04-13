@@ -93,7 +93,7 @@ const departmentOptions = departmentInfo.map(item=>{
 const createDialogVisible = ref(false)
 const { isUsersUpdate } = toRefs(useUserInfoStore())
 const createRuleFormRef = ref<FormInstance>()
-interface createAdminData {
+interface CreateAdminData {
   account: string
   password: string
   name: string
@@ -102,7 +102,7 @@ interface createAdminData {
   identity: string
   department: string
 }
-const createData: createAdminData = reactive({
+const createData: CreateAdminData = reactive({
   account: '',
   password: '',
   name: '',
@@ -112,7 +112,7 @@ const createData: createAdminData = reactive({
   department: '',
 })
 
-const rules = reactive<FormRules<createAdminData>>({
+const rules = reactive<FormRules<CreateAdminData>>({
   account: [
     { required: true, message: '请输入账号名称', trigger: 'blur' },
     { min: 6, max: 12, message: '请确认账号名称，长度6-12位', trigger: 'blur' },

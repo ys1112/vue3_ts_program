@@ -181,12 +181,9 @@ const state = reactive({
 })
 const { circleUrl } = toRefs(state)
 const goCommonManage = (path: string) => {
-  // 保存activeMenu
-  activeMenuItem.activeMenu = path
   // 保存面包屑
-  const breadItems = getBread(menus, path)
-  sessionStorage.setItem('breadItems', JSON.stringify(breadItems))
-  router.push({
+  getBread(menus, path)
+  router.replace({
     path
   })
 }

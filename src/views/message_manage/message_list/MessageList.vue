@@ -36,11 +36,11 @@
                 <el-table-column prop="message_publish_department" label="发布部门" width="128" />
                 <el-table-column prop="message_publish_name" label="发布人" width="96" />
                 <el-table-column prop="message_receipt_object" label="接收对象" width="120" />
-                <el-table-column prop="message_level" label="公告等级" width="128">
+                <el-table-column prop="message_level" label="公告等级" align="center" width="128">
                   <template #default="scope">
-                    <el-tag v-if="scope.row.message_level == '必要'" type="danger">必要</el-tag>
-                    <el-tag v-if="scope.row.message_level == '重要'" type="warning">重要</el-tag>
-                    <el-tag v-if="scope.row.message_level == '一般'" type="primary">一般</el-tag>
+                    <el-tag size="small" v-if="scope.row.message_level == '必要'" type="danger">必要</el-tag>
+                    <el-tag size="small" v-if="scope.row.message_level == '重要'" type="warning">重要</el-tag>
+                    <el-tag size="small" v-if="scope.row.message_level == '一般'" type="primary">一般</el-tag>
                   </template>
                 </el-table-column>
                 <el-table-column prop="message_create_time" label="发布时间" width="164">

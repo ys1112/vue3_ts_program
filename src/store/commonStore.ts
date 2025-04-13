@@ -19,6 +19,7 @@ export const useCommonStore = defineStore("common", {
   actions: {
     // 路由编程式跳转时更新面包屑导航
     getBread(menu: any, path: string) {
+      this.activeMenuItem.activeMenu = path
       const bread = {
         first: "",
         second: "",
@@ -42,7 +43,7 @@ export const useCommonStore = defineStore("common", {
           }
         }
       }
-      return bread
+      sessionStorage.setItem("breadItems", JSON.stringify(bread))
     },
   },
   persist: {

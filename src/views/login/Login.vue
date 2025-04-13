@@ -133,16 +133,16 @@ const registerFormRef = ref<FormInstance>()
 const forgetDialogRef = ref()
 
 
-interface formData {
+interface FormData {
   account: string
   password: string
   confirmPassword?: string
 }
-const loginData: formData = reactive({
+const loginData: FormData = reactive({
   account: '',
   password: ''
 })
-const registerData: formData = reactive({
+const registerData: FormData = reactive({
   account: '',
   password: '',
   confirmPassword: ''
@@ -170,7 +170,7 @@ const validatePassword = (rule: any, value: any, callback: any) => {
   }
 }
 
-const rules = reactive<FormRules<formData>>({
+const rules = reactive<FormRules<FormData>>({
   account: [
     { required: true, message: '请输入您账号', trigger: 'blur' },
     { min: 6, max: 12, message: '请确认账号，长度6-12位', trigger: 'blur' },

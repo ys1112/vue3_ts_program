@@ -88,7 +88,7 @@ const departmentOptions = departmentInfo.map(item=>{
 // ]
 const editDialogVisible = ref(false)
 const editRuleFormRef = ref<FormInstance>()
-interface editAdminData {
+interface EditAdminData {
   id: string,
   name: string
   gender: string
@@ -97,7 +97,7 @@ interface editAdminData {
   department: string
 }
 const account = ref('')
-const editData: editAdminData = reactive({
+const editData: EditAdminData = reactive({
   id: '',
   name: '',
   gender: '',
@@ -106,7 +106,7 @@ const editData: editAdminData = reactive({
   department: '',
 })
 
-const rules = reactive<FormRules<editAdminData>>({
+const rules = reactive<FormRules<EditAdminData>>({
   name: [
     { required: true, message: '请输入姓名', trigger: 'blur' },
     { validator: validateName, trigger: 'blur' }

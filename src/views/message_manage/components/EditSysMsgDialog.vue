@@ -49,12 +49,12 @@ const labelPosition = ref<FormProps['labelPosition']>('right')
 
 const editMsgVisible = ref(false)
 const editSysMsgFormRef = ref<FormInstance>()
-interface editSysData {
+interface EditSysData {
   id:string
   message_title: string
   message_content: string
 }
-const editSysMsgData: editSysData = reactive({
+const editSysMsgData: EditSysData = reactive({
   id:'',
   message_title: '',
   message_content: '',
@@ -90,7 +90,7 @@ const isEditorContentEmpty = (html:any) => {
 }
 
 // 校验规则
-const rules = reactive<FormRules<editSysData>>({
+const rules = reactive<FormRules<EditSysData>>({
   message_title: [
     { required: true, message: '请输入主题', trigger: 'blur' },
   ],

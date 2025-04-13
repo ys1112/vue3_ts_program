@@ -48,14 +48,14 @@ const { isProductUpdate } = toRefs(useProductStore())
 const applyRuleFormRef = ref<FormInstance>()
 const productName = ref('')
 
-interface applyOutData {
+interface ApplyOutData {
   id: string
   product_out_id: string
   product_out_number: string
   product_out_apply_person: string
   apply_memo: string
 }
-const applyData: applyOutData = reactive({
+const applyData: ApplyOutData = reactive({
   id: '',
   product_out_id: '',
   product_out_number: '',
@@ -63,7 +63,7 @@ const applyData: applyOutData = reactive({
   apply_memo: '',
 })
 
-const rules = reactive<FormRules<applyOutData>>({
+const rules = reactive<FormRules<ApplyOutData>>({
   product_out_id: [
     { required: true, message: '请输入出库编号', trigger: 'blur' },
   ],

@@ -1,6 +1,6 @@
 import instance from "@/http/index"
 
-interface commonData {
+interface CommonData {
   id: number
 }
 
@@ -14,7 +14,7 @@ export const getContract = (params:any) => {
 }
 
 // 删除文件
-export const deleteContract = (data: commonData) => {
+export const deleteContract = (data: CommonData) => {
   return instance({
     url: "/file/deleteFile",
     method: "DELETE",
@@ -23,7 +23,7 @@ export const deleteContract = (data: commonData) => {
 }
 
 // 更新下载量
-export const updateDownload = (data: commonData) => {
+export const updateDownload = (data: CommonData) => {
   return instance({
     url: "/file/updateDownload",
     method: "POST",

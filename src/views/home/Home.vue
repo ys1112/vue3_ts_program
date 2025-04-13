@@ -31,24 +31,37 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="announced-wrapper">
-            <el-table :data="tableData" style="width: 100%" max-height="200">
-              <el-table-column prop="title" label="公司公告" />
-              <el-table-column prop="necessary" width="100" align="center">
+            <div class="msg-title">公司公告</div>
+            <el-table :data="corpData" style="width: 100%" max-height="200" :show-header="false"
+              @row-click="showDetail">
+              <el-table-column prop="message_title" show-overflow-tooltip />
+              <el-table-column prop="message_level" align="center">
                 <template #default="scope">
-                  <el-tag v-if="scope.row.necessary == '1'" type="danger">必要</el-tag>
-                  <el-tag v-if="scope.row.necessary == '0'" type="primary">非必要</el-tag>
+                  <el-tag size="small" v-if="scope.row.message_level == '必要'" type="danger">必要</el-tag>
+                  <el-tag size="small" v-if="scope.row.message_level == '重要'" type="warning">重要</el-tag>
+                  <el-tag size="small" v-if="scope.row.message_level == '一般'" type="primary">一般</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="department" align="center" />
-              <el-table-column prop="date" />
+              <el-table-column prop="message_publish_department" align="center" />
+              <el-table-column prop="message_create_time" align="center" min-width="160">
+                <template #default="scope">
+                  {{ scope?.row.message_create_time ? scope?.row.message_create_time.split('.')[0] : '--' }}
+                </template>
+              </el-table-column>
             </el-table>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="announced-wrapper">
-            <el-table :data="systemData" style="width: 100%" max-height="200">
-              <el-table-column prop="title" label="系统消息" />
-              <el-table-column prop="date" />
+            <div class="msg-title">系统消息</div>
+            <el-table :data="systemData" style="width: 100%" :show-header="false" max-height="200"
+              @row-click="showDetail">
+              <el-table-column prop="message_title" show-overflow-tooltip />
+              <el-table-column prop="message_create_time">
+                <template #default="scope">
+                  {{ scope?.row.message_create_time ? scope?.row.message_create_time.split('.')[0] : '--' }}
+                </template>
+              </el-table-column>
             </el-table>
           </div>
         </el-col>
@@ -56,16 +69,21 @@
     </div>
   </div>
   <ShowDetailDialog ref="detailDialogRef"></ShowDetailDialog>
+  <ShowMsgInfoDialog ref="msgDetailDialogRef"></ShowMsgInfoDialog>
 </template>
 
 <script lang="ts" setup name="Home">
-import ShowDetailDialog from "@/views/home/showDetailDialog/ShowDetailDialog.vue";
+import ShowDetailDialog from "@/views/home/components/ShowDetailDialog.vue";
+import ShowMsgInfoDialog from "@/views/home/components/ShowMsgInfoDialog.vue";
+import { updateClick } from "@/api/department"
 import { onMounted, reactive, ref } from 'vue';
 import { CompanyInfoEnum } from '@/contants/CompanyInfoEnum'
 // pinia存储的公司信息和首页轮播图数据
 import { useSettingStore } from "@/store/settingInfoStore"
+import { getAllMemberMsg } from "@/api/message";
 import emitter from '@/utils/emitter'
 const detailDialogRef = ref()
+const msgDetailDialogRef = ref()
 const settingStore = useSettingStore()
 // pinia存储的数据
 const { swipers, companyInfo } = reactive(settingStore)
@@ -73,6 +91,9 @@ const { swipers, companyInfo } = reactive(settingStore)
 //   return new URL(`/src/assets/images/${name}`, import.meta.url).href;
 // };
 // const companyInfos: { [key: string]: any } = reactive({ list: [] })
+onMounted(() => {
+  getSysAndMemberSys()
+})
 // 公司信息
 const getCompanyTitle = (item: string) => {
   return CompanyInfoEnum[item as keyof typeof CompanyInfoEnum]
@@ -82,52 +103,28 @@ const getCompanyTitle = (item: string) => {
 //     companyInfos.list = companyInfo.conmapyData.filter((item: any, index) => { return index > 0 })
 //   },10)
 // })
-const tableData = reactive([
-  {
-    title: '下班后开会',
-    necessary: '1',
-    department: '总裁部',
-    date: '2025-05-03',
-  },
-  {
-    title: '部门会议',
-    necessary: '1',
-    department: '总裁部',
-    date: '2025-05-03',
-  },
-])
+const corpData = ref()
 
-const systemData = reactive([
-  {
-    title: '手机1已出库',
-    date: '2025-06-01',
-  },
-  {
-    title: '电脑2已入库',
-    date: '2025-05-02',
-  },
-  {
-    title: '平板3已出库',
-    date: '2025-04-01',
-  },
-  {
-    title: '耳机4已入库',
-    date: '2025-03-02',
-  },
-  {
-    title: '手表5已出库',
-    date: '2025-02-01',
-  },
-  {
-    title: '屏幕6已入库',
-    date: '2025-01-02',
-  },
-])
+const systemData = ref()
 
 // 打开编辑弹窗
 const openDetailDialog = (item: any) => {
   emitter.emit('detail', item)
   detailDialogRef.value.open()
+}
+const getSysAndMemberSys = async () => {
+  const res = await getAllMemberMsg()
+  if (res.data.status == 0) {
+    systemData.value = res.data.results.sysMsgs
+    corpData.value = res.data.results.companyMsgs
+  }
+}
+const showDetail = async (row: any, column: any, event: Event) => {
+  const params = {
+    id: row.id
+  }
+  await updateClick(params)
+  msgDetailDialogRef.value.open(row)
 }
 </script>
 
@@ -137,33 +134,35 @@ const openDetailDialog = (item: any) => {
   height: 100%;
   border-radius: 10px;
 }
+
 .home-content {
 
   .layout-wrapper {
-  .company-wrapper {
-    height: 200px;
-    padding: 8px;
-    border-radius: 8px;
-    background-color: #F0F2F5;
-    cursor: pointer;
-    overflow: hidden;
-
-    .company-wrapper-title {
-      text-decoration: underline solid #337ecc 1px;
-      text-underline-offset: 4px;
-      color: #303133;
-      font-weight: 700;
-    }
-    .company-info {
-      height: 160px;
+    .company-wrapper {
+      height: 200px;
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #F0F2F5;
+      cursor: pointer;
       overflow: hidden;
+
+      .company-wrapper-title {
+        text-decoration: underline solid #337ecc 1px;
+        text-underline-offset: 4px;
+        color: #303133;
+        font-weight: 700;
+      }
+
+      .company-info {
+        height: 160px;
+        overflow: hidden;
+      }
+    }
+
+    .company-wrapper:hover {
+      background-color: #d9ecff;
     }
   }
-
-  .company-wrapper:hover {
-    background-color: #d9ecff;
-  }
-}
 }
 
 
@@ -171,6 +170,13 @@ const openDetailDialog = (item: any) => {
   height: 192px;
   overflow: hidden;
   border-radius: 8px;
+
+  .msg-title {
+    padding-bottom: 4px;
+    border-bottom: 1px solid #c45656;
+    font-weight: 700;
+    color: #303133;
+  }
 }
 
 :deep(.el-table .cell) {
@@ -221,5 +227,9 @@ const openDetailDialog = (item: any) => {
 .grid-content {
   border-radius: 4px;
   min-height: 36px;
+}
+
+:deep(.el-table__row) {
+  cursor: pointer;
 }
 </style>

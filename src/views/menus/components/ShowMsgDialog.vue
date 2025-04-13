@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="showMsgDialogVisible" title="部门信息" center style="height: 640px;" width="800"
-    :before-close="handleClose" ::destroy-on-close="true">
+    :before-close="handleClose" :destroy-on-close="true">
     <div class="dialog-body">
       <el-container>
         <el-aside width="50%" style="height: 100%;">
@@ -9,9 +9,9 @@
             <el-table-column align="center" show-overflow-tooltip prop="message_title" label="主题" width="120" />
             <el-table-column align="center" prop="message_level" label="等级" width="100">
               <template #default="scope">
-                <el-tag v-if="scope.row.message_level == '必要'" type="danger">必要</el-tag>
-                <el-tag v-if="scope.row.message_level == '重要'" type="warning">重要</el-tag>
-                <el-tag v-if="scope.row.message_level == '一般'" type="primary">一般</el-tag>
+                <el-tag size="small" v-if="scope.row.message_level == '必要'" type="danger">必要</el-tag>
+                <el-tag size="small" v-if="scope.row.message_level == '重要'" type="warning">重要</el-tag>
+                <el-tag size="small" v-if="scope.row.message_level == '一般'" type="primary">一般</el-tag>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="message_create_time" label="发布日期">
@@ -38,7 +38,6 @@
 import { onMounted, onUnmounted, reactive, ref, toRefs, watchEffect } from 'vue';
 import { getAllDepartMsg, deleteReadMsg, updateClick } from "@/api/department"
 import { useUserInfoStore } from '@/store/userInfoStore'
-import { id } from 'element-plus/es/locale/index.mjs';
 const infoStore = useUserInfoStore()
 const { userInfo, unreadNum } = toRefs(infoStore)
 // 对话框显示控制
@@ -92,9 +91,9 @@ const showDetail = async (row: any, column: any, event: Event) => {
     unreadNum.value = JSON.parse(userInfo.value.read_list).filter((item: number) => item != row.id).length
   }
 }
-watchEffect(()=>{
-  if(!showMsgDialogVisible.value){
-    detailInfo.value='<div class="msg-tip">请点击左侧信息查看消息详情</div>'
+watchEffect(() => {
+  if (!showMsgDialogVisible.value) {
+    detailInfo.value = '<div class="msg-tip">请点击左侧信息查看消息详情</div>'
   }
 })
 // 向父组件暴露打开弹窗事件
@@ -104,7 +103,6 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
-
 .dialog-body {
   height: 500px;
 
@@ -117,6 +115,7 @@ defineExpose({
 .el-container {
   height: 100%;
 }
+
 :deep(.el-table__row) {
   cursor: pointer;
 }
@@ -128,16 +127,16 @@ defineExpose({
   font-size: 16px;
   font-weight: 700;
 }
+
 .el-dialog__title {
   font-weight: 700;
 }
 
 .el-table .warning-row {
   position: relative;
-  background-image: linear-gradient(
-  -90deg,
-  rgb(253, 225.6, 225.6) 20%,
-  #fff);
+  background-image: linear-gradient(-90deg,
+      rgb(253, 225.6, 225.6) 20%,
+      #fff);
 }
 
 .el-table .warning-row::after {
@@ -153,5 +152,9 @@ defineExpose({
 
 .el-table .success-row {
   --el-table-tr-bg-color: var(--el-color-success-light-9);
+}
+
+.el-main {
+  border-left: 1px solid #CDD0D6;
 }
 </style>

@@ -6,7 +6,7 @@ export default function () {
   const regEmail =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
-  interface getUserListData {
+  interface GetUserListData {
     pageNum: number
     pageSize: number
     identity: string
@@ -14,7 +14,7 @@ export default function () {
     status?: string
     keyword?: string
   }
-  const getList = async (params: getUserListData) => {
+  const getList = async (params: GetUserListData) => {
     const res = await getUserList(params)
     if (res.data.status == 0) {
       return res.data
