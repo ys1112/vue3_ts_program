@@ -14,6 +14,7 @@
 // 封装富文本编辑器组件
 
 import { ref, watch, shallowRef, onBeforeUnmount, onMounted, nextTick } from 'vue';
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { useDebounce } from "@/hooks/useDebounce";
 import { useFormItem } from 'element-plus'

@@ -262,9 +262,8 @@ onUnmounted(() => {
   socket.disconnect();
 })
 watch(() => route.name, (newPath) => {
-  console.log(newPath);
   // 保存面包屑
-  getBread(menus, newPath as string)
+  getBread(menus, (<string>newPath).toLocaleLowerCase())
 })
 </script>
 

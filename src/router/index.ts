@@ -33,17 +33,20 @@ const router = createRouter({
         {
           name: "ProductManager",
           path: "/product_manager",
-          component: () => import("@/views/user_manage/product_manage/ProductManager.vue"),
+          component: () =>
+            import("@/views/user_manage/product_manage/ProductManager.vue"),
         },
         {
           name: "UserManager",
           path: "/user_manager",
-          component: () => import("@/views/user_manage/user_manage/UserManager.vue"),
+          component: () =>
+            import("@/views/user_manage/user_manage/UserManager.vue"),
         },
         {
           name: "MessageManager",
           path: "/message_manager",
-          component: () => import("@/views/user_manage/message_manage/MessageManager.vue"),
+          component: () =>
+            import("@/views/user_manage/message_manage/MessageManager.vue"),
         },
         {
           name: "UserList",
@@ -53,22 +56,26 @@ const router = createRouter({
         {
           name: "ProductList",
           path: "/product_list",
-          component: () => import("@/views/product_manage/product_list/ProductList.vue"),
+          component: () =>
+            import("@/views/product_manage/product_list/ProductList.vue"),
         },
         {
           name: "DeliveryList",
           path: "/delivery_list",
-          component: () => import("@/views/product_manage/delivery_list/DeliveryList.vue"),
+          component: () =>
+            import("@/views/product_manage/delivery_list/DeliveryList.vue"),
         },
         {
           name: "MessageList",
           path: "/message_list",
-          component: () => import("@/views/message_manage/message_list/MessageList.vue"),
+          component: () =>
+            import("@/views/message_manage/message_list/MessageList.vue"),
         },
         {
           name: "RecycleBin",
           path: "/recycle_bin",
-          component: () => import("@/views/message_manage/recycle_bin/RecycleBin.vue"),
+          component: () =>
+            import("@/views/message_manage/recycle_bin/RecycleBin.vue"),
         },
         {
           name: "ContractManage",
@@ -94,5 +101,30 @@ const router = createRouter({
     },
   ],
 })
+// 全局前置守卫
+router.beforeEach((to, from) => {
+  // 检查目标路由是否需要认证
+  // 登录状态检查
+  const isAuthenticated = localStorage.getItem("token") // 假设存在token
+  // 情况1：需要登录但未登录
+  if (
+    !isAuthenticated &&
+    // ❗️ 避免无限重定向
+    to.name !== "Login"
+  ) {
+    // 未登录，重定向到登录页并携带原路径
+    return {
+      path: "/login",
+      query: { redirect: to.fullPath },
+    }
+  }
 
+  // 情况2：已登录时禁止访问登录页
+  if (to.path === "/login" && isAuthenticated) {
+    return { name: 'Home' } // 重定向到首页
+    // return { path: '/home' } // 重定向到首页
+  }
+  // 情况3：正常放行
+  return true
+})
 export default router

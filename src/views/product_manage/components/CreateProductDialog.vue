@@ -22,8 +22,8 @@
           <el-option v-for="item in unitOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="库存数量" prop="product_inwarehouse_number">
-        <el-input v-model.number="createData.product_inwarehouse_number" style="width: 240px" placeholder="请输入入库数量">
+      <el-form-item label="库存数量" prop="product_in_warehouse_number">
+        <el-input v-model.number="createData.product_in_warehouse_number" style="width: 240px" placeholder="请输入入库数量">
         </el-input>
       </el-form-item>
       <el-form-item label="产品单价" prop="product_single_price">
@@ -130,7 +130,7 @@ interface CreateProductData {
   product_name: string
   product_category: string
   product_unit: string
-  product_inwarehouse_number: string
+  product_in_warehouse_number: string
   product_single_price: string
   product_create_person: string
   in_memo: string
@@ -140,7 +140,7 @@ const createData: CreateProductData = reactive({
   product_name: '',
   product_category: '',
   product_unit: '',
-  product_inwarehouse_number: '',
+  product_in_warehouse_number: '',
   product_single_price: '',
   product_create_person: '',
   in_memo: '',
@@ -160,7 +160,7 @@ const rules = reactive<FormRules<CreateProductData>>({
   product_unit: [
     { required: true, message: '请选择产品单位', trigger: 'change' },
   ],
-  product_inwarehouse_number: [
+  product_in_warehouse_number: [
     { required: true, message: '请输入入库数量', trigger: 'blur' },
     { type: 'number', message: '请输入数字类型' }
   ],

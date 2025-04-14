@@ -4,7 +4,7 @@ interface CreateProductData {
   product_name: string
   product_category: string
   product_unit: string
-  product_inwarehouse_number: string
+  product_in_warehouse_number: string
   product_single_price: string
   product_create_person: string
   in_memo: string
@@ -14,7 +14,7 @@ interface UpdateProductData {
   product_name: string
   product_category: string
   product_unit: string
-  product_inwarehouse_number: string
+  product_in_warehouse_number: string
   product_single_price: string
   in_memo: string
 }
@@ -52,7 +52,7 @@ export const createProduct = (data: CreateProductData) => {
     product_name,
     product_category,
     product_unit,
-    product_inwarehouse_number,
+    product_in_warehouse_number,
     product_single_price,
     product_create_person,
     in_memo,
@@ -65,7 +65,7 @@ export const createProduct = (data: CreateProductData) => {
       product_name,
       product_category,
       product_unit,
-      product_inwarehouse_number,
+      product_in_warehouse_number,
       product_single_price,
       product_create_person,
       in_memo,
@@ -102,7 +102,7 @@ export const updateProduct = (data: UpdateProductData) => {
     product_name,
     product_category,
     product_unit,
-    product_inwarehouse_number,
+    product_in_warehouse_number,
     product_single_price,
     in_memo,
   } = data
@@ -114,7 +114,7 @@ export const updateProduct = (data: UpdateProductData) => {
       product_name,
       product_category,
       product_unit,
-      product_inwarehouse_number,
+      product_in_warehouse_number,
       product_single_price,
       in_memo,
     },

@@ -27,7 +27,7 @@
                 <el-table-column prop="product_name" label="产品名称" width="128" />
                 <el-table-column prop="product_category" label="产品类别" width="128" />
                 <el-table-column prop="product_unit" label="单位" width="96" />
-                <el-table-column prop="product_inwarehouse_number" label="库存数量" width="120" />
+                <el-table-column prop="product_in_warehouse_number" label="库存数量" width="120" />
                 <el-table-column prop="product_single_price" label="产品单价(单位)" width="128" />
                 <el-table-column prop="product_all_price" label="库存总价" width="128" />
                 <el-table-column prop="product_status" label="库存状态" width="128">
