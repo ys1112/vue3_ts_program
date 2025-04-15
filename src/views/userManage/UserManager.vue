@@ -1,17 +1,16 @@
 <template>
   <div class="common-wrapper">
-    <!-- 产品管理员主体 -->
-    <div class="common-content product-manager-content">
+    <!-- 用户管理员主体 -->
+    <div class="common-content user-manager-content">
       <!-- 结构顶部搜索框和按钮区域 -->
       <div class="table-header">
         <!-- 结构顶部左侧搜索框域 -->
         <div class="table-header-left">
-          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px"
-            placeholder="输入账号进行搜索" />
+          <el-input v-model="searchValue" clearable @input="searchAccount" style="width: 240px" placeholder="输入账号进行搜索" />
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
-          <el-button type="primary" @click="addProductManager">添加产品管理员</el-button>
+          <el-button type="primary" @click="addUserManager">添加用户管理员</el-button>
         </div>
       </div>
       <!-- 表格主体 -->
@@ -45,9 +44,8 @@
         <!-- 表格底部分页栏 -->
         <div class="table-content-footer">
           <el-pagination v-model:current-page="pageInfo.currentPage" :page-size="pageInfo.pageSize"
-            layout="total, sizes, prev, pager, next" :total="pageInfo.total"
-            :hide-on-single-page="pageInfo.isSinglePage" @size-change="handleSizeChange"
-            @current-change="handleCurrentChange" />
+            layout="total, sizes, prev, pager, next" :total="pageInfo.total" :hide-on-single-page="pageInfo.isSinglePage"
+            @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
       </div>
 
@@ -57,13 +55,13 @@
   <EditUserDialog :identity="identity" ref="editDialogRef"></EditUserDialog>
 </template>
 
-<script lang="ts" setup name="ProductManager">
+<script lang="ts" setup name="UserManager">
 import { onMounted, reactive, ref, markRaw, h, watch, toRefs, watchEffect } from 'vue';
 import { ElMessage, ElMessageBox } from "element-plus"
 import { useDebounce } from '@/hooks/useDebounce'
 import useUserManage from '@/hooks/useUserManage'
-import CreateAdminDialog from "../components/CreateAdminDialog.vue";
-import EditUserDialog from "../components/EditUserDialog.vue";
+import CreateAdminDialog from "./components/CreateAdminDialog.vue";
+import EditUserDialog from "./components/EditUserDialog.vue";
 import emitter from "@/utils/emitter";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { useUserInfoStore } from "@/store/userInfoStore";
@@ -73,12 +71,12 @@ onMounted(async () => {
   const flag = await getAdminList()
   if (flag) {
     ElMessage({
-      message: "获取产品管理员列表成功",
+      message: "获取用户管理员列表成功",
       type: "success",
     })
   }
 })
-const identity = ref('产品管理员')
+const identity = ref('用户管理员')
 const { isUsersUpdate } = toRefs(useUserInfoStore())
 // 通过 key 强制表格在分页时重新渲染
 const tableKey = ref(0);
@@ -113,6 +111,7 @@ const userData = reactive({
   userList: [] as { [key: string]: any }
 })
 
+
 // 获取用户列表事件
 const getAdminList = async () => {
   const params = {
@@ -136,8 +135,8 @@ const searchAccount = useDebounce(() => {
   }
 }, 800)
 
-// 添加产品管理员
-const addProductManager = () => {
+// 添加用户管理员
+const addUserManager = () => {
   createDialogRef.value.open()
 }
 const editUserInfo = (scope: any) => {
@@ -202,6 +201,9 @@ const deleteUserInfo = (row: any) => {
 
 watchEffect(() => {
   if (isUsersUpdate.value) {
+    const params = {
+      identity: identity.value
+    }
     getAdminList()
     isUsersUpdate.value = !isUsersUpdate.value
   }
@@ -214,7 +216,7 @@ watchEffect(() => {
 </script>
 
 <style lang="scss" scoped>
-.product-manager-content {
+.user-manager-content {
   height: 100%;
 }
 </style>

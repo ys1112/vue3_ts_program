@@ -77,8 +77,8 @@ import useUserManage from '@/hooks/useUserManage'
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { ElMessage, ElMessageBox, ElButton } from "element-plus"
 import { freezeUser, unfreezeUser, empowerUser, deleteUser } from '@/api/user';
-import ShowDetailDialog from "../components/ShowDetailDialog.vue";
-import EditUserDialog from "../components/EditUserDialog.vue";
+import ShowDetailDialog from "./components/ShowDetailDialog.vue";
+import EditUserDialog from "./components/EditUserDialog.vue";
 import { useSettingStore } from "@/store/settingInfoStore";
 import { trackRecord } from "@/utils/tracker";
 onMounted(async () => {

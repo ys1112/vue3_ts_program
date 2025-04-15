@@ -9,7 +9,7 @@
           <el-menu-item index="home">
             <template #title>
               <el-icon>
-                <House />
+                <house />
               </el-icon>
               <span>首页</span>
             </template>
@@ -17,75 +17,75 @@
 
           <el-menu-item index="overview">
             <el-icon>
-              <Document />
+              <document />
             </el-icon>
             <span>系统概览</span>
           </el-menu-item>
 
-          <el-sub-menu index="user_manage">
+          <el-sub-menu index="userManage">
             <template #title>
               <el-icon>
-                <User />
+                <user />
               </el-icon>
               <span>用户管理</span>
             </template>
             <el-menu-item-group title="管理员管理">
-              <el-menu-item index="product_manager">产品管理员</el-menu-item>
-              <el-menu-item index="user_manager">用户管理员</el-menu-item>
-              <el-menu-item index="message_manager">消息管理员</el-menu-item>
+              <el-menu-item index="productManager">产品管理员</el-menu-item>
+              <el-menu-item index="userManager">用户管理员</el-menu-item>
+              <el-menu-item index="messageManager">消息管理员</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="员工管理">
-              <el-menu-item index="user_list">用户列表</el-menu-item>
+              <el-menu-item index="userList">用户列表</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 
-          <el-sub-menu index="product_manage">
+          <el-sub-menu index="productManage">
             <template #title>
               <el-icon>
-                <Box />
+                <box />
               </el-icon>
               <span>产品管理</span>
             </template>
             <el-menu-item-group title="入库管理">
-              <el-menu-item index="product_list">产品列表</el-menu-item>
+              <el-menu-item index="productList">产品列表</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="出库管理">
-              <el-menu-item index="delivery_list">出库列表</el-menu-item>
+              <el-menu-item index="deliveryList">出库列表</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 
-          <el-sub-menu index="message_manage">
+          <el-sub-menu index="messageManage">
             <template #title>
               <el-icon>
-                <ChatLineSquare />
+                <chatLineSquare />
               </el-icon>
               <span>消息管理</span>
             </template>
             <el-menu-item-group title="消息管理">
-              <el-menu-item index="message_list">消息列表</el-menu-item>
+              <el-menu-item index="messageList">消息列表</el-menu-item>
             </el-menu-item-group>
             <el-menu-item-group title="回收站">
-              <el-menu-item index="recycle_bin">回收站</el-menu-item>
+              <el-menu-item index="recycleBin">回收站</el-menu-item>
             </el-menu-item-group>
           </el-sub-menu>
 
-          <el-menu-item index="contract_manage">
+          <el-menu-item index="contractManage">
             <el-icon>
-              <Files />
+              <files />
             </el-icon>
             <span>合同管理</span>
           </el-menu-item>
 
-          <el-menu-item index="operate_log">
+          <el-menu-item index="operateLog">
             <el-icon>
-              <DocumentCopy />
+              <documentCopy />
             </el-icon>
             <span>操作日志</span>
           </el-menu-item>
 
-          <el-menu-item index="login_log">
+          <el-menu-item index="loginLog">
             <el-icon>
-              <Memo />
+              <memo />
             </el-icon>
             <span>登录日志</span>
           </el-menu-item>
@@ -160,7 +160,8 @@ const menus = MENU_CONFIG.MENU.menus
 const router = useRouter()
 const route = useRoute()
 const infoStore = useUserInfoStore()
-const { userInfo, departmentMsgData, unreadNum } = toRefs(infoStore)
+const { userInfo, departmentMsgData, unreadNum, menuList } = toRefs(infoStore)
+const { getUnreadNum } = useUserInfoStore()
 
 const currentDeptId = userInfo.value.department;
 // 编码部门名称
@@ -182,10 +183,10 @@ onMounted(async () => {
   // 连接后立即加入部门房间
   socket.emit('joinDeptRoom', encodedDeptName);
   // 监听本部门的新消息
-  socket.on('newMessage', (msg) => {
+  socket.on('newMessage', async (msg) => {
     console.log('收到部门消息:', msg);
     if (msg) {
-      getUnreadNum()
+      await getUnreadNum()
     }
   });
   // 保证刷新activeName位置
@@ -229,19 +230,19 @@ const selectedItem = (key: string, keyPath: string[]) => {
   }
   sessionStorage.setItem('breadItems', JSON.stringify(breadItems))
 }
-const getUnreadNum = async () => {
-  if (localStorage.getItem('userId')) {
-    const params = {
-      id: +(localStorage.getItem('userId') as unknown as string)
-    }
-    // 获取用户未读信息read_list
-    const res = await getReadMsg(params)
-    if (res.data.status == 0 && res.data.results.read_status) {
-      userInfo.value.read_list = JSON.stringify(JSON.parse(res.data.results.read_list))
-      unreadNum.value = JSON.parse(res.data.results.read_list).length
-    }
-  }
-}
+// const getUnreadNum = async () => {
+//   if (localStorage.getItem('userId')) {
+//     const params = {
+//       id: +(localStorage.getItem('userId') as unknown as string)
+//     }
+//     // 获取用户未读信息read_list
+//     const res = await getReadMsg(params)
+//     if (res.data.status == 0 && res.data.results.read_status) {
+//       userInfo.value.read_list = JSON.stringify(JSON.parse(res.data.results.read_list))
+//       unreadNum.value = JSON.parse(res.data.results.read_list).length
+//     }
+//   }
+// }
 // 定时器轮询（保底方案）
 // const getNum = setInterval(async() => {
 //   await getUnreadNum()
@@ -261,9 +262,9 @@ onUnmounted(() => {
   // clearInterval(getNum)
   socket.disconnect();
 })
-watch(() => route.name, (newPath) => {
+watch(() => route.path, (newPath) => {
   // 保存面包屑
-  getBread(menus, (<string>newPath).toLocaleLowerCase())
+  getBread(menus, newPath.slice(1))
 })
 </script>
 
@@ -310,10 +311,12 @@ watch(() => route.name, (newPath) => {
   text-decoration: none;
   color: #606266;
 }
+
 .navigate a:hover {
   background-color: #ecf5ff;
   color: #409eff;
 }
+
 .menu-title {
   text-align: center;
   color: #fff;

@@ -14,6 +14,8 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { createPinia } from 'pinia'
 // pinia持久化工具
 import persistedState from "pinia-plugin-persistedstate";
+import { formatRoutes } from "@/router/asyncRoute"
+import { getCachedRoutes } from "@/utils/auth"
 
 import 'virtual:svg-icons-register'
 import router from './router'
@@ -22,6 +24,15 @@ const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+
+//保证路由刷新不丢失
+if (localStorage.getItem('token') && router.getRoutes().length<6) {
+  const routeList = formatRoutes(JSON.parse(getCachedRoutes()))
+  routeList.forEach((route: any) => {
+    router.addRoute("Menu", route) // 添加到Menu路由的children
+  })
+}
+
 // 挂载路由
 app.use(router)
 app.use(createPinia().use(persistedState))

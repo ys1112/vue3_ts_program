@@ -2,12 +2,15 @@ import { defineStore } from "pinia"
 import { reactive, ref } from "vue"
 import { getUserInfo, getUserList } from "@/api/user"
 import { ElMessage } from "element-plus"
+import { setCachedRoutes } from "@/utils/auth"
+import { getReadMsg } from "@/api/department"
 interface GetUserListData {
   identity: string
   department?: string
   status?: string
   keyword?: string
 }
+
 export const useUserInfoStore = defineStore("userInfo", {
   state() {
     return {
@@ -26,6 +29,7 @@ export const useUserInfoStore = defineStore("userInfo", {
       isUsersUpdate: ref(false),
       unreadNum: ref(),
       departmentMsgData: ref(),
+      menuList: ref(),
     }
   },
   actions: {
@@ -37,7 +41,9 @@ export const useUserInfoStore = defineStore("userInfo", {
             this.userInfo[key as keyof typeof this.userInfo] = res.data[key]
           }
         })
+        setCachedRoutes(res.data.menus)
         this.unreadNum = JSON.parse(res.data.read_list).length
+        this.menuList = JSON.parse(res.data.menus)
       } else {
         ElMessage({
           message: "获取用户信息失败",
@@ -58,6 +64,21 @@ export const useUserInfoStore = defineStore("userInfo", {
         return res.data.results
       } else {
         ElMessage.error("获取用户列表失败")
+      }
+    },
+    async getUnreadNum() {
+      if (localStorage.getItem("userId")) {
+        const params = {
+          id: +(localStorage.getItem("userId") as unknown as string),
+        }
+        // 获取用户未读信息read_list
+        const res = await getReadMsg(params)
+        if (res.data.status == 0 && res.data.results.read_status) {
+          this.userInfo.read_list = JSON.stringify(
+            JSON.parse(res.data.results.read_list)
+          )
+          this.unreadNum = JSON.parse(res.data.results.read_list).length
+        }
       }
     },
   },

@@ -126,9 +126,9 @@
 </template>
 
 <script lang="ts" setup name="MessageList">
-import PublishMsgDialog from "../components/PublishMsgDialog.vue";
-import EditMsgDialog from "../components/EditMsgDialog.vue";
-import EditSysMsgDialog from "../components/EditSysMsgDialog.vue";
+import PublishMsgDialog from "./components/PublishMsgDialog.vue";
+import EditMsgDialog from "./components/EditMsgDialog.vue";
+import EditSysMsgDialog from "./components/EditSysMsgDialog.vue";
 import { onMounted, reactive, ref, h, watchEffect, toRefs, markRaw } from 'vue';
 import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
 import { WarnTriangleFilled } from '@element-plus/icons-vue'

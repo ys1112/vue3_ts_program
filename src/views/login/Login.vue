@@ -99,7 +99,7 @@
 
 <script lang="ts" setup name="Login">
 import { ElMessage, type FormInstance, type FormRules, type TabsPaneContext } from 'element-plus'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, toRefs } from 'vue'
 import forgetDialog from './components/ForgetPwdDialog.vue'
 import { useRouter } from 'vue-router'
 import { login, register } from "@/api/login";
@@ -108,9 +108,12 @@ import { useUserInfoStore } from '@/store/userInfoStore'
 import { useSettingStore } from '@/store/settingInfoStore'
 import { useCommonStore } from '@/store/commonStore'
 import { getDepartMsg } from "@/api/department"
+import { setCachedRoutes } from '@/utils/auth'
+import { formatRoutes } from "@/router/asyncRoute";
 
-const { getInfo,userInfo } = useUserInfoStore()
-const { getSettingInfo,getDepartmentInfo,getProductInfo } = useSettingStore()
+const { getInfo, userInfo } = useUserInfoStore()
+const { menuList } = toRefs(useUserInfoStore())
+const { getSettingInfo, getDepartmentInfo, getProductInfo } = useSettingStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
 
 const stores = [useCommonStore(), useSettingStore(), useUserInfoStore()]
@@ -131,7 +134,6 @@ const activeName = ref('first')
 const ruleFormRef = ref<FormInstance>()
 const registerFormRef = ref<FormInstance>()
 const forgetDialogRef = ref()
-
 
 interface FormData {
   account: string
@@ -195,21 +197,23 @@ const toLogin = (formEl: FormInstance | undefined) => {
     if (valid) {
       const res = await login(loginData)
       if (res.data.status == 0) {
+        // 记录菜单
+        handleMenus(res.data.results.menus)
         // 记录登录日志
         const params = {
-          name:res.data.results.name,
-          account:res.data.results.account,
-          email:res.data.results.email,
-          identity:res.data.results.identity
+          name: res.data.results.name,
+          account: res.data.results.account,
+          email: res.data.results.email,
+          identity: res.data.results.identity
         }
-        localStorage.setItem('userId',res.data.results.id)
+        localStorage.setItem('userId', res.data.results.id)
         await recordLogin(params)
         ElMessage({
           message: '登录成功',
           type: 'success',
         })
         const { token } = res.data
-        
+
         // 获取公司信息和轮播图
         getSettingInfo()
         // 获取部门设置
@@ -240,6 +244,16 @@ const toLogin = (formEl: FormInstance | undefined) => {
   })
 }
 
+const handleMenus = (menuData: string) => {
+  const routeList = formatRoutes(JSON.parse(menuData))
+  routeList.forEach((route:any) => {
+    router.addRoute('Menu', route) // 添加到Menu路由的children
+  })
+  // 存储到Store
+  menuList.value = JSON.parse(menuData)
+  // 记录菜单到storage
+  setCachedRoutes(menuData)
+}
 
 const toRegister = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
@@ -412,5 +426,4 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   line-height: 36px;
   font-size: 16px;
 }
-
 </style>

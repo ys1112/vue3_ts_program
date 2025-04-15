@@ -133,20 +133,20 @@ const commonManages = reactive([
     id: 1,
     svgName: 'userManage',
     title: '用户管理',
-    path: 'product_manager'
+    path: 'productManager'
 
   },
   {
     id: 2,
     svgName: 'productManage',
     title: '产品管理',
-    path: 'product_list'
+    path: 'productList'
   },
   {
     id: 3,
     svgName: 'systemInform',
     title: '系统消息',
-    path: 'message_list'
+    path: 'messageList'
   },
   {
     id: 4,
@@ -158,7 +158,7 @@ const commonManages = reactive([
     id: 5,
     svgName: 'departmentMessage',
     title: '部门信息',
-    path: 'message_list'
+    path: 'messageList'
   },
   {
     id: 6,
@@ -280,7 +280,7 @@ onMounted(async () => {
 
         // 柱条样式
         itemStyle: {
-          barBorderRadius: 5,
+          borderRadius: 5,
           borderWidth: 1,
           borderType: 'solid',
           borderColor: '#73c0de',

@@ -6,7 +6,7 @@ export const useCommonStore = defineStore("common", {
   state() {
     return {
       activeMenuItem: reactive({
-        activeMenu: "首页",
+        activeMenu: "home",
       }),
       breadItems: reactive(
         JSON.parse(sessionStorage.getItem("breadItems") as string) || {

@@ -160,10 +160,10 @@ import {
   resubmit,
 } from '@/api/product';
 import { useDebounce } from '@/hooks/useDebounce'
-import CreateProductDialog from "../components/CreateProductDialog.vue";
-import EditProductDialog from "../components/EditProductDialog.vue";
-import ApplyProductDialog from "../components/ApplyDeliveryDialog.vue";
-import AuditApplyDialog from "../components/AuditApplyDialog.vue";
+import CreateProductDialog from "./components/CreateProductDialog.vue";
+import EditProductDialog from "./components/EditProductDialog.vue";
+import ApplyProductDialog from "./components/ApplyDeliveryDialog.vue";
+import AuditApplyDialog from "./components/AuditApplyDialog.vue";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { trackRecord } from "@/utils/tracker";
 import { useProductStore } from "@/store/useProductStore";

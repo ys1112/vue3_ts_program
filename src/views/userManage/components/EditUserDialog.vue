@@ -46,7 +46,8 @@ import { useSettingStore } from "@/store/settingInfoStore";
 import { updateUser } from "@/api/user";
 defineProps(['identity'])
 const { validateEmail, validateName } = useUserManage()
-const { isUsersUpdate } = toRefs(useUserInfoStore())
+const { isUsersUpdate,userInfo } = toRefs(useUserInfoStore())
+const {getUnreadNum} = useUserInfoStore()
 const genderOptions = [
   {
     value: "男",
@@ -159,6 +160,11 @@ const toEdite = (formEl: FormInstance | undefined) => {
       const params = editData
       const res = await updateUser(params)
       if (res.data.status == 0) {
+        // 如果编辑的是当前用户，则更新未读消息
+        if(account.value == userInfo.value.account) {
+          userInfo.value.department = editData.department
+          await getUnreadNum()
+        }
         ElMessage({
           message: "编辑用户信息成功",
           type: "success",
