@@ -17,20 +17,14 @@ defineProps(['breadItems'])
 
 <style lang="scss" scoped>
 .bread {
-  padding: 10px 10px 0 10px;
+  padding: 16px 10px 0 16px;
   display: flex;
   background-color: #e6e6e6;
   align-items: center;
 }
 .el-breadcrumb {
-  font-size: 14px;
+  font-size: 16px;
   margin-left: 4px;
 }
 
-:deep(.el-breadcrumb__item .el-breadcrumb__inner) {
-  font-weight: 700;
-}
-:deep(.el-breadcrumb__item .el-breadcrumb__inner:hover) {
-  font-weight: 700;
-}
 </style>

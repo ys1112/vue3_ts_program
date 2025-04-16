@@ -106,27 +106,18 @@ import { login, register } from "@/api/login";
 import { recordLogin } from "@/api/login_log";
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useSettingStore } from '@/store/settingInfoStore'
-import { useCommonStore } from '@/store/commonStore'
 import { getDepartMsg } from "@/api/department"
 import { setCachedRoutes } from '@/utils/auth'
 import { formatRoutes } from "@/router/asyncRoute";
-
+import {clearStore} from "@/utils/clearStore"
 const { getInfo, userInfo } = useUserInfoStore()
 const { menuList } = toRefs(useUserInfoStore())
 const { getSettingInfo, getDepartmentInfo, getProductInfo } = useSettingStore()
 const regPassword = /^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9-_!?@]{6,16}$/
-
-const stores = [useCommonStore(), useSettingStore(), useUserInfoStore()]
-stores.forEach((store) => {
-  store.$reset(); // 重置状态到初始值
-  localStorage.removeItem(store.$id);
-});
 onMounted(() => {
-  const stores = [useCommonStore(), useSettingStore(), useUserInfoStore()]
-  stores.forEach((store) => {
-    store.$reset(); // 重置状态到初始值
-    localStorage.removeItem(store.$id);
-  });
+  localStorage.clear()
+  sessionStorage.clear()
+  clearStore()
 })
 const router = useRouter()
 const activeName = ref('first')
@@ -197,6 +188,8 @@ const toLogin = (formEl: FormInstance | undefined) => {
     if (valid) {
       const res = await login(loginData)
       if (res.data.status == 0) {
+        const { token } = res.data
+        localStorage.setItem('token', token)
         // 记录菜单
         handleMenus(res.data.results.menus)
         // 记录登录日志
@@ -212,8 +205,6 @@ const toLogin = (formEl: FormInstance | undefined) => {
           message: '登录成功',
           type: 'success',
         })
-        const { token } = res.data
-
         // 获取公司信息和轮播图
         getSettingInfo()
         // 获取部门设置
@@ -233,7 +224,6 @@ const toLogin = (formEl: FormInstance | undefined) => {
         }
         // 获取用户信息 存储用户信息
         await getInfo(res.data.results.id)
-        localStorage.setItem('token', token)
         router.push('/home')
       } else {
         ElMessage.error('登录失败')

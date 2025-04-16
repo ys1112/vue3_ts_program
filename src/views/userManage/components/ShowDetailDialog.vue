@@ -46,7 +46,7 @@ import { useUserInfoStore } from "@/store/userInfoStore";
 import { empowerUser, deleteUser } from "@/api/user";
 import { trackRecord } from "@/utils/tracker";
 import emitter from '@/utils/emitter'
-const { isUsersUpdate } = toRefs(useUserInfoStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const detailDialogVisible = ref(false)
 const selectedValue = ref('用户管理员')
 const circleUrl = ref('https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png')
@@ -68,7 +68,7 @@ defineExpose({
 const editUser = () => {
   emitter.emit('editInfo', userInfo.value)
   editRef.value.open()
-  if (isUsersUpdate.value) {
+  if (isDataUpdate.value) {
     detailDialogVisible.value = false
   }
 }
@@ -135,7 +135,7 @@ const weightOperate = () => {
               type: "success",
             })
             detailDialogVisible.value = false
-            isUsersUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('赋权失败，请稍后再试')
           }
@@ -181,7 +181,7 @@ const toDeleteUser = () => {
           if (res.data.status == 0) {
             await trackRecord('user', 'delete', userInfo.value.account)
             detailDialogVisible.value = false
-            isUsersUpdate.value = true
+            isDataUpdate.value = true
             ElMessage({
               type: 'success',
               message: '删除用户成功',
@@ -207,7 +207,7 @@ const toDeleteUser = () => {
     })
 }
 watchEffect(() => {
-  if (!isUsersUpdate.value) {
+  if (!isDataUpdate.value) {
     detailDialogVisible.value = false
   }
 })

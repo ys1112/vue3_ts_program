@@ -46,7 +46,7 @@ import { useSettingStore } from "@/store/settingInfoStore";
 import { updateUser } from "@/api/user";
 defineProps(['identity'])
 const { validateEmail, validateName } = useUserManage()
-const { isUsersUpdate,userInfo } = toRefs(useUserInfoStore())
+const { isDataUpdate,userInfo } = toRefs(useUserInfoStore())
 const {getUnreadNum} = useUserInfoStore()
 const genderOptions = [
   {
@@ -170,7 +170,7 @@ const toEdite = (formEl: FormInstance | undefined) => {
           type: "success",
         })
         editDialogVisible.value = false
-        isUsersUpdate.value = true
+        isDataUpdate.value = true
       } else {
         ElMessage.error("编辑用户信息失败，请稍后再试")
       }

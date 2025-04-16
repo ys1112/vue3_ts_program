@@ -166,13 +166,13 @@ import ApplyProductDialog from "./components/ApplyDeliveryDialog.vue";
 import AuditApplyDialog from "./components/AuditApplyDialog.vue";
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { trackRecord } from "@/utils/tracker";
-import { useProductStore } from "@/store/useProductStore";
+import { useUserInfoStore } from "@/store/userInfoStore";
 const activeName = ref('productList')
 const createProductRef = ref()
 const editProductRef = ref()
 const applyProductRef = ref()
 const auditApplyRef = ref()
-const { isProductUpdate } = toRefs(useProductStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const handleClick = async (tab: TabsPaneContext, event: Event) => {
   if (tab.paneName == 'auditList') {
     // 获取出库申请审核列表
@@ -298,7 +298,7 @@ const handleDelete = (row: any) => {
               type: 'success',
               message: '删除产品成功',
             })
-            isProductUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('删除产品失败，请稍后再试')
           }
@@ -406,7 +406,7 @@ const useMessageBox = (info: { [key: string]: any }, row: any) => {
         const res = await cancelApply(params)
         if (res.data.status == 0) {
           await trackRecord('product', 'cancel', row.product_name)
-          isProductUpdate.value = true
+          isDataUpdate.value = true
           ElMessage({
             type: 'success',
             message: '取消申请成功',
@@ -419,7 +419,7 @@ const useMessageBox = (info: { [key: string]: any }, row: any) => {
         const res = await resubmit(params)
         if (res.data.status == 0) {
           await trackRecord('product', 'resubmit', row.product_name)
-          isProductUpdate.value = true
+          isDataUpdate.value = true
           ElMessage({
             type: 'success',
             message: '重新提交成功',
@@ -438,13 +438,13 @@ const useMessageBox = (info: { [key: string]: any }, row: any) => {
 }
 
 watchEffect(() => {
-  if (isProductUpdate.value) {
+  if (isDataUpdate.value) {
     if (activeName.value == 'auditList') {
       getOutList()
     } else {
       getProductList()
     }
-    isProductUpdate.value = !isProductUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 </script>

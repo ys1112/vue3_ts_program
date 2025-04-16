@@ -55,7 +55,7 @@
 <script lang="ts" setup name="EditProductDialog">
 import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
-import { useProductStore } from "@/store/useProductStore";
+import { useUserInfoStore } from "@/store/userInfoStore";
 import { updateProduct } from "@/api/product";
 import { useSettingStore } from "@/store/settingInfoStore";
 const {productInfo} = useSettingStore()
@@ -95,7 +95,7 @@ const unitOptions = [
 ]
 
 const editDialogVisible = ref(false)
-const { isProductUpdate } = toRefs(useProductStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const editRuleFormRef = ref<FormInstance>()
 
 const product_id = ref('')
@@ -185,7 +185,7 @@ const toEdit = (formEl: FormInstance | undefined) => {
       const params = editData
       const res = await updateProduct(params)
       if (res.data.status == 0) {
-        isProductUpdate.value = true
+        isDataUpdate.value = true
         ElMessage({
           message: "修改产品信息成功",
           type: "success",

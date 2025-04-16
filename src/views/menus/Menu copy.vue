@@ -6,7 +6,97 @@
         <el-menu active-text-color="#ffd04b" background-color="#545c64" class="el-menu-vertical-demo"
           :default-active="activeMenuItem.activeMenu" text-color="#fff" @select="selectedItem" router
           :unique-opened="true">
-          <MenuItem v-for="route in menuData" :key="route.path" :item="route" />
+          <el-menu-item index="home">
+            <template #title>
+              <el-icon>
+                <house />
+              </el-icon>
+              <span>首页</span>
+            </template>
+          </el-menu-item>
+
+          <el-menu-item index="overview">
+            <el-icon>
+              <document />
+            </el-icon>
+            <span>系统概览</span>
+          </el-menu-item>
+
+          <el-sub-menu index="userManage">
+            <template #title>
+              <el-icon>
+                <user />
+              </el-icon>
+              <span>用户管理</span>
+            </template>
+            <el-menu-item-group title="管理员管理">
+              <el-menu-item index="productManager">产品管理员</el-menu-item>
+              <el-menu-item index="userManager">用户管理员</el-menu-item>
+              <el-menu-item index="messageManager">消息管理员</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="员工管理">
+              <el-menu-item index="userList">用户列表</el-menu-item>
+            </el-menu-item-group>
+          </el-sub-menu>
+
+          <el-sub-menu index="productManage">
+            <template #title>
+              <el-icon>
+                <box />
+              </el-icon>
+              <span>产品管理</span>
+            </template>
+            <el-menu-item-group title="入库管理">
+              <el-menu-item index="productList">产品列表</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="出库管理">
+              <el-menu-item index="deliveryList">出库列表</el-menu-item>
+            </el-menu-item-group>
+          </el-sub-menu>
+
+          <el-sub-menu index="messageManage">
+            <template #title>
+              <el-icon>
+                <chatLineSquare />
+              </el-icon>
+              <span>消息管理</span>
+            </template>
+            <el-menu-item-group title="消息管理">
+              <el-menu-item index="messageList">消息列表</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="回收站">
+              <el-menu-item index="recycleBin">回收站</el-menu-item>
+            </el-menu-item-group>
+          </el-sub-menu>
+
+          <el-menu-item index="contractManage">
+            <el-icon>
+              <files />
+            </el-icon>
+            <span>合同管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="operateLog">
+            <el-icon>
+              <documentCopy />
+            </el-icon>
+            <span>操作日志</span>
+          </el-menu-item>
+
+          <el-menu-item index="loginLog">
+            <el-icon>
+              <memo />
+            </el-icon>
+            <span>登录日志</span>
+          </el-menu-item>
+
+          <el-menu-item index="setting">
+            <el-icon>
+              <setting />
+            </el-icon>
+            <span>系统设置</span>
+          </el-menu-item>
+
         </el-menu>
       </el-aside>
       <el-container>
@@ -27,11 +117,11 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item @click="setAccount">
-                    设置账号
+                  <el-dropdown-item class="navigate">
+                    <RouterLink :to="{ path: '/setting' }" active-class="active">设置账号</RouterLink>
                   </el-dropdown-item>
-                  <el-dropdown-item @click="setAvatar">
-                    更改头像
+                  <el-dropdown-item class="navigate">
+                    <RouterLink :to="{ path: '/setting' }" active-class="active">更改头像</RouterLink>
                   </el-dropdown-item>
                   <el-dropdown-item @click="LogOut">退出登录</el-dropdown-item>
                 </el-dropdown-menu>
@@ -49,24 +139,24 @@
     </el-container>
   </div>
   <ShowMsgDialog ref="msgDialogRef"></ShowMsgDialog>
-  <SetAvatarDialog ref="setAvatarDialogRef"></SetAvatarDialog>
-  <SetAccountDialog ref="setAccountDialogRef"></SetAccountDialog>
 </template>
 <script lang="ts" setup name="Menu">
-import MenuItem from "./components/MenuItem.vue";
 import Breadcrumb from "@/components/BreadCrumb.vue";
-import SetAvatarDialog from "./components/SetAvatarDialog.vue";
-import SetAccountDialog from "./components/SetAccountDialog.vue";
 import { reactive, toRefs, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { useUserInfoStore } from '@/store/userInfoStore'
 import { useCommonStore } from '@/store/commonStore'
+import { useSettingStore } from '@/store/settingInfoStore'
 import { MenusEnum } from '@/contants/MenusEnum'
 import ShowMsgDialog from "./components/ShowMsgDialog.vue";
 import { MENU_CONFIG } from '@/contants/menuStructure'
 import { getCachedRoutes } from "@/utils/auth"
 import { io } from 'socket.io-client';
-
+import {
+  getDepartMsg,
+  getReadMsg,
+  deleteReadMsg
+} from "@/api/department"
 const menus = MENU_CONFIG.MENU.menus
 const router = useRouter()
 const route = useRoute()
@@ -78,8 +168,6 @@ const currentDeptId = userInfo.value.department;
 // 编码部门名称
 const encodedDeptName = encodeURIComponent(currentDeptId);
 const msgDialogRef = ref()
-const setAvatarDialogRef = ref()
-const setAccountDialogRef = ref()
 const commonStore = useCommonStore()
 let { activeMenuItem, breadItems, getBread } = reactive(commonStore)
 const menuData = ref<any[]>([])
@@ -96,6 +184,7 @@ const socket = io('http://127.0.0.1:3002', {
 // });
 
 onMounted(async () => {
+  console.log(JSON.parse(getCachedRoutes()));
   menuData.value = JSON.parse(getCachedRoutes())
   // 连接后立即加入部门房间
   socket.emit('joinDeptRoom', encodedDeptName);
@@ -159,13 +248,6 @@ const selectedItem = (key: string, keyPath: string[]) => {
 // const getNum = setInterval(async() => {
 //   await getUnreadNum()
 // }, 60000);
-// 设置头像
-const setAvatar = ()=>{
-  setAvatarDialogRef.value.open()
-}
-const setAccount = ()=>{
-  setAccountDialogRef.value.open()
-}
 const LogOut = () => {
   // 写在上面，不然重置时会去读取storage里面的值，导致清除不干净
   localStorage.clear()
@@ -182,8 +264,6 @@ onUnmounted(() => {
   socket.disconnect();
 })
 watch(() => route.path, (newPath) => {
-  console.log(route.path);
-  
   // 保存面包屑
   getBread(menus, newPath.slice(1))
 })
@@ -194,7 +274,7 @@ watch(() => route.path, (newPath) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #2a303a;
+  background-color: #303133;
   color: #fff;
 
   .header-left {
@@ -214,14 +294,28 @@ watch(() => route.path, (newPath) => {
       margin-right: 12px;
     }
 
+    .navigate a {
+      text-decoration: none;
+    }
+
     .el-dropdown-link {
       display: flex;
       align-items: center;
-      color: #fff;
+      color: #a0a5af;
       cursor: pointer;
       font-size: 16px;
     }
   }
+}
+
+.navigate a {
+  text-decoration: none;
+  color: #606266;
+}
+
+.navigate a:hover {
+  background-color: #ecf5ff;
+  color: #409eff;
 }
 
 .menu-title {
@@ -230,7 +324,7 @@ watch(() => route.path, (newPath) => {
 }
 
 .el-aside {
-  background-color: #2a303a;
+  background-color: #555c64;
 }
 
 .el-menu {
@@ -252,17 +346,5 @@ watch(() => route.path, (newPath) => {
   margin-right: 12px;
   font-style: normal;
   cursor: pointer;
-}
-
-// .el-menu {
-//   background-color: #2a303a;
-// }
-// :deep(.el-menu-item-group__title) {
-//   background-color: #2a303a;
-// }
-.el-menu,
-:deep(.el-menu-item),
-:deep(.el-menu-item-group__title) {
-  background-color: #2a303a;
 }
 </style>

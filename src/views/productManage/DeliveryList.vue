@@ -58,8 +58,8 @@ import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
 import { getOutProducts, deleteDelivery } from '@/api/product';
 import { useDebounce } from '@/hooks/useDebounce'
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
-import { useProductStore } from "@/store/useProductStore";
-const { isProductUpdate } = toRefs(useProductStore())
+import { useUserInfoStore } from "@/store/userInfoStore";
+const { isDataUpdate } = toRefs(useUserInfoStore())
 
 onMounted(async () => {
   const flag = await getOuts()
@@ -139,7 +139,7 @@ const deleteData = (id: string) => {
               type: 'success',
               message: '删除成功',
             })
-            isProductUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('删除失败，请稍后再试')
           }
@@ -160,9 +160,9 @@ const deleteData = (id: string) => {
     })
 }
 watchEffect(() => {
-  if (isProductUpdate.value) {
+  if (isDataUpdate.value) {
     getOuts()
-    isProductUpdate.value = !isProductUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 </script>

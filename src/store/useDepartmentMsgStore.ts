@@ -6,7 +6,7 @@ export const useDepartMsgStore = defineStore("departMsgInfo", {
   state() {
     return {
       departMsg: ref(),
-      isUsersUpdate: ref(false),
+      isDataUpdate: ref(false),
     }
   },
   actions: {

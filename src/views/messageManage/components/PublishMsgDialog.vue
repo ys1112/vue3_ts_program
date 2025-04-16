@@ -53,15 +53,12 @@
 import { reactive, ref, toRefs, watch, watchEffect } from 'vue';
 import EditorInput from "@/components/EditorInput.vue";
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
-import { useProductStore } from "@/store/useProductStore";
 import { publishMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
-import { useMessageStore } from "@/store/useMessageStore";
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { trackRecord } from "@/utils/tracker";
 import { addUnreadMsg } from "@/api/department"
-const { userInfo } = useUserInfoStore()
-const { isMessageUpdate } = toRefs(useMessageStore())
+const { userInfo,isDataUpdate } = toRefs(useUserInfoStore())
 const { departmentInfo } = useSettingStore()
 const departmentOptions = departmentInfo.map(item => {
   return {
@@ -121,7 +118,7 @@ interface PublishData {
 const publishMsgData: PublishData = reactive({
   message_title: '',
   message_publish_department: '',
-  message_publish_name: userInfo.name,
+  message_publish_name: userInfo.value.name,
   message_category: '',
   message_receipt_object: '',
   message_level: '',
@@ -228,7 +225,7 @@ const toPublish = (formEl: FormInstance | undefined) => {
           type: "success",
         })
         publishDialogVisible.value = false
-        isMessageUpdate.value = true
+        isDataUpdate.value = true
       } else if (res.data.status == 1) {
         ElMessage.error(res.data.message)
       } else {

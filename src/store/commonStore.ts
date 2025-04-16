@@ -20,30 +20,23 @@ export const useCommonStore = defineStore("common", {
     // 路由编程式跳转时更新面包屑导航
     getBread(menu: any, path: string) {
       this.activeMenuItem.activeMenu = path
-      const bread = {
-        first: "",
-        second: "",
-      }
       for (const key in menu) {
         if (
           key == path &&
           !(menu[key as keyof typeof menu] instanceof Object)
         ) {
-          bread.first = menu[key as keyof typeof menu] || ""
           this.breadItems.first = menu[key as keyof typeof menu] || ""
           break
         } else {
           for (const key1 in menu[key]) {
             if (key1 == path) {
-              bread.first = MenusEnum[key as keyof typeof MenusEnum]
               this.breadItems.first = MenusEnum[key as keyof typeof MenusEnum]
-              bread.second = MenusEnum[key1 as keyof typeof MenusEnum]
               this.breadItems.second = MenusEnum[key1 as keyof typeof MenusEnum]
             }
           }
         }
       }
-      sessionStorage.setItem("breadItems", JSON.stringify(bread))
+      sessionStorage.setItem("breadItems", JSON.stringify(this.breadItems))
     },
   },
   persist: {

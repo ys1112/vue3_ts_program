@@ -41,6 +41,12 @@ interface UpdateUserData {
   email: string
   department: string
 }
+interface SetAccountData {
+  id: string
+  name: string
+  gender: string
+  email: string
+}
 // interface searchUserListData {
 //   identity: string
 //   keyword: string
@@ -230,6 +236,21 @@ export const deleteUser = (data: DeleteUserData) => {
     data: {
       id,
       account,
+    },
+  })
+}
+
+// 编辑用户账号信息 updateUser put
+export const setAccount = (data: SetAccountData) => {
+  const { id, name, gender, email } = data
+  return instance({
+    url: "/user/setAccount",
+    method: "PUT",
+    params: { id: id },
+    data: {
+      name,
+      gender,
+      email,
     },
   })
 }

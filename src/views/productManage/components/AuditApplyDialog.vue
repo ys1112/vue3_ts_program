@@ -29,15 +29,13 @@
 <script lang="ts" setup name="AuditApplyDialog">
 import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
-import { useProductStore } from "@/store/useProductStore";
 import { approveApply, rejectApply } from "@/api/product";
 import { trackRecord } from "@/utils/tracker";
 import { useUserInfoStore } from "@/store/userInfoStore";
 const labelPosition = ref<FormProps['labelPosition']>('right')
-const { userInfo } = toRefs(useUserInfoStore())
+const { userInfo,isDataUpdate } = toRefs(useUserInfoStore())
 
 const auditDialogVisible = ref(false)
-const { isProductUpdate } = toRefs(useProductStore())
 const auditRuleFormRef = ref<FormInstance>()
 const isApprove = ref('')
 const productName = ref('')
@@ -89,7 +87,7 @@ const toAudit = (formEl: FormInstance | undefined) => {
         const res = await approveApply(params)
         if (res.data.status == 0) {
           await trackRecord('product', 'agree', productName.value)
-          isProductUpdate.value = true
+          isDataUpdate.value = true
           ElMessage({
             message: "同意申请成功",
             type: "success",
@@ -103,7 +101,7 @@ const toAudit = (formEl: FormInstance | undefined) => {
         const res = await rejectApply(params)
         if (res.data.status == 0) {
           await trackRecord('product', 'reject', productName.value)
-          isProductUpdate.value = true
+          isDataUpdate.value = true
           ElMessage({
             message: "驳回申请成功",
             type: "success",

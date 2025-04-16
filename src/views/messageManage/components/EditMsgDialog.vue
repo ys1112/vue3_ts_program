@@ -48,12 +48,11 @@
 import { watchEffect, reactive, ref, toRefs, watch } from 'vue';
 import EditorInput from "@/components/EditorInput.vue";
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
-import { useProductStore } from "@/store/useProductStore";
 import { updateCorpMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
-import { useMessageStore } from "@/store/useMessageStore";
+import { useUserInfoStore } from "@/store/userInfoStore";
 import { addUnreadMsg } from "@/api/department"
-const { isMessageUpdate } = toRefs(useMessageStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const { departmentInfo } = useSettingStore()
 const departmentOptions = departmentInfo.map(item => {
   return {
@@ -197,7 +196,7 @@ const toEdit = (formEl: FormInstance | undefined) => {
           type: "success",
         })
         editMsgVisible.value = false
-        isMessageUpdate.value = true
+        isDataUpdate.value = true
       } else if (res.data.status == 1) {
         ElMessage.error(res.data.message)
       } else {

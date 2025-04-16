@@ -91,7 +91,7 @@ const departmentOptions = departmentInfo.map(item=>{
 //   },
 // ]
 const createDialogVisible = ref(false)
-const { isUsersUpdate } = toRefs(useUserInfoStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const createRuleFormRef = ref<FormInstance>()
 interface CreateAdminData {
   account: string
@@ -166,7 +166,7 @@ const toCreate = (formEl: FormInstance | undefined) => {
       } else {
         ElMessage.error(`添加${props.identity}失败，请稍后再试`)
       }
-      isUsersUpdate.value = true
+      isDataUpdate.value = true
     } else {
       console.log('error submit!')
     }

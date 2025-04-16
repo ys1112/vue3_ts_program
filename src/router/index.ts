@@ -33,40 +33,62 @@ const adminMenu = [
     hidden: 1,
     children: [
       {
-        path: "/productManager",
-        name: "ProductManager",
         meta: {
-          title: "产品管理员",
+          title: "管理员管理",
           icon: "",
         },
-        component: "userManage/ProductManager",
+        hidden: 1,
+        children: [
+          {
+            path: "/productManager",
+            name: "ProductManager",
+            meta: {
+              title: "产品管理员",
+              icon: "",
+            },
+            component: "userManage/ProductManager",
+            hidden: 0,
+          },
+          {
+            path: "/userManager",
+            name: "UserManager",
+            meta: {
+              title: "用户管理员",
+              icon: "",
+            },
+            component: "userManage/UserManager",
+            hidden: 0,
+          },
+          {
+            path: "/messageManager",
+            name: "MessageManager",
+            meta: {
+              title: "消息管理员",
+              icon: "",
+            },
+            component: "userManage/MessageManager",
+            hidden: 0,
+          },
+        ],
       },
       {
-        path: "/userManager",
-        name: "UserManager",
         meta: {
-          title: "用户管理员",
+          title: "用户管理",
           icon: "",
         },
-        component: "userManage/UserManager",
-      },
-      {
-        path: "/messageManager",
-        name: "MessageManager",
-        meta: {
-          title: "消息管理员",
-          icon: "",
-        },
-        component: "userManage/MessageManager",
-      },
-      {
-        path: "/userList",
-        name: "UserList",
-        meta: {
-          title: "用户列表",
-          icon: "",
-        },
-        component: "userManage/UserList",
+        hidden: 1,
+        children: [
+          {
+            path: "/userList",
+            name: "UserList",
+            meta: {
+              title: "用户列表",
+              icon: "",
+            },
+            component: "userManage/UserList",
+            hidden: 0,
+          },
+        ],
       },
     ],
   },
@@ -79,22 +101,42 @@ const adminMenu = [
     },
     children: [
       {
-        path: "/productList",
-        name: "ProductList",
+        hidden: 1,
         meta: {
-          title: "产品列表",
+          title: "入库管理",
           icon: "",
         },
-        component: "productManage/ProductList",
+        children: [
+          {
+            path: "/productList",
+            name: "ProductList",
+            meta: {
+              title: "产品列表",
+              icon: "",
+            },
+            component: "productManage/ProductList",
+            hidden: 0,
+          },
+        ],
       },
       {
-        path: "/deliveryList",
-        name: "DeliveryList",
+        hidden: 1,
         meta: {
-          title: "出库列表",
+          title: "出库管理",
           icon: "",
         },
-        component: "productManage/DeliveryList",
+        children: [
+          {
+            path: "/deliveryList",
+            name: "DeliveryList",
+            meta: {
+              title: "出库列表",
+              icon: "",
+            },
+            component: "productManage/DeliveryList",
+            hidden: 0,
+          },
+        ],
       },
     ],
   },
@@ -107,22 +149,42 @@ const adminMenu = [
     },
     children: [
       {
-        path: "/messageList",
-        name: "MessageList",
+        hidden: 1,
         meta: {
-          title: "消息列表",
+          title: "消息管理",
           icon: "",
         },
-        component: "messageManage/MessageList",
+        children: [
+          {
+            path: "/messageList",
+            name: "MessageList",
+            meta: {
+              title: "消息列表",
+              icon: "",
+            },
+            component: "messageManage/MessageList",
+            hidden: 0,
+          },
+        ],
       },
       {
-        path: "/recycleBin",
-        name: "RecycleBin",
+        hidden: 1,
         meta: {
           title: "回收站",
           icon: "",
         },
-        component: "messageManage/RecycleBin",
+        children: [
+          {
+            path: "/recycleBin",
+            name: "RecycleBin",
+            meta: {
+              title: "回收站",
+              icon: "",
+            },
+            component: "messageManage/RecycleBin",
+            hidden: 0,
+          },
+        ],
       },
     ],
   },
@@ -167,7 +229,7 @@ const adminMenu = [
     hidden: 0,
   },
 ]
-const routes = ref(formatRoutes(adminMenu))
+const routes = ref(formatRoutes(adminMenu) as any)
 
 // createRouter创建路由
 const router = createRouter({

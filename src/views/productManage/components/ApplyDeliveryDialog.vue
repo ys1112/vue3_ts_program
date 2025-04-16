@@ -36,15 +36,13 @@
 <script lang="ts" setup name="ApplyProductDialog">
 import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
-import { useProductStore } from "@/store/useProductStore";
 import { applyDelivery } from "@/api/product";
 import { trackRecord } from "@/utils/tracker";
 import { useUserInfoStore } from "@/store/userInfoStore";
 const labelPosition = ref<FormProps['labelPosition']>('right')
-const { userInfo } = toRefs(useUserInfoStore())
+const { userInfo,isDataUpdate } = toRefs(useUserInfoStore())
 
 const applyDialogVisible = ref(false)
-const { isProductUpdate } = toRefs(useProductStore())
 const applyRuleFormRef = ref<FormInstance>()
 const productName = ref('')
 
@@ -108,7 +106,7 @@ const toApply = (formEl: FormInstance | undefined) => {
           message: "申请出库成功",
           type: "success",
         })
-        isProductUpdate.value = true
+        isDataUpdate.value = true
         applyDialogVisible.value = false
       } else if (res.data.status == 1) {
         ElMessage.error(res.data.message)

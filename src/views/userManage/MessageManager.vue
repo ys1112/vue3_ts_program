@@ -77,7 +77,7 @@ onMounted(async () => {
   }
 })
 const identity = ref('消息管理员')
-const { isUsersUpdate } = toRefs(useUserInfoStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 // 通过 key 强制表格在分页时重新渲染
 const tableKey = ref(0);
 
@@ -168,7 +168,7 @@ const deleteUserInfo = (row: any) => {
               type: 'success',
               message: '降级操作成功',
             })
-            isUsersUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('降级操作失败，请稍后再试')
           }
@@ -187,7 +187,7 @@ const deleteUserInfo = (row: any) => {
       //     type: 'success',
       //     message: '降级操作成功',
       //   })
-      //   isUsersUpdate.value = true
+      //   isDataUpdate.value = true
       // }
     })
     .catch(() => {
@@ -199,17 +199,17 @@ const deleteUserInfo = (row: any) => {
 }
 
 watchEffect(() => {
-  if (isUsersUpdate.value) {
+  if (isDataUpdate.value) {
     const params = {
       identity: identity.value
     }
     getAdminList()
-    isUsersUpdate.value = !isUsersUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 
-// const stopWatch = watch(isUsersUpdate,(newVal,oldVal)=>{
-//   console.log('isUsersUpdate变化了',newVal,oldVal);
+// const stopWatch = watch(isDataUpdate,(newVal,oldVal)=>{
+//   console.log('isDataUpdate变化了',newVal,oldVal);
 // },{deep:true})
 
 </script>

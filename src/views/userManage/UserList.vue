@@ -91,7 +91,7 @@ onMounted(async () => {
     })
   }
 })
-const { isUsersUpdate } = toRefs(useUserInfoStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const detailDialogRef = ref()
 const editDialogRef = ref()
 const { departmentInfo } = useSettingStore()
@@ -223,7 +223,7 @@ const useMessageBox = (info: { [key: string]: any }, row: any) => {
       if (info.isFreeze == 0) {
         const res = await freezeUser(params)
         if (res.data.status == 0) {
-          isUsersUpdate.value = true
+          isDataUpdate.value = true
           await trackRecord('user', 'freeze', row.account)
           ElMessage({
             type: 'success',
@@ -236,7 +236,7 @@ const useMessageBox = (info: { [key: string]: any }, row: any) => {
       if (info.isFreeze == 1) {
         const res = await unfreezeUser(params)
         if (res.data.status == 0) {
-          isUsersUpdate.value = true
+          isDataUpdate.value = true
           await trackRecord('user', 'thaw', row.account)
           ElMessage({
             type: 'success',
@@ -269,9 +269,9 @@ const showDetail = (row: any, column: any, event: Event) => {
 }
 
 watchEffect(() => {
-  if (isUsersUpdate.value) {
+  if (isDataUpdate.value) {
     getUserList()
-    isUsersUpdate.value = !isUsersUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 </script>

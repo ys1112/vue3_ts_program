@@ -1,9 +1,14 @@
 import { defineStore } from "pinia"
 import { reactive, ref, toRef, toRefs } from "vue"
-import { getAllSwiper, getCompanyInfo,getDepartment,getProduct } from "@/api/setting"
+import {
+  getAllSwiper,
+  getCompanyInfo,
+  getDepartment,
+  getProduct,
+} from "@/api/setting"
 import { ElMessage } from "element-plus"
 
-export const useSettingStore = defineStore("settingInfo",{
+export const useSettingStore = defineStore("settingInfo", {
   state() {
     return {
       swipers: reactive({
@@ -68,58 +73,46 @@ export const useSettingStore = defineStore("settingInfo",{
             set_value: "",
           },
         ],
-        mainContent: []as { [key: string]: any },
+        mainContent: [] as { [key: string]: any },
       }),
-      departmentInfo:ref([]as string[]),
-      productInfo:ref([]as string[])
+      departmentInfo: ref([] as string[]),
+      productInfo: ref([] as string[]),
     }
   },
-  actions:{
-    async  getSettingInfo() {
+  actions: {
+    async getSettingInfo() {
       const res = await getAllSwiper()
       const res1 = await getCompanyInfo()
       if (res.data.status == 0) {
         this.swipers.swiperData = res.data.results
       } else {
-        ElMessage({
-          message: "获取轮播图失败",
-          type: "success",
-        })
+        ElMessage.error("获取轮播图失败")
       }
       if (res1.data.status == 0) {
-        this.companyInfo.conmapyData = res1.data.results,
-        (<{ [key: string]: any }>this.companyInfo.mainContent) = this.companyInfo.conmapyData.filter((item: any, index: any) => {
-            return index > 0
-          }
-        )
+        ;(this.companyInfo.conmapyData = res1.data.results),
+          ((<{ [key: string]: any }>this.companyInfo.mainContent) =
+            this.companyInfo.conmapyData.filter((item: any, index: any) => {
+              return index > 0
+            }))
       } else {
-        ElMessage({
-          message: "获取公司信息失败",
-          type: "success",
-        })
+        ElMessage.error("获取公司信息失败")
       }
     },
-    async  getDepartmentInfo() {
+    async getDepartmentInfo() {
       const res = await getDepartment()
       if (res.data.status == 0) {
         this.departmentInfo = JSON.parse(res.data.results.set_value)
       } else {
-        ElMessage({
-          message: "获取部门信息失败",
-          type: "success",
-        })
+        ElMessage.error("获取部门信息失败")
       }
     },
-    async  getProductInfo() {
+    async getProductInfo() {
       const res = await getProduct()
       if (res.data.status == 0 && res.data.results.set_value) {
-        if(!res.data.results.set_value) return
+        if (!res.data.results.set_value) return
         this.productInfo = JSON.parse(res.data.results.set_value)
       } else {
-        ElMessage({
-          message: "获取商品信息失败",
-          type: "success",
-        })
+        ElMessage.error("获取商品信息失败")
       }
     },
   },
@@ -214,10 +207,7 @@ export const useSettingStore = defineStore("settingInfo",{
 //       if (res.data.status == 0) {
 //         swipers.swiperData = res.data.results
 //       } else {
-//         ElMessage({
-//           message: "获取轮播图失败",
-//           type: "success",
-//         })
+// ElMessage.error("获取轮播图失败")
 //       }
 //       if (res1.data.status == 0) {
 //         companyInfo.conmapyData = res1.data.results
@@ -227,10 +217,7 @@ export const useSettingStore = defineStore("settingInfo",{
 //           }
 //         )
 //       } else {
-//         ElMessage({
-//           message: "获取公司信息失败",
-//           type: "success",
-//         })
+// ElMessage.error("获取公司信息失败")
 //       }
 //     }
 

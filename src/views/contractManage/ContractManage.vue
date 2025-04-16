@@ -64,12 +64,11 @@ import { ElMessage, type UploadProps, type TabsPaneContext, ElMessageBox } from 
 import { getContract, deleteContract, updateDownload } from '@/api/contract';
 import { useDebounce } from '@/hooks/useDebounce'
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
-import { useContractStore } from "@/store/useContractStore";
 import { useUserInfoStore } from "@/store/userInfoStore";
 import { downloadFile } from '@/utils/downloader';
 import { trackRecord } from "@/utils/tracker";
-const { userInfo: { name: upload_person } } = useUserInfoStore()
-const { isContractUpdate } = toRefs(useContractStore())
+const { userInfo: { name: upload_person }, } = useUserInfoStore()
+const { isDataUpdate } = toRefs(useUserInfoStore())
 
 onMounted(async () => {
   // 第一次进页面提示,后续改动调用接口刷新页面,不提示,更友好
@@ -143,7 +142,7 @@ const handleFileSuccess: UploadProps["onSuccess"] = async (
       message: "上传文件成功",
       type: 'success',
     })
-    isContractUpdate.value = true
+    isDataUpdate.value = true
   } else if (response.status == 1) {
     ElMessage.error(response.message)
   }
@@ -195,7 +194,7 @@ const deleteFile = (row: any) => {
               type: 'success',
               message: '删除成功',
             })
-            isContractUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('删除失败，请稍后再试')
           }
@@ -216,9 +215,9 @@ const deleteFile = (row: any) => {
     })
 }
 watchEffect(() => {
-  if (isContractUpdate.value) {
+  if (isDataUpdate.value) {
     getFiles()
-    isContractUpdate.value = !isContractUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 // 更新下载数量数

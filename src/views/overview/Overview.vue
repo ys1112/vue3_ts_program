@@ -183,7 +183,7 @@ const { circleUrl } = toRefs(state)
 const goCommonManage = (path: string) => {
   // 保存面包屑
   getBread(menus, path)
-  router.replace({
+  router.push({
     path
   })
 }
@@ -387,7 +387,7 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .overview-content {
-  margin: 16px;
+  margin: 13px 16px 0px;
   border-radius: 10px;
 
   .bg {

@@ -26,7 +26,7 @@ export const useUserInfoStore = defineStore("userInfo", {
         read_list: "[]",
         read_status: 0,
       } as any),
-      isUsersUpdate: ref(false),
+      isDataUpdate: ref(false),
       unreadNum: ref(),
       departmentMsgData: ref(),
       menuList: ref(),
@@ -45,10 +45,7 @@ export const useUserInfoStore = defineStore("userInfo", {
         this.unreadNum = JSON.parse(res.data.read_list).length
         this.menuList = JSON.parse(res.data.menus)
       } else {
-        ElMessage({
-          message: "获取用户信息失败",
-          type: "success",
-        })
+        ElMessage.error("获取用户信息失败")
       }
     },
     async getList(params: GetUserListData) {

@@ -58,9 +58,9 @@ import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
 import { getRecycleMsg, restoreMsg, deleteRecycleMsg } from '@/api/message';
 import { useDebounce } from '@/hooks/useDebounce'
 import { QuestionFilled, WarnTriangleFilled } from '@element-plus/icons-vue'
-import { useMessageStore } from "@/store/useMessageStore";
 import { addUnreadMsg } from "@/api/department"
-const { isMessageUpdate } = toRefs(useMessageStore())
+import { useUserInfoStore } from "@/store/userInfoStore";
+const { isDataUpdate } = toRefs(useUserInfoStore())
 
 onMounted(async () => {
   const flag = await getMsg()
@@ -155,7 +155,7 @@ const restoreMessage = (row: any) => {
               type: 'success',
               message: '还原成功',
             })
-            isMessageUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('还原消息失败，请稍后再试')
           }
@@ -199,7 +199,7 @@ const deleteData = (id: string) => {
               type: 'success',
               message: '删除成功',
             })
-            isMessageUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('删除失败，请稍后再试')
           }
@@ -220,9 +220,9 @@ const deleteData = (id: string) => {
     })
 }
 watchEffect(() => {
-  if (isMessageUpdate.value) {
+  if (isDataUpdate.value) {
     getMsg()
-    isMessageUpdate.value = !isMessageUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 </script>

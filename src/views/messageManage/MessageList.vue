@@ -134,10 +134,10 @@ import { ElMessage, type TabsPaneContext, ElMessageBox } from "element-plus"
 import { WarnTriangleFilled } from '@element-plus/icons-vue'
 import { getCorpMsg, getSysMsg, deleteMsg } from "@/api/message";
 import { useSettingStore } from "@/store/settingInfoStore";
-import { useMessageStore } from "@/store/useMessageStore";
+import { useUserInfoStore } from "@/store/userInfoStore";
 import { trackRecord } from "@/utils/tracker";
 import { deleteUnreadMsg } from "@/api/department"
-const { isMessageUpdate } = toRefs(useMessageStore())
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const activeName = ref('messageList')
 const publishMsgRef = ref()
 const editMsgRef = ref()
@@ -243,7 +243,7 @@ const deleteMessage = async (row: any) => {
               type: 'success',
               message: '删除消息成功',
             })
-            isMessageUpdate.value = true
+            isDataUpdate.value = true
           } else {
             ElMessage.error('删除消息失败，请稍后再试')
           }
@@ -346,14 +346,14 @@ const handleCurrentChange1 = (val: number) => {
 }
 
 watchEffect(() => {
-  if (isMessageUpdate.value) {
+  if (isDataUpdate.value) {
     if (activeName.value == 'systemList') {
       getSysMsgList()
 
     } else {
       getCropMsgList()
     }
-    isMessageUpdate.value = !isMessageUpdate.value
+    isDataUpdate.value = !isDataUpdate.value
   }
 })
 

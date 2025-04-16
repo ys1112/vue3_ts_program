@@ -56,11 +56,12 @@
 <script lang="ts" setup name="CreateProductDialog">
 import { reactive, ref, toRefs } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules, type FormInstance, type FormProps } from 'element-plus'
-import { useProductStore } from "@/store/useProductStore";
 import { createProduct } from "@/api/product";
 import { trackRecord } from "@/utils/tracker";
+import { useUserInfoStore } from "@/store/userInfoStore";
 import { useSettingStore } from "@/store/settingInfoStore";
 const labelPosition = ref<FormProps['labelPosition']>('right')
+const { isDataUpdate } = toRefs(useUserInfoStore())
 const {productInfo} = useSettingStore()
 const categoryOptions = productInfo.map(item => {
   return {
@@ -123,7 +124,6 @@ const unitOptions = [
 // ]
 
 const createDialogVisible = ref(false)
-const { isProductUpdate } = toRefs(useProductStore())
 const createRuleFormRef = ref<FormInstance>()
 interface CreateProductData {
   product_id: string
@@ -206,7 +206,7 @@ const toCreate = (formEl: FormInstance | undefined) => {
           type: "success",
         })
         createDialogVisible.value = false
-        isProductUpdate.value = true
+        isDataUpdate.value = true
       } else if (res.data.status == 1) {
         ElMessage.error(res.data.message)
       } else {
