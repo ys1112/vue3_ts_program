@@ -5,10 +5,10 @@
     <router-link to="/home">返回首页</router-link>
     </div> -->
   <div class="not-found">
-    <el-result title="404 - Page Not Found" sub-title="您访问的页面不存在">
-      <template #icon>
+    <el-result icon="error" title="404 - Page Not Found" sub-title="您访问的页面不存在">
+      <!-- <template #icon>
         <el-image src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
-      </template>
+      </template> -->
       <template #extra>
         <el-button type="primary" @click="toHome">返回首页</el-button>
       </template>
@@ -38,7 +38,7 @@ const toHome = ()=>{
 <style scoped>
 .not-found {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
 }

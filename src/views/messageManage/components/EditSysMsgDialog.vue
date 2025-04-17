@@ -104,7 +104,6 @@ const handleClose = (done: () => void) => {
 }
 
 const open = (info:any) => {
-  console.log(info);
   editSysMsgData.id = info.id
   message_publish_name.value = info.message_publish_name
   editMsgVisible.value = true

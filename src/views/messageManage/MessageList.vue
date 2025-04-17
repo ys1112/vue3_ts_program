@@ -349,7 +349,6 @@ watchEffect(() => {
   if (isDataUpdate.value) {
     if (activeName.value == 'systemList') {
       getSysMsgList()
-
     } else {
       getCropMsgList()
     }

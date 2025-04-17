@@ -85,7 +85,9 @@ let { activeMenuItem, breadItems, getBread } = reactive(commonStore)
 const menuData = ref<any[]>([])
 // 创建 Socket 实例（替换为实际后端地址）
 const socket = io('http://127.0.0.1:3002', {
-  path: '/my-socket-path'
+  path: '/my-socket-path',
+  auth: { token: localStorage.getItem('token') },
+  reconnectionAttempts: 3
 });
 // const socket = io('http://127.0.0.1:3001', {
 //   autoConnect: true,       // 自动连接
@@ -96,6 +98,7 @@ const socket = io('http://127.0.0.1:3002', {
 // });
 
 onMounted(async () => {
+  await getUnreadNum()
   menuData.value = JSON.parse(getCachedRoutes())
   // 连接后立即加入部门房间
   socket.emit('joinDeptRoom', encodedDeptName);
@@ -106,6 +109,27 @@ onMounted(async () => {
       await getUnreadNum()
     }
   });
+  // 监听认证失败事件
+  socket.on('connect_error', (err) => {
+    console.log(err.message);
+
+    // if (err.message === 'Authentication failed') {
+    //   ElMessage.error('Token 无效，请重新登录')
+    //   window.location.href = '/login';
+    // }
+  });
+  //   socket.on('connect_error', async (err) => {
+  //   if (err.message === 'Token expired') {
+  //     try {
+  //       // 刷新 Token 并重新连接
+  //       const { accessToken } = await refreshToken();
+  //       socket.auth.token = accessToken;
+  //       socket.connect();
+  //     } catch {
+  //       window.location.href = '/login';
+  //     }
+  //   }
+  // });
   // 保证刷新activeName位置
   for (const key in MenusEnum) {
     if (breadItems.second == MenusEnum[key as keyof typeof MenusEnum]) {
@@ -131,16 +155,8 @@ const state = reactive({
 const { circleUrl } = toRefs(state)
 const selectedItem = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
-  breadItems.first = ''
   breadItems.second = ''
   activeMenuItem.activeMenu = key
-  if (keyPath.length > 1) {
-    breadItems.first = MenusEnum[keyPath[0] as keyof typeof MenusEnum]
-    breadItems.second = MenusEnum[keyPath[1] as keyof typeof MenusEnum]
-  } else {
-    breadItems.first = MenusEnum[keyPath[0] as keyof typeof MenusEnum]
-  }
-  sessionStorage.setItem('breadItems', JSON.stringify(breadItems))
 }
 // const getUnreadNum = async () => {
 //   if (localStorage.getItem('userId')) {
@@ -160,10 +176,10 @@ const selectedItem = (key: string, keyPath: string[]) => {
 //   await getUnreadNum()
 // }, 60000);
 // 设置头像
-const setAvatar = ()=>{
+const setAvatar = () => {
   setAvatarDialogRef.value.open()
 }
-const setAccount = ()=>{
+const setAccount = () => {
   setAccountDialogRef.value.open()
 }
 const LogOut = () => {
@@ -175,6 +191,7 @@ const LogOut = () => {
   //   store.$reset(); // 重置状态到初始值
   //   localStorage.removeItem(store.$id);
   // });
+  socket.disconnect()
   router.replace('/login')
 }
 onUnmounted(() => {
@@ -182,8 +199,6 @@ onUnmounted(() => {
   socket.disconnect();
 })
 watch(() => route.path, (newPath) => {
-  console.log(route.path);
-  
   // 保存面包屑
   getBread(menus, newPath.slice(1))
 })

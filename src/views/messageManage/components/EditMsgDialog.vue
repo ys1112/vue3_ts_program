@@ -103,6 +103,7 @@ const editMsgData: EditData = reactive({
   message_content: '',
 })
 const message_publish_name = ref('')
+const origin_receipt_object = ref('')
 // 自定义检验
 const validateContent = (rule: any, value: any, callback: any) => {
   const isEmpty = isEditorContentEmpty(value)
@@ -161,6 +162,7 @@ const handleChange = () => {
 const open = (info: any) => {
   editMsgData.id = info.id
   message_publish_name.value = info.message_publish_name
+  origin_receipt_object.value = info.message_receipt_object
   editMsgVisible.value = true
   Object.keys(editMsgData).forEach((key) => {
     if (info.hasOwnProperty(key)) {
@@ -183,7 +185,7 @@ const toEdit = (formEl: FormInstance | undefined) => {
       const params = editMsgData
       const res = await updateCorpMsg(params)
       if (res.data.status == 0) {
-        if (editMsgData.message_receipt_object && editMsgData.message_receipt_object != '全体成员') {
+        if (editMsgData.message_receipt_object !=origin_receipt_object.value && editMsgData.message_receipt_object != '全体成员') {
           const params = {
             id: +editMsgData.id,
             department: editMsgData.message_receipt_object

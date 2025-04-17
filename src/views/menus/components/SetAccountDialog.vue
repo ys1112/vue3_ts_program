@@ -3,7 +3,7 @@
     :destroy-on-close="true">
     <el-form :model="setAccountData" :rules="rules" ref="setRuleFormRef" label-position="left" class="set-form">
       <el-form-item style="margin-left: 12px;" label="账号" prop="account">
-        <el-input disabled v-model="account" style="width: 240px">
+        <el-input disabled v-model="userInfo.account" style="width: 240px">
         </el-input>
       </el-form-item>
       <el-form-item label="姓名" prop="name">
@@ -16,6 +16,10 @@
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="setAccountData.email" style="width: 240px" placeholder="请输入邮箱">
+        </el-input>
+      </el-form-item>
+      <el-form-item label="部门" prop="department">
+        <el-input disabled v-model="userInfo.department" style="width: 240px">
         </el-input>
       </el-form-item>
     </el-form>
@@ -48,7 +52,6 @@ const { validateEmail, validateName } = useUserManage()
 const { userInfo } = toRefs(useUserInfoStore())
 const setAccountVisible = ref(false)
 const setRuleFormRef = ref<FormInstance>()
-const account = ref('')
 const setAccountData: SetData = reactive({
   id: '',
   name: '',
@@ -78,7 +81,6 @@ const rules = reactive<FormRules<SetData>>({
   ],
 })
 onMounted(()=>{
-  account.value = userInfo.value.account
   Object.keys(setAccountData).forEach((key) => {
       if (userInfo.value.hasOwnProperty(key)) {
         setAccountData[key as keyof typeof setAccountData] = userInfo.value[key] || ''

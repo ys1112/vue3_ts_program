@@ -32,10 +32,10 @@ if (localStorage.getItem('token') && router.getRoutes().length<6) {
     router.addRoute("Menu", route) // 添加到Menu路由的children
   })
 }
-
+const pinia = createPinia().use(persistedState)
 // 挂载路由
 app.use(router)
-app.use(createPinia().use(persistedState))
+app.use(pinia)
 app.use(ElementPlus, {
   locale: zhCn,
 })

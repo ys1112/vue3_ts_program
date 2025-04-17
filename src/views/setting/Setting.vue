@@ -9,7 +9,7 @@
             <div class="setting-info-content">
               <span class="setting-info-item">用户头像：</span>
               <!-- 1.头像上传 -->
-              <el-upload class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
+              <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
                 :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload" :data="{ id: userInfo.id }">
                 <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
@@ -81,7 +81,7 @@
             <span class="upload-tip">提示：点击图片框上传首页轮播图</span>
             <div class="home-info-content" v-for="item in swiperData" :key="item.id">
               <span class="home-info-item">{{ getSwiperTitle(item.set_name) }}：</span>
-              <el-upload class="upload-demo" action="http://127.0.0.1:3001/set/setSwiper" list-type="picture"
+              <el-upload :headers="uploadHeaders" class="upload-demo" action="http://127.0.0.1:3001/set/setSwiper" list-type="picture"
                 :auto-upload="true" :show-file-list="false" :on-success="handleSwiperSuccess"
                 :before-upload="beforeSwiperUpload" :data="{ set_name: item.set_name }">
                 <img class="swiper-item" v-if="item.set_value" :src="item.set_value" @error="handleImageError" />
@@ -168,7 +168,9 @@ interface SetInfoForm {
   set_name: string
   set_value: string
 }
-
+const uploadHeaders = ref({
+  Authorization: localStorage.getItem('token')
+});
 // 其他设置数据
 // 部门设置
 const inputDepartmentValue = ref('')

@@ -3,7 +3,7 @@
     :destroy-on-close="true">
     <div class="dialog-body">
       <span class="upload-tip">提示：点击图片框更换头像</span>
-      <el-upload class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
+      <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
         :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload" :data="{ id: userInfo.id }">
         <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
@@ -35,7 +35,9 @@ const handleClose = (done: () => void) => {
 const cancel = () => {
   setAvatarDialogVisible.value = false;
 };
-
+const uploadHeaders = ref({
+  Authorization: localStorage.getItem('token')
+});
 // 头像上传
 const handleAvatarSuccess: UploadProps["onSuccess"] = async (
   response,
@@ -68,6 +70,9 @@ const beforeAvatarUpload: UploadProps["beforeUpload"] = (rawFile) => {
     return false
   } else if (rawFile.size / 1024 / 1024 > 2) {
     ElMessage.error("Avatar picture size can not exceed 2MB!")
+    return false
+  } else if(!uploadHeaders.value.Authorization) {
+    ElMessage.error('请先登录')
     return false
   }
   return true

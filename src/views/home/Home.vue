@@ -3,7 +3,7 @@
     <!-- 轮播图 -->
     <div class="common-content home-content">
       <div class="carousel-wrapper">
-        <el-carousel :interval="4000" indicator-position="outside" :autoplay="false" type="card" height="240px">
+        <el-carousel :interval="4000" indicator-position="outside" type="card" height="240px">
           <el-carousel-item v-for="item in swipers.swiperData" :key="item.id">
             <el-image class="carousel-img" :src="item.set_value" fit="cover" />
           </el-carousel-item>
