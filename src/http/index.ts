@@ -1,7 +1,5 @@
 import axios from "axios"
-import { ElMessage } from "element-plus"
-import { useRouter} from 'vue-router'
-const router = useRouter()
+import { ElMessage, ElMessageBox, type Action } from "element-plus"
 
 // 自定义配置新建一个 axios 实例
 const instance = axios.create({
@@ -44,8 +42,6 @@ instance.interceptors.response.use(
     return response
   },
   function (error) {
-    console.log(123);
-    
     const { response } = error
     if (response) {
       // 根据状态码处理
@@ -55,11 +51,29 @@ instance.interceptors.response.use(
           break
         case 401:
           error.message = "登录已过期，请重新登录"
-          // 清除 token 等认证信息
-          localStorage.clear()
-          sessionStorage.clear()
-          // 跳转到登录页
-          router.replace("/login")
+          ElMessageBox({
+            title: "提示",
+            message: "登录已过期，请重新登录",
+            // showCancelButton: true,
+            showClose: false,
+            confirmButtonText: "确认",
+            // cancelButtonText: '取消',
+            type: "warning",
+            dangerouslyUseHTMLString: true,
+            beforeClose: (action: any, instance: any, done: any) => {
+              if (action === "confirm") {
+                // 清除 token 等认证信息
+                localStorage.clear()
+                sessionStorage.clear()
+                // 跳转到登录页
+                window.location.replace("/login")
+                done()
+              } else {
+              }
+            },
+          })
+            .then(() => {})
+            .catch(() => {})
           break
         case 403:
           error.message = "拒绝访问"
