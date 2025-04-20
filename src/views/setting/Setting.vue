@@ -9,7 +9,7 @@
             <div class="setting-info-content">
               <span class="setting-info-item">用户头像：</span>
               <!-- 1.头像上传 -->
-              <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
+              <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`${apiUrl}/user/uploadAvatar?id=${userInfo.id}`"
                 :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload" :data="{ id: userInfo.id }">
                 <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
@@ -81,7 +81,7 @@
             <span class="upload-tip">提示：点击图片框上传首页轮播图</span>
             <div class="home-info-content" v-for="item in swiperData" :key="item.id">
               <span class="home-info-item">{{ getSwiperTitle(item.set_name) }}：</span>
-              <el-upload :headers="uploadHeaders" class="upload-demo" action="http://127.0.0.1:3001/set/setSwiper" list-type="picture"
+              <el-upload :headers="uploadHeaders" class="upload-demo" :action="`${apiUrl}/set/setSwiper`" list-type="picture"
                 :auto-upload="true" :show-file-list="false" :on-success="handleSwiperSuccess"
                 :before-upload="beforeSwiperUpload" :data="{ set_name: item.set_name }">
                 <img class="swiper-item" v-if="item.set_value" :src="item.set_value" @error="handleImageError" />
@@ -158,6 +158,8 @@ import useAccountInfo from '@/hooks/useAoocuntInfo'
 
 // pinia存储的公司信息和首页轮播图数据
 import { useSettingStore } from "@/store/settingInfoStore"
+const apiUrl = import.meta.env.VITE_API_URL
+
 // 打开修改对话框
 const setInfoDialogRef = ref()
 const settingStore = useSettingStore()

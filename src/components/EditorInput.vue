@@ -20,7 +20,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useFormItem } from 'element-plus'
 // 获取 el-form-item 上下文 实现校验的重点
 const { formItem } = useFormItem()
-
+const apiUrl = import.meta.env.VITE_API_URL
 const props = defineProps(['editValue', 'width', 'height'])
 const emit = defineEmits(['update:editValue'])
 const currentClass = ref('editor-default')
@@ -54,7 +54,7 @@ const editorConfig = {
   MENU_CONF: {
     uploadImage: {
       //上传图片配置
-      server: 'http://127.0.0.1:3007/set/uploadCompanyPicture', //上传接口地址
+      server: apiUrl + '/set/uploadCompanyPicture', //上传接口地址
       fieldName: 'file', //上传文件名
       methods: 'post',
       // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。

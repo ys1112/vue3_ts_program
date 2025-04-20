@@ -1,9 +1,10 @@
 <template>
-  <el-dialog v-model="setInfoDialogVisible" :title="setTitle" width="600" :before-close="handleClose" :destroy-on-close="true">
+  <el-dialog v-model="setInfoDialogVisible" :title="setTitle" width="600" :before-close="handleClose"
+    :destroy-on-close="true">
     <div style="border: 1px solid #ccc">
       <!-- wangEditor结构 -->
       <Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
-      <Editor style="height: 500px; overflow-y: hidden;"  v-model="valueHtml" :defaultConfig="editorConfig" :mode="mode"
+      <Editor style="height: 500px; overflow-y: hidden;" v-model="valueHtml" :defaultConfig="editorConfig" :mode="mode"
         @onCreated="handleCreated" />
     </div>
     <template #footer>
@@ -28,6 +29,7 @@ import { trackRecord } from "@/utils/tracker";
 import emitter from '@/utils/emitter'
 // 编辑器实例，必须用 shallowRef
 const editorRef = shallowRef()
+const apiUrl = import.meta.env.VITE_API_URL
 
 // mode
 const mode = ref('default')
@@ -52,7 +54,7 @@ const editorConfig = {
   MENU_CONF: {
     uploadImage: {
       //上传图片配置
-      server: 'http://127.0.0.1:3007/set/uploadCompanyPicture', //上传接口地址
+      server: apiUrl + '/set/uploadCompanyPicture', //上传接口地址
       fieldName: 'file', //上传文件名
       methods: 'post',
       // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。

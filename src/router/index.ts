@@ -234,7 +234,7 @@ const routes = ref(formatRoutes(adminMenu) as any)
 // createRouter创建路由
 const router = createRouter({
   // 创建路由历史模式
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes: [
     {
       path:"/404",

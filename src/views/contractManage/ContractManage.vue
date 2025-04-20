@@ -10,7 +10,7 @@
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
-          <el-upload class="upload-demo" action="http://127.0.0.1:3001/file/uploadFile" :limit="1"
+          <el-upload class="upload-demo" :action="apiUrl + '/file/uploadFile'" :limit="1"
             :data="{ upload_person }" :show-file-list="false" :before-upload="beforeFileUpload"
             :on-success="handleFileSuccess">
             <el-button type="primary">上传文件</el-button>
@@ -69,6 +69,7 @@ import { downloadFile } from '@/utils/downloader';
 import { trackRecord } from "@/utils/tracker";
 const { userInfo: { name: upload_person }, } = useUserInfoStore()
 const { isDataUpdate } = toRefs(useUserInfoStore())
+const apiUrl = import.meta.env.VITE_API_URL
 
 onMounted(async () => {
   // 第一次进页面提示,后续改动调用接口刷新页面,不提示,更友好

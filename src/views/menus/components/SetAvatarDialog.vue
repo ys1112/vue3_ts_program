@@ -3,7 +3,7 @@
     :destroy-on-close="true">
     <div class="dialog-body">
       <span class="upload-tip">提示：点击图片框更换头像</span>
-      <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`http://127.0.0.1:3001/user/uploadAvatar?id=${userInfo.id}`"
+      <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`${apiUrl}/user/uploadAvatar?id=${userInfo.id}`"
         :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload" :data="{ id: userInfo.id }">
         <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />
@@ -26,6 +26,7 @@ import { type UploadProps, ElMessage } from "element-plus"
 import { useUserInfoStore } from "@/store/userInfoStore"
 import { bindAccount } from "@/api/user"
 const { userInfo } = reactive(useUserInfoStore())
+const apiUrl = import.meta.env.VITE_API_URL
 
 const setAvatarDialogVisible = ref(false)
 const handleClose = (done: () => void) => {

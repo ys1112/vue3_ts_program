@@ -3,7 +3,7 @@ import { ElMessage, ElMessageBox, type Action } from "element-plus"
 
 // 自定义配置新建一个 axios 实例
 const instance = axios.create({
-  baseURL: "http://127.0.0.1:3001",
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 6000,
   headers: { "Content-Type": "application/x-www-form-urlencoded" },
 })
