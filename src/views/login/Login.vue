@@ -287,7 +287,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
       justify-content: space-between;
       align-items: center;
       margin: 0 auto;
-      padding: 0 64px;
+      padding: 0 40px;
 
       span {
         font-size: 14px;
