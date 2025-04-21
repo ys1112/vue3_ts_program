@@ -278,14 +278,14 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   color: #fff;
   height: 100vh;
   background-image: url('@/assets/images/bgc.jpg');
-  background-size: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
 
   .header-wrapper {
     .header-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 1200px;
       margin: 0 auto;
 
       span {
@@ -295,18 +295,15 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   }
 
   .login-wrapper {
-    height: 600px;
+      position: relative;
+      height: 600px;
 
     .login-content {
-      position: relative;
-      width: 1200px;
-      height: 600px;
-      margin: 0 auto;
 
       .box-login {
         position: absolute;
         top: 50%;
-        right: 0;
+        right: 10%;
         transform: translateY(-50%);
         width: 450px;
         height: 320px;
@@ -387,7 +384,6 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
     .footer-content {
       display: flex;
       justify-content: center;
-      width: 1200px;
       margin: 0 auto;
       font-size: 12px;
     }
