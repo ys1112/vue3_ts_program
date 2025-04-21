@@ -3,7 +3,7 @@
     :destroy-on-close="true">
     <div class="dialog-body">
       <span class="upload-tip">提示：点击图片框更换头像</span>
-      <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`${apiUrl}/user/uploadAvatar?id=${userInfo.id}`"
+      <el-upload :headers="uploadHeaders" class="avatar-uploader" :action="`${apiUrl}/api/users/uploadAvatar?id=${userInfo.id}`"
         :show-file-list="false" :auto-upload="true" :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload" :data="{ id: userInfo.id }">
         <img v-if="userInfo.image_url" :src="userInfo.image_url" @error="handleImageError" class="avatar" />

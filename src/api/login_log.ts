@@ -12,7 +12,7 @@ interface InsertData {
 // 获取登录日志列表
 export const getLoginLog = (params: any) => {
   return instance({
-    url: "/login_log/getLoginLog",
+    url: "/api/signin-records/getLoginLog",
     method: "GET",
     params,
   })
@@ -21,7 +21,7 @@ export const getLoginLog = (params: any) => {
 // 删除操作记录
 export const deleteLoginLog = (data: DeleteData) => {
   return instance({
-    url: "/login_log/deleteLoginLog",
+    url: "/api/signin-records/deleteLoginLog",
     method: "DELETE",
     data,
   })
@@ -30,7 +30,7 @@ export const deleteLoginLog = (data: DeleteData) => {
 // 插入操作记录
 export const recordLogin = (data: InsertData) => {
   return instance({
-    url: "/login_log/recordLogin",
+    url: "/api/signin-records/recordLogin",
     method: "POST",
     data,
   })
@@ -39,7 +39,7 @@ export const recordLogin = (data: InsertData) => {
 // 清空记录
 export const clearLoginLog = () => {
   return instance({
-    url: "/login_log/clearLoginLog",
+    url: "/api/signin-records/clearLoginLog",
     method: "POST",
   })
 }

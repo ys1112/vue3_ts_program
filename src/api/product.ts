@@ -39,7 +39,7 @@ interface OperateData {
 // 获取产品信息
 export const getProductInfo = (params:any) => {
   return instance({
-    url: "/pro/getProducts",
+    url: "/api/products/getProducts",
     method: "GET",
     params
   })
@@ -58,7 +58,7 @@ export const createProduct = (data: CreateProductData) => {
     in_memo,
   } = data
   return instance({
-    url: "/pro/createProduct",
+    url: "/api/products/createProduct",
     method: "POST",
     data: {
       product_id,
@@ -83,7 +83,7 @@ export const applyDelivery = (data: ApplyOutData) => {
     apply_memo,
   } = data
   return instance({
-    url: "/pro/applyDelivery",
+    url: "/api/products/applyDelivery",
     method: "POST",
     data: {
       id,
@@ -107,7 +107,7 @@ export const updateProduct = (data: UpdateProductData) => {
     in_memo,
   } = data
   return instance({
-    url: "/pro/updateProduct",
+    url: "/api/products/updateProduct",
     method: "PUT",
     params: { id: id },
     data: {
@@ -127,7 +127,7 @@ export const deleteProduct = (data: DeleteProductData) => {
     id,
   } = data
   return instance({
-    url: "/pro/deleteProduct",
+    url: "/api/products/deleteProduct",
     method: "DELETE",
     data: {
       id
@@ -138,7 +138,7 @@ export const deleteProduct = (data: DeleteProductData) => {
 // 获取申请出库产品信息
 export const getApplyProducts = (params:any) => {
   return instance({
-    url: "/pro/getApplyProducts",
+    url: "/api/products/getApplyProducts",
     method: "GET",
     params
   })
@@ -147,7 +147,7 @@ export const getApplyProducts = (params:any) => {
 // 同意申请
 export const approveApply = (data: AuditData) => {
   return instance({
-    url: "/pro/approveApply",
+    url: "/api/products/approveApply",
     method: "POST",
     data,
   })
@@ -155,7 +155,7 @@ export const approveApply = (data: AuditData) => {
 // 驳回申请
 export const rejectApply = (data: AuditData) => {
   return instance({
-    url: "/pro/rejectApply",
+    url: "/api/products/rejectApply",
     method: "POST",
     data,
   })
@@ -164,7 +164,7 @@ export const rejectApply = (data: AuditData) => {
 export const cancelApply = (data: OperateData) => {
   const { id } = data
   return instance({
-    url: "/pro/cancelApply",
+    url: "/api/products/cancelApply",
     method: "POST",
     data:{
       id
@@ -175,7 +175,7 @@ export const cancelApply = (data: OperateData) => {
 export const resubmit = (data: OperateData) => {
   const { id } = data
   return instance({
-    url: "/pro/resubmit",
+    url: "/api/products/resubmit",
     method: "POST",
     data:{
       id
@@ -186,7 +186,7 @@ export const resubmit = (data: OperateData) => {
 // 获取已出库产品信息
 export const getOutProducts = (params:any) => {
   return instance({
-    url: "/pro/getOutProducts",
+    url: "/api/products/getOutProducts",
     method: "GET",
     params
   })
@@ -198,7 +198,7 @@ export const deleteDelivery = (data: DeleteProductData) => {
     id,
   } = data
   return instance({
-    url: "/pro/deleteDelivery",
+    url: "/api/products/deleteDelivery",
     method: "DELETE",
     data: {
       id

@@ -7,7 +7,7 @@ interface CommonData {
 // 获取公司消息列表
 export const getContract = (params:any) => {
   return instance({
-    url: "/file/getFiles",
+    url: "/api/files/getFiles",
     method: "GET",
     params
   })
@@ -16,7 +16,7 @@ export const getContract = (params:any) => {
 // 删除文件
 export const deleteContract = (data: CommonData) => {
   return instance({
-    url: "/file/deleteFile",
+    url: "/api/files/deleteFile",
     method: "DELETE",
     data,
   })
@@ -25,7 +25,7 @@ export const deleteContract = (data: CommonData) => {
 // 更新下载量
 export const updateDownload = (data: CommonData) => {
   return instance({
-    url: "/file/updateDownload",
+    url: "/api/files/updateDownload",
     method: "POST",
     data,
   })

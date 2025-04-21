@@ -69,7 +69,7 @@ interface DeleteUserData {
 // 获取用户信息
 export const getUserInfo = (id: Id) => {
   return instance({
-    url: "/user/getUserInfo",
+    url: "/api/users/getUserInfo",
     method: "GET",
     params: id,
   })
@@ -79,7 +79,7 @@ export const getUserInfo = (id: Id) => {
 export const bindAccount = (data: BindAccountData) => {
   const { only_id, url, account } = data
   return instance({
-    url: "/user/bindAccount",
+    url: "/api/users/bindAccount",
     method: "POST",
     data: {
       account,
@@ -93,7 +93,7 @@ export const bindAccount = (data: BindAccountData) => {
 export const updatePassword = (id: Id, data: ResetData) => {
   const { password, newPassword } = data
   return instance({
-    url: "/user/updatePassword",
+    url: "/api/users/updatePassword",
     method: "PUT",
     params: id,
     data: {
@@ -106,7 +106,7 @@ export const updatePassword = (id: Id, data: ResetData) => {
 // 修改姓名
 export const updateName = (id: Id, uName: UName) => {
   return instance({
-    url: "/user/updateName",
+    url: "/api/users/updateName",
     method: "PUT",
     params: id,
     data: uName,
@@ -116,7 +116,7 @@ export const updateName = (id: Id, uName: UName) => {
 // 修改性别
 export const updateGender = (id: Id, gender: Gender) => {
   return instance({
-    url: "/user/updateGender",
+    url: "/api/users/updateGender",
     method: "PUT",
     params: id,
     data: gender,
@@ -126,7 +126,7 @@ export const updateGender = (id: Id, gender: Gender) => {
 // 修改邮箱
 export const updateEmail = (id: Id, email: Email) => {
   return instance({
-    url: "/user/updateEmail",
+    url: "/api/users/updateEmail",
     method: "PUT",
     params: id,
     data: email,
@@ -138,7 +138,7 @@ export const updateEmail = (id: Id, email: Email) => {
 export const createAdmin = (data: CreateAdminData) => {
   const { account, password, name, gender, email, identity, department } = data
   return instance({
-    url: "/user/createAdmin",
+    url: "/api/users/createAdmin",
     method: "POST",
     data: {
       account,
@@ -155,7 +155,7 @@ export const createAdmin = (data: CreateAdminData) => {
 export const downgradeAdmin = (data: DowngradeAdminData) => {
   const { id } = data
   return instance({
-    url: "/user/downgradeAdmin",
+    url: "/api/users/downgradeAdmin",
     method: "POST",
     data: {
       id,
@@ -166,7 +166,7 @@ export const downgradeAdmin = (data: DowngradeAdminData) => {
 export const updateUser = (data: UpdateUserData) => {
   const { id, name, gender, email, department } = data
   return instance({
-    url: "/user/updateUser",
+    url: "/api/users/updateUser",
     method: "PUT",
     params: { id: id },
     data: {
@@ -180,7 +180,7 @@ export const updateUser = (data: UpdateUserData) => {
 // 获取用户列表 getUserList get
 export const getUserList = (params: any) => {
   return instance({
-    url: "/user/getUserList",
+    url: "/api/users/getUserList",
     method: "GET",
     params,
   })
@@ -188,7 +188,7 @@ export const getUserList = (params: any) => {
 // // 搜索用户列表 searchUserList get
 // export const searchUserList = (data: searchUserListData) => {
 //   return instance({
-//     url: "/user/searchUserList",
+//     url: "/api/users/searchUserList",
 //     method: "GET",
 //     params: data,
 //   })
@@ -197,7 +197,7 @@ export const getUserList = (params: any) => {
 export const freezeUser = (data: FreezeUserData) => {
   const { id } = data
   return instance({
-    url: "/user/freezeUser",
+    url: "/api/users/freezeUser",
     method: "POST",
     data: {
       id,
@@ -208,7 +208,7 @@ export const freezeUser = (data: FreezeUserData) => {
 export const unfreezeUser = (data: UnfreezeUserData) => {
   const { id } = data
   return instance({
-    url: "/user/unfreezeUser",
+    url: "/api/users/unfreezeUser",
     method: "POST",
     data: {
       id,
@@ -219,7 +219,7 @@ export const unfreezeUser = (data: UnfreezeUserData) => {
 export const empowerUser = (data: EmpowerUserData) => {
   const { id, identity } = data
   return instance({
-    url: "/user/empowerUser",
+    url: "/api/users/empowerUser",
     method: "POST",
     data: {
       id,
@@ -231,7 +231,7 @@ export const empowerUser = (data: EmpowerUserData) => {
 export const deleteUser = (data: DeleteUserData) => {
   const { id, account } = data
   return instance({
-    url: "/user/deleteUser",
+    url: "/api/users/deleteUser",
     method: "DELETE",
     data: {
       id,
@@ -244,7 +244,7 @@ export const deleteUser = (data: DeleteUserData) => {
 export const setAccount = (data: SetAccountData) => {
   const { id, name, gender, email } = data
   return instance({
-    url: "/user/setAccount",
+    url: "/api/users/setAccount",
     method: "PUT",
     params: { id: id },
     data: {

@@ -30,7 +30,7 @@ interface OperateData {
 // 获取公司消息列表
 export const getCorpMsg = (params: any) => {
   return instance({
-    url: "/msg/getCorpMsg",
+    url: "/api/notification/getCorpMsg",
     method: "GET",
     params,
   })
@@ -39,7 +39,7 @@ export const getCorpMsg = (params: any) => {
 // 获取系统消息列表
 export const getSysMsg = (params: any) => {
   return instance({
-    url: "/msg/getSysMsg",
+    url: "/api/notification/getSysMsg",
     method: "GET",
     params,
   })
@@ -48,7 +48,7 @@ export const getSysMsg = (params: any) => {
 // 发布消息
 export const publishMsg = (data: PublishData) => {
   return instance({
-    url: "/msg/publishMsg",
+    url: "/api/notification/publishMsg",
     method: "POST",
     data,
   })
@@ -65,7 +65,7 @@ export const updateCorpMsg = (data: UpdateCorpData) => {
     message_content,
   } = data
   return instance({
-    url: "/msg/updateCorpMsg",
+    url: "/api/notification/updateCorpMsg",
     method: "PUT",
     params: { id },
     data: {
@@ -81,7 +81,7 @@ export const updateCorpMsg = (data: UpdateCorpData) => {
 // 删除公司消息到回收站
 export const deleteMsg = (data: OperateData) => {
   return instance({
-    url: "/msg/deleteMsg",
+    url: "/api/notification/deleteMsg",
     method: "POST",
     data,
   })
@@ -90,7 +90,7 @@ export const deleteMsg = (data: OperateData) => {
 // 获取系统消息列表
 export const getRecycleMsg = (params: any) => {
   return instance({
-    url: "/msg/getRecycleMsg",
+    url: "/api/notification/getRecycleMsg",
     method: "GET",
     params,
   })
@@ -100,7 +100,7 @@ export const getRecycleMsg = (params: any) => {
 export const updateSysMsg = (data: UpdateSysData) => {
   const { id, message_title, message_content } = data
   return instance({
-    url: "/msg/updateSysMsg",
+    url: "/api/notification/updateSysMsg",
     method: "PUT",
     params: { id },
     data: {
@@ -113,7 +113,7 @@ export const updateSysMsg = (data: UpdateSysData) => {
 // 还原消息
 export const restoreMsg = (data: OperateData) => {
   return instance({
-    url: "/msg/restoreMsg",
+    url: "/api/notification/restoreMsg",
     method: "POST",
     data,
   })
@@ -122,7 +122,7 @@ export const restoreMsg = (data: OperateData) => {
 // 删除消息
 export const deleteRecycleMsg = (data: OperateData) => {
   return instance({
-    url: "/msg/deleteRecycleMsg",
+    url: "/api/notification/deleteRecycleMsg",
     method: "DELETE",
     data,
   })
@@ -131,7 +131,7 @@ export const deleteRecycleMsg = (data: OperateData) => {
 // 获取系统消息和全体成员的公司公告消息列表
 export const getAllMemberMsg = () => {
   return instance({
-    url: "/msg/getAllMemberMsg",
+    url: "/api/notification/getAllMemberMsg",
     method: "GET",
   })
 }

@@ -10,7 +10,7 @@
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
-          <el-upload class="upload-demo" :action="apiUrl + '/file/uploadFile'" :limit="1"
+          <el-upload class="upload-demo" :action="apiUrl + '/api/files/uploadFile'" :limit="1"
             :data="{ upload_person }" :show-file-list="false" :before-upload="beforeFileUpload"
             :on-success="handleFileSuccess">
             <el-button type="primary">上传文件</el-button>

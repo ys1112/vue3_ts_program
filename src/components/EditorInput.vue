@@ -54,7 +54,7 @@ const editorConfig = {
   MENU_CONF: {
     uploadImage: {
       //上传图片配置
-      server: apiUrl + '/set/uploadCompanyPicture', //上传接口地址
+      server: apiUrl + '/api/system/uploadCompanyPicture', //上传接口地址
       fieldName: 'file', //上传文件名
       methods: 'post',
       // 自定义上传参数，例如传递验证的 token 等。参数会被添加到 formData 中，一起上传到服务端。

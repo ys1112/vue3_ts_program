@@ -12,7 +12,7 @@ interface OperData {
 // 获取操作日志列表
 export const getOperLog = (params:any) => {
   return instance({
-    url: "/operate_log/getOperLog",
+    url: "/api/operations/getOperLog",
     method: "GET",
     params
   })
@@ -21,7 +21,7 @@ export const getOperLog = (params:any) => {
 // 删除操作记录
 export const deleteOperLog = (data: DeleteData) => {
   return instance({
-    url: "/operate_log/deleteOperLog",
+    url: "/api/operations/deleteOperLog",
     method: "DELETE",
     data,
   })
@@ -30,7 +30,7 @@ export const deleteOperLog = (data: DeleteData) => {
 // 插入操作记录
 export const recordOper = (data: OperData) => {
   return instance({
-    url: "/operate_log/recordOper",
+    url: "/api/operations/recordOper",
     method: "POST",
     data,
   })
@@ -39,7 +39,7 @@ export const recordOper = (data: OperData) => {
 // 清空记录
 export const clearOperLog = () => {
   return instance({
-    url: "/operate_log/clearOperLog",
+    url: "/api/operations/clearOperLog",
     method: "POST",
   })
 }

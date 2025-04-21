@@ -15,7 +15,7 @@ interface VerifyResetData {
 export const register = (data:LoginData)=>{
   const { account, password } = data
   return instance({
-    url:'/api/register',
+    url:'/api/auth/register',
     method:'POST',
     data: {
       account, 
@@ -28,7 +28,7 @@ export const register = (data:LoginData)=>{
 export const login = (data:LoginData)=>{
   const { account, password } = data
   return instance({
-    url:'/api/login',
+    url:'/api/auth/login',
     method:'POST',
     data: {
       account, 
@@ -41,7 +41,7 @@ export const login = (data:LoginData)=>{
 export const verifyAccount = (data:VerifyAccountData)=>{
   const { account, email } = data
   return instance({
-    url:'/user/verifyAccount',
+    url:'/api/users/verifyAccount',
     method:'POST',
     data: {
       account, 
@@ -54,7 +54,7 @@ export const verifyAccount = (data:VerifyAccountData)=>{
 export const resetPassword = (data:VerifyResetData)=>{
   const { id, newPassword } = data
   return instance({
-    url:'/user/resetPassword',
+    url:'/api/users/resetPassword',
     method:'POST',
     data: {
       id, 
