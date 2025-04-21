@@ -26,6 +26,7 @@ export default defineConfig({
       customDomId: "__svg__icons__dom__",
     }),
   ],
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
   resolve: {
     alias: {
       // "@": fileURLToPath(new URL("./src", import.meta.url)),

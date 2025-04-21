@@ -89,7 +89,8 @@ const socket = io('http://127.0.0.1:3002', {
   auth: { token: localStorage.getItem('token') },
   reconnectionAttempts: 3
 });
-// const socket = io('http://127.0.0.1:3001', {
+// 实际后端地址,反向代理也需配置
+// const socket = io('https://api.gmbksys.xyz', {
 //   autoConnect: true,       // 自动连接
 //   reconnection: true,      // 自动重连
 //   // auth: { 
