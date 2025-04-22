@@ -1,5 +1,5 @@
 // 封装下载方法,可以实现保存位置选择
-
+import { ref } from "vue";
 // 文件类型配置接口
 interface FileTypeConfig {
   mime: string
@@ -62,10 +62,15 @@ function getFileTypes(fileName: string): FilePickerAcceptType[] {
 export async function downloadFile(
   url: string,
   fileName: string,
+  token:string,
   isSuccess: boolean
 ): Promise<boolean> {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url,{
+      headers: {
+        Authorization: token // 将 Token 放入请求头
+      }
+    })
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
     const blob = await response.blob()
 

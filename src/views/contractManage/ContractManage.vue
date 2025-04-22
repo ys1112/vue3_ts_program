@@ -10,7 +10,7 @@
         </div>
         <!-- 结构顶部右侧按钮区域 -->
         <div class="table-header-right">
-          <el-upload class="upload-demo" :action="apiUrl + '/api/files/uploadFile'" :limit="1"
+          <el-upload :headers="uploadHeaders" class="upload-demo" :action="apiUrl + '/api/files/uploadFile'" :limit="1"
             :data="{ upload_person }" :show-file-list="false" :before-upload="beforeFileUpload"
             :on-success="handleFileSuccess">
             <el-button type="primary">上传文件</el-button>
@@ -70,7 +70,9 @@ import { trackRecord } from "@/utils/tracker";
 const { userInfo: { name: upload_person }, } = useUserInfoStore()
 const { isDataUpdate } = toRefs(useUserInfoStore())
 const apiUrl = import.meta.env.VITE_API_URL
-
+const uploadHeaders = ref({
+  Authorization: localStorage.getItem('token')
+});
 onMounted(async () => {
   // 第一次进页面提示,后续改动调用接口刷新页面,不提示,更友好
   const flag = await getFiles()
@@ -159,7 +161,7 @@ const handleCurrentChange = (val: number) => {
 
 // 下载,封装下载函数,可以实现用户选择下载位置
 const downloadContract = async (info: any) => {
-  isSuccess.value = await downloadFile(info.file_url, info.file_name, isSuccess.value);
+  isSuccess.value = await downloadFile(info.file_url, info.file_name, localStorage.getItem('token') as string,isSuccess.value);
   // 判断是否更新下载次数
   if (isSuccess.value) {
     updateDownloadNum(info.id)
