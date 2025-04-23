@@ -84,7 +84,7 @@ const commonStore = useCommonStore()
 let { activeMenuItem, breadItems, getBread } = reactive(commonStore)
 const menuData = ref<any[]>([])
 // 创建 Socket 实例（替换为实际后端地址）
-const socket = io(import.meta.env.VITE_API_URL, {
+const socket = io(import.meta.env.VITE_API_URL1, {
   path: '/my-socket-path',
   auth: { token: localStorage.getItem('token') },
   reconnectionAttempts: 3

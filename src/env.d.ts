@@ -3,6 +3,7 @@
 interface ImportMetaEnv {
   readonly VITE_BASE_URL: string;  // 你的环境变量
   readonly VITE_API_URL: string;  // 你的环境变量
+  readonly VITE_API_URL1: string;  // 你的环境变量
   // 其他变量...
 }
 
