@@ -132,8 +132,8 @@ interface FormData {
   confirmPassword?: string
 }
 const loginData: FormData = reactive({
-  account: '',
-  password: ''
+  account: 'admin1',
+  password: 'a123123'
 })
 const registerData: FormData = reactive({
   account: '',

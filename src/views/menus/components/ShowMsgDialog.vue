@@ -119,6 +119,9 @@ defineExpose({
 :deep(.el-table__row) {
   cursor: pointer;
 }
+:deep(.el-main) {
+  border-left: 1px solid #CDD0D6;
+}
 </style>
 <style>
 .msg-tip {
@@ -154,7 +157,5 @@ defineExpose({
   --el-table-tr-bg-color: var(--el-color-success-light-9);
 }
 
-.el-main {
-  border-left: 1px solid #CDD0D6;
-}
+
 </style>
