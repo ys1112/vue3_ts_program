@@ -90,7 +90,7 @@ const socket = io('http://127.0.0.1:3002', {
   reconnectionAttempts: 3
 });
 // 实际后端地址,反向代理也需配置
-// const socket = io('https://api.gmbksys.xyz', {
+// const socket = io('https://www.gmbksys.xyz', {
 //   autoConnect: true,       // 自动连接
 //   reconnection: true,      // 自动重连
 //   // auth: { 
