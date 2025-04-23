@@ -99,6 +99,7 @@ const socket = io(import.meta.env.VITE_API_URL1, {
 // });
 
 onMounted(async () => {
+  getBread(menus, route.path.slice(1))
   await getUnreadNum()
   menuData.value = JSON.parse(getCachedRoutes())
   // 连接后立即加入部门房间
