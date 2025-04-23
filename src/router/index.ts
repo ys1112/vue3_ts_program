@@ -237,11 +237,6 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes: [
     {
-      path:"/404",
-      name:"404",
-      component:import("@/views/error/404.vue")
-    },
-    {
       path: "/",
       redirect: "/login",
     },
@@ -259,8 +254,9 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/404'
-    }
+      name:"NotFound",
+      component:() => import("@/views/error/404.vue")
+    },
   ],
 })
 // 全局前置守卫
