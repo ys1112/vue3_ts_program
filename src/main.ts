@@ -16,6 +16,7 @@ import { createPinia } from 'pinia'
 import persistedState from "pinia-plugin-persistedstate";
 import { formatRoutes } from "@/router/asyncRoute"
 import { getCachedRoutes } from "@/utils/auth"
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import 'virtual:svg-icons-register'
 import router from './router'

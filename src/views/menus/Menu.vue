@@ -13,6 +13,7 @@
         <el-header>
           <div class="header-left">{{ userInfo.name || 'Undefined' }} 欢迎您登录本系统</div>
           <div class="header-right">
+            <el-text class="mx-1" @click="router.push('/adaptiveHome')">去Adaptive首页</el-text>
             <el-icon size="20" @click="viewDepartmentInfo">
               <el-badge :value="unreadNum" :max="99" :show-zero="false" class="item">
                 <Message />
@@ -270,7 +271,11 @@ watch(() => route.path, (newPath) => {
   font-style: normal;
   cursor: pointer;
 }
-
+.el-text {
+  padding: 0 24px;
+  color: #fff;
+  cursor: pointer;
+}
 // .el-menu {
 //   background-color: #2a303a;
 // }

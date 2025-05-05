@@ -253,6 +253,11 @@ const router = createRouter({
       // children: routes.value,
     },
     {
+      path: "/adaptiveHome",
+      component: () => import("@/views/adaptiveHome/AdaptiveHome.vue"),
+      name: "AdaptiveHome",
+    },
+    {
       path: '/:pathMatch(.*)*',
       name:"NotFound",
       component:() => import("@/views/error/404.vue")

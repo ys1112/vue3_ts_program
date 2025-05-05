@@ -280,7 +280,7 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   background-image: url('@/assets/images/bgc.jpg');
   background-repeat: no-repeat;
   background-size: cover;
-
+  overflow: hidden;
   .header-wrapper {
     .header-content {
       display: flex;
